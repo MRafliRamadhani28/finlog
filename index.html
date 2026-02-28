@@ -1,1247 +1,2235 @@
 <!DOCTYPE html>
 <html lang="id">
+
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Catatan Keuangan</title>
-<link href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
-<style>
-  :root {
-    --bg: #0a0e1a;
-    --bg2: #111827;
-    --bg3: #1a2235;
-    --card: #141c2e;
-    --card2: #1e2a42;
-    --border: #2a3a5c;
-    --border2: #3a4f78;
-    --text: #e8edf5;
-    --text2: #8fa3c8;
-    --text3: #5a7099;
-    --green: #22d98a;
-    --green2: #16a362;
-    --green-bg: rgba(34,217,138,0.08);
-    --red: #ff5e7a;
-    --red2: #c23358;
-    --red-bg: rgba(255,94,122,0.08);
-    --yellow: #ffc947;
-    --yellow-bg: rgba(255,201,71,0.08);
-    --blue: #4d9fff;
-    --blue-bg: rgba(77,159,255,0.08);
-    --purple: #a78bfa;
-    --gold: #e8c96d;
-    --radius: 12px;
-    --radius2: 8px;
-  }
-  * { box-sizing: border-box; margin: 0; padding: 0; }
-  body { font-family: 'Sora', sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; }
-  
-  /* SCROLLBAR */
-  ::-webkit-scrollbar { width: 6px; height: 6px; }
-  ::-webkit-scrollbar-track { background: var(--bg2); }
-  ::-webkit-scrollbar-thumb { background: var(--border2); border-radius: 3px; }
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Catatan Keuangan</title>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap"
+    rel="stylesheet">
+  <style>
+    :root {
+      --bg: #0a0e1a;
+      --bg2: #111827;
+      --bg3: #1a2235;
+      --card: #141c2e;
+      --card2: #1e2a42;
+      --border: #2a3a5c;
+      --border2: #3a4f78;
+      --text: #e8edf5;
+      --text2: #8fa3c8;
+      --text3: #5a7099;
+      --green: #22d98a;
+      --green2: #16a362;
+      --green-bg: rgba(34, 217, 138, 0.08);
+      --red: #ff5e7a;
+      --red2: #c23358;
+      --red-bg: rgba(255, 94, 122, 0.08);
+      --yellow: #ffc947;
+      --yellow-bg: rgba(255, 201, 71, 0.08);
+      --blue: #4d9fff;
+      --blue-bg: rgba(77, 159, 255, 0.08);
+      --purple: #a78bfa;
+      --gold: #e8c96d;
+      --radius: 12px;
+      --radius2: 8px;
+    }
 
-  /* LAYOUT */
-  .app { max-width: 1200px; margin: 0 auto; padding: 24px 16px; }
-  
-  /* HEADER */
-  .header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 28px; flex-wrap: wrap; gap: 12px; }
-  .header-title { display: flex; align-items: center; gap: 12px; }
-  .logo { width: 40px; height: 40px; background: linear-gradient(135deg, var(--gold), #f59e0b); border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 20px; }
-  .header h1 { font-size: 1.5rem; font-weight: 700; color: var(--text); letter-spacing: -0.5px; }
-  .header h1 span { color: var(--gold); }
-  
-  /* MONTH NAV */
-  .month-nav { display: flex; align-items: center; gap: 8px; background: var(--card); border: 1px solid var(--border); border-radius: var(--radius); padding: 6px 10px; }
-  .month-nav button { background: none; border: none; color: var(--text2); cursor: pointer; padding: 4px 8px; border-radius: 6px; font-size: 16px; transition: all .2s; }
-  .month-nav button:hover { background: var(--card2); color: var(--text); }
-  .month-label { font-family: 'JetBrains Mono', monospace; font-size: .9rem; font-weight: 500; color: var(--gold); min-width: 120px; text-align: center; }
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
 
-  /* BALANCE PANEL */
-  .balance-panel { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px; margin-bottom: 28px; }
-  .bal-card { background: var(--card); border: 1px solid var(--border); border-radius: var(--radius); padding: 20px; position: relative; overflow: hidden; }
-  .bal-card::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px; }
-  .bal-card.green::before { background: linear-gradient(90deg, var(--green2), var(--green)); }
-  .bal-card.red::before { background: linear-gradient(90deg, var(--red2), var(--red)); }
-  .bal-card.yellow::before { background: linear-gradient(90deg, #c47f0a, var(--yellow)); }
-  .bal-card.blue::before { background: linear-gradient(90deg, #2563eb, var(--blue)); }
-  .bal-label { font-size: .75rem; font-weight: 500; color: var(--text3); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 8px; }
-  .bal-amount { font-family: 'JetBrains Mono', monospace; font-size: 1.4rem; font-weight: 600; }
-  .bal-card.green .bal-amount { color: var(--green); }
-  .bal-card.red .bal-amount { color: var(--red); }
-  .bal-card.yellow .bal-amount { color: var(--yellow); }
-  .bal-card.blue .bal-amount { color: var(--blue); }
-  .bal-sub { font-size: .72rem; color: var(--text3); margin-top: 4px; }
+    body {
+      font-family: 'Sora', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+    }
 
-  /* TABS */
-  .tabs { display: flex; gap: 4px; background: var(--card); border: 1px solid var(--border); border-radius: var(--radius); padding: 5px; margin-bottom: 20px; overflow-x: auto; }
-  .tab { flex-shrink: 0; padding: 8px 16px; border-radius: 8px; border: none; background: none; color: var(--text2); font-family: 'Sora', sans-serif; font-size: .85rem; font-weight: 500; cursor: pointer; transition: all .2s; white-space: nowrap; }
-  .tab.active { background: var(--card2); color: var(--text); box-shadow: inset 0 0 0 1px var(--border2); }
-  .tab:hover:not(.active) { color: var(--text); }
+    /* SCROLLBAR */
+    ::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
 
-  /* SECTION */
-  .section { display: none; }
-  .section.active { display: block; }
+    ::-webkit-scrollbar-track {
+      background: var(--bg2);
+    }
 
-  /* CARD */
-  .card { background: var(--card); border: 1px solid var(--border); border-radius: var(--radius); padding: 20px; margin-bottom: 16px; }
-  .card-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px; }
-  .card-title { font-size: .95rem; font-weight: 600; color: var(--text); display: flex; align-items: center; gap: 8px; }
-  .card-title .dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
-  .dot-green { background: var(--green); }
-  .dot-red { background: var(--red); }
-  .dot-yellow { background: var(--yellow); }
-  .dot-blue { background: var(--blue); }
-  .dot-purple { background: var(--purple); }
+    ::-webkit-scrollbar-thumb {
+      background: var(--border2);
+      border-radius: 3px;
+    }
 
-  /* FORM */
-  .form-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 10px; margin-bottom: 12px; }
-  .form-group { display: flex; flex-direction: column; gap: 5px; }
-  .form-group label { font-size: .72rem; font-weight: 500; color: var(--text3); text-transform: uppercase; letter-spacing: .8px; }
-  .form-group input, .form-group select, .form-group textarea {
-    background: var(--bg2); border: 1px solid var(--border); border-radius: var(--radius2);
-    color: var(--text); font-family: 'Sora', sans-serif; font-size: .85rem;
-    padding: 9px 12px; transition: border-color .2s; outline: none;
-  }
-  .form-group input:focus, .form-group select:focus, .form-group textarea:focus { border-color: var(--blue); }
-  .form-group select option { background: var(--bg2); }
-  .form-group textarea { resize: vertical; min-height: 60px; }
+    /* LAYOUT */
+    .app {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 24px 16px;
+    }
 
-  /* BUTTONS */
-  .btn { display: inline-flex; align-items: center; gap: 6px; padding: 9px 18px; border-radius: var(--radius2); border: none; font-family: 'Sora', sans-serif; font-size: .85rem; font-weight: 500; cursor: pointer; transition: all .2s; }
-  .btn-primary { background: linear-gradient(135deg, #2563eb, var(--blue)); color: #fff; }
-  .btn-primary:hover { opacity: .85; transform: translateY(-1px); }
-  .btn-green { background: var(--green-bg); color: var(--green); border: 1px solid rgba(34,217,138,.2); }
-  .btn-green:hover { background: rgba(34,217,138,.15); }
-  .btn-red { background: var(--red-bg); color: var(--red); border: 1px solid rgba(255,94,122,.2); }
-  .btn-red:hover { background: rgba(255,94,122,.15); }
-  .btn-ghost { background: none; color: var(--text2); border: 1px solid var(--border); }
-  .btn-ghost:hover { border-color: var(--border2); color: var(--text); }
-  .btn-sm { padding: 5px 10px; font-size: .78rem; }
-  .btn-icon { padding: 6px; border-radius: 6px; }
+    /* HEADER */
+    .header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 28px;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
 
-  /* TABLE */
-  .table-wrap { overflow-x: auto; }
-  table { width: 100%; border-collapse: collapse; font-size: .83rem; }
-  th { padding: 10px 12px; text-align: left; font-size: .7rem; font-weight: 600; color: var(--text3); text-transform: uppercase; letter-spacing: .8px; border-bottom: 1px solid var(--border); }
-  td { padding: 11px 12px; border-bottom: 1px solid rgba(42,58,92,.5); vertical-align: middle; }
-  tr:last-child td { border-bottom: none; }
-  tr:hover td { background: rgba(255,255,255,.02); }
+    .header-title {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
 
-  /* BADGES */
-  .badge { display: inline-flex; align-items: center; gap: 4px; padding: 3px 10px; border-radius: 20px; font-size: .72rem; font-weight: 500; }
-  .badge-green { background: var(--green-bg); color: var(--green); }
-  .badge-red { background: var(--red-bg); color: var(--red); }
-  .badge-yellow { background: var(--yellow-bg); color: var(--yellow); }
-  .badge-blue { background: var(--blue-bg); color: var(--blue); }
-  .badge-purple { background: rgba(167,139,250,.1); color: var(--purple); }
-  .badge-gray { background: rgba(255,255,255,.05); color: var(--text3); }
+    .logo {
+      width: 40px;
+      height: 40px;
+      background: linear-gradient(135deg, var(--gold), #f59e0b);
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 20px;
+    }
 
-  /* SALARY INPUT */
-  .salary-input-wrap { display: flex; gap: 10px; align-items: flex-end; }
-  .salary-big { font-family: 'JetBrains Mono', monospace; font-size: 2rem; font-weight: 600; color: var(--gold); padding: 8px 0; }
+    .header h1 {
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: var(--text);
+      letter-spacing: -0.5px;
+    }
 
-  /* PROGRESS BAR */
-  .progress-wrap { margin-bottom: 12px; }
-  .progress-label { display: flex; justify-content: space-between; font-size: .75rem; color: var(--text2); margin-bottom: 5px; }
-  .progress-bar { height: 6px; background: var(--bg2); border-radius: 3px; overflow: hidden; }
-  .progress-fill { height: 100%; border-radius: 3px; transition: width .5s ease; }
+    .header h1 span {
+      color: var(--gold);
+    }
 
-  /* PLANNED LIST */
-  .planned-item { display: flex; align-items: center; gap: 12px; padding: 12px; border: 1px solid var(--border); border-radius: var(--radius2); margin-bottom: 8px; transition: all .2s; }
-  .planned-item.checked { opacity: .5; }
-  .planned-item:hover { border-color: var(--border2); }
-  .checkbox { width: 20px; height: 20px; border: 2px solid var(--border2); border-radius: 5px; cursor: pointer; display: flex; align-items: center; justify-content: center; flex-shrink: 0; transition: all .2s; }
-  .checkbox.checked { background: var(--green); border-color: var(--green); }
-  .checkbox svg { width: 12px; height: 12px; stroke: #fff; fill: none; stroke-width: 2.5; }
-  .planned-info { flex: 1; }
-  .planned-name { font-size: .85rem; font-weight: 500; color: var(--text); }
-  .planned-cat { font-size: .73rem; color: var(--text3); margin-top: 2px; }
-  .planned-amount { font-family: 'JetBrains Mono', monospace; font-size: .9rem; font-weight: 600; color: var(--red); }
+    /* MONTH NAV */
+    .month-nav {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 6px 10px;
+    }
 
-  /* EMPTY STATE */
-  .empty { text-align: center; padding: 40px 20px; color: var(--text3); }
-  .empty-icon { font-size: 2.5rem; margin-bottom: 10px; opacity: .5; }
-  .empty p { font-size: .85rem; }
+    .month-nav button {
+      background: none;
+      border: none;
+      color: var(--text2);
+      cursor: pointer;
+      padding: 4px 8px;
+      border-radius: 6px;
+      font-size: 16px;
+      transition: all .2s;
+    }
 
-  /* MODAL */
-  .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,.7); backdrop-filter: blur(4px); z-index: 100; display: flex; align-items: center; justify-content: center; padding: 16px; opacity: 0; pointer-events: none; transition: opacity .2s; }
-  .modal-overlay.open { opacity: 1; pointer-events: all; }
-  .modal { background: var(--card); border: 1px solid var(--border2); border-radius: var(--radius); padding: 24px; width: 100%; max-width: 480px; transform: translateY(20px); transition: transform .2s; }
-  .modal-overlay.open .modal { transform: translateY(0); }
-  .modal-title { font-size: 1.1rem; font-weight: 600; margin-bottom: 20px; color: var(--text); }
-  .modal-actions { display: flex; gap: 8px; justify-content: flex-end; margin-top: 16px; }
+    .month-nav button:hover {
+      background: var(--card2);
+      color: var(--text);
+    }
 
-  /* DIVIDER */
-  .divider { height: 1px; background: var(--border); margin: 16px 0; }
+    .month-label {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: .9rem;
+      font-weight: 500;
+      color: var(--gold);
+      min-width: 120px;
+      text-align: center;
+    }
 
-  /* TOTAL ROW */
-  .total-row { display: flex; justify-content: space-between; align-items: center; padding: 12px 0; }
-  .total-row + .total-row { border-top: 1px solid rgba(42,58,92,.5); }
-  .total-label { font-size: .82rem; color: var(--text2); }
-  .total-val { font-family: 'JetBrains Mono', monospace; font-size: .95rem; font-weight: 600; }
+    /* BALANCE PANEL */
+    .balance-panel {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 16px;
+      margin-bottom: 28px;
+    }
 
-  /* PIUTANG STATUS */
-  .status-toggle { cursor: pointer; }
+    .bal-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 20px;
+      position: relative;
+      overflow: hidden;
+    }
 
-  /* RESPONSIVE */
-  @media(max-width: 640px) {
-    .balance-panel { grid-template-columns: 1fr 1fr; }
-    .bal-amount { font-size: 1.1rem; }
-    .tabs { gap: 2px; }
-    .tab { padding: 7px 12px; font-size: .8rem; }
-  }
-  @media(max-width: 400px) {
-    .balance-panel { grid-template-columns: 1fr; }
-  }
+    .bal-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 3px;
+    }
 
-  /* ANIMATIONS */
-  @keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
-  .section.active { animation: fadeIn .2s ease; }
-  
-  /* SALARY SECTION */
-  .salary-section { display: flex; align-items: center; gap: 20px; flex-wrap: wrap; }
-  .salary-display { flex: 1; min-width: 200px; }
-  .salary-edit { display: flex; gap: 8px; align-items: center; flex: 1; min-width: 200px; }
-  .salary-edit input { flex: 1; }
-  
-  /* CATEG COLORS */
-  .cat-gaji { color: #e8c96d; }
-  .cat-freelance { color: var(--blue); }
-  .cat-bonus { color: var(--green); }
-  .cat-piutang { color: var(--purple); }
-  .cat-other { color: var(--text2); }
-  .cat-makanan { color: #fb923c; }
-  .cat-transport { color: #60a5fa; }
-  .cat-tagihan { color: var(--red); }
-  .cat-kesehatan { color: #34d399; }
-  .cat-hiburan { color: #c084fc; }
-  .cat-belanja { color: #f472b6; }
-  
-  /* SUMMARY SECTION */
-  .summary-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
-  @media(max-width: 600px) { .summary-grid { grid-template-columns: 1fr; } }
+    .bal-card.green::before {
+      background: linear-gradient(90deg, var(--green2), var(--green));
+    }
 
-  /* TUTORIAL OVERLAY */
-  .tut-overlay { position: fixed; inset: 0; background: rgba(0,0,0,.75); backdrop-filter: blur(3px); z-index: 200; display: flex; align-items: center; justify-content: center; padding: 16px; opacity: 0; pointer-events: none; transition: opacity .3s; }
-  .tut-overlay.open { opacity: 1; pointer-events: all; }
-  .tut-box { background: var(--card); border: 1px solid var(--border2); border-radius: 16px; padding: 28px; width: 100%; max-width: 520px; transform: scale(.95); transition: transform .3s; }
-  .tut-overlay.open .tut-box { transform: scale(1); }
-  .tut-step-badge { display: inline-flex; align-items: center; gap: 6px; background: var(--blue-bg); color: var(--blue); border: 1px solid rgba(77,159,255,.2); border-radius: 20px; padding: 4px 12px; font-size: .72rem; font-weight: 600; letter-spacing: .8px; text-transform: uppercase; margin-bottom: 14px; }
-  .tut-icon { font-size: 2.5rem; margin-bottom: 12px; }
-  .tut-title { font-size: 1.2rem; font-weight: 700; color: var(--text); margin-bottom: 10px; }
-  .tut-desc { font-size: .87rem; color: var(--text2); line-height: 1.6; margin-bottom: 20px; }
-  .tut-desc b { color: var(--text); }
-  .tut-dots { display: flex; gap: 6px; margin-bottom: 20px; }
-  .tut-dot { width: 8px; height: 8px; border-radius: 4px; background: var(--border2); transition: all .3s; }
-  .tut-dot.active { background: var(--blue); width: 24px; }
-  .tut-actions { display: flex; gap: 8px; justify-content: space-between; align-items: center; }
-  .tut-nav { display: flex; gap: 8px; }
-  .tut-progress { font-size: .75rem; color: var(--text3); }
+    .bal-card.red::before {
+      background: linear-gradient(90deg, var(--red2), var(--red));
+    }
 
-  /* PANDUAN TAB */
-  .guide-section { margin-bottom: 24px; }
-  .guide-step { display: flex; gap: 16px; padding: 16px; border: 1px solid var(--border); border-radius: var(--radius2); margin-bottom: 10px; transition: border-color .2s; }
-  .guide-step:hover { border-color: var(--border2); }
-  .guide-num { width: 32px; height: 32px; border-radius: 50%; background: var(--blue-bg); border: 1px solid rgba(77,159,255,.25); color: var(--blue); font-weight: 700; font-size: .85rem; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
-  .guide-content h4 { font-size: .9rem; font-weight: 600; color: var(--text); margin-bottom: 5px; }
-  .guide-content p { font-size: .82rem; color: var(--text2); line-height: 1.55; }
-  .guide-tag { display: inline-block; padding: 2px 8px; border-radius: 4px; font-size: .7rem; font-weight: 600; margin-right: 4px; }
-  .guide-section-title { font-size: .8rem; font-weight: 600; color: var(--text3); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 12px; display: flex; align-items: center; gap: 8px; }
-  .guide-section-title::after { content: ''; flex: 1; height: 1px; background: var(--border); }
+    .bal-card.yellow::before {
+      background: linear-gradient(90deg, #c47f0a, var(--yellow));
+    }
 
-  /* EXPORT/IMPORT */
-  .export-area { background: var(--bg2); border: 1px solid var(--border); border-radius: var(--radius2); padding: 14px; font-family: 'JetBrains Mono', monospace; font-size: .75rem; color: var(--text2); word-break: break-all; line-height: 1.5; min-height: 80px; max-height: 180px; overflow-y: auto; user-select: all; cursor: text; }
-  .import-area { background: var(--bg2); border: 1px solid var(--border); border-radius: var(--radius2); padding: 14px; font-family: 'JetBrains Mono', monospace; font-size: .75rem; color: var(--text2); width: 100%; min-height: 100px; resize: vertical; outline: none; transition: border-color .2s; }
-  .import-area:focus { border-color: var(--blue); }
+    .bal-card.blue::before {
+      background: linear-gradient(90deg, #2563eb, var(--blue));
+    }
 
-  /* TOAST */
-  .toast { position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%) translateY(80px); background: var(--card2); border: 1px solid var(--border2); border-radius: 10px; padding: 10px 20px; font-size: .85rem; font-weight: 500; color: var(--text); z-index: 300; transition: transform .3s ease; box-shadow: 0 8px 32px rgba(0,0,0,.4); white-space: nowrap; }
-  .toast.show { transform: translateX(-50%) translateY(0); }
-  .toast.success { border-color: var(--green); color: var(--green); }
-  .toast.error { border-color: var(--red); color: var(--red); }
-</style>
+    .bal-label {
+      font-size: .75rem;
+      font-weight: 500;
+      color: var(--text3);
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      margin-bottom: 8px;
+    }
+
+    .bal-amount {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 1.4rem;
+      font-weight: 600;
+    }
+
+    .bal-card.green .bal-amount {
+      color: var(--green);
+    }
+
+    .bal-card.red .bal-amount {
+      color: var(--red);
+    }
+
+    .bal-card.yellow .bal-amount {
+      color: var(--yellow);
+    }
+
+    .bal-card.blue .bal-amount {
+      color: var(--blue);
+    }
+
+    .bal-sub {
+      font-size: .72rem;
+      color: var(--text3);
+      margin-top: 4px;
+    }
+
+    /* TABS */
+    .tabs {
+      display: flex;
+      gap: 4px;
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 5px;
+      margin-bottom: 20px;
+      overflow-x: auto;
+    }
+
+    .tab {
+      flex-shrink: 0;
+      padding: 8px 16px;
+      border-radius: 8px;
+      border: none;
+      background: none;
+      color: var(--text2);
+      font-family: 'Sora', sans-serif;
+      font-size: .85rem;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all .2s;
+      white-space: nowrap;
+    }
+
+    .tab.active {
+      background: var(--card2);
+      color: var(--text);
+      box-shadow: inset 0 0 0 1px var(--border2);
+    }
+
+    .tab:hover:not(.active) {
+      color: var(--text);
+    }
+
+    /* SECTION */
+    .section {
+      display: none;
+    }
+
+    .section.active {
+      display: block;
+    }
+
+    /* CARD */
+    .card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 20px;
+      margin-bottom: 16px;
+    }
+
+    .card-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 16px;
+    }
+
+    .card-title {
+      font-size: .95rem;
+      font-weight: 600;
+      color: var(--text);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .card-title .dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      flex-shrink: 0;
+    }
+
+    .dot-green {
+      background: var(--green);
+    }
+
+    .dot-red {
+      background: var(--red);
+    }
+
+    .dot-yellow {
+      background: var(--yellow);
+    }
+
+    .dot-blue {
+      background: var(--blue);
+    }
+
+    .dot-purple {
+      background: var(--purple);
+    }
+
+    /* FORM */
+    .form-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+      gap: 10px;
+      margin-bottom: 12px;
+    }
+
+    .form-group {
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+    }
+
+    .form-group label {
+      font-size: .72rem;
+      font-weight: 500;
+      color: var(--text3);
+      text-transform: uppercase;
+      letter-spacing: .8px;
+    }
+
+    .form-group input,
+    .form-group select,
+    .form-group textarea {
+      background: var(--bg2);
+      border: 1px solid var(--border);
+      border-radius: var(--radius2);
+      color: var(--text);
+      font-family: 'Sora', sans-serif;
+      font-size: .85rem;
+      padding: 9px 12px;
+      transition: border-color .2s;
+      outline: none;
+    }
+
+    .form-group input:focus,
+    .form-group select:focus,
+    .form-group textarea:focus {
+      border-color: var(--blue);
+    }
+
+    .form-group select option {
+      background: var(--bg2);
+    }
+
+    .form-group textarea {
+      resize: vertical;
+      min-height: 60px;
+    }
+
+    /* BUTTONS */
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 9px 18px;
+      border-radius: var(--radius2);
+      border: none;
+      font-family: 'Sora', sans-serif;
+      font-size: .85rem;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all .2s;
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, #2563eb, var(--blue));
+      color: #fff;
+    }
+
+    .btn-primary:hover {
+      opacity: .85;
+      transform: translateY(-1px);
+    }
+
+    .btn-green {
+      background: var(--green-bg);
+      color: var(--green);
+      border: 1px solid rgba(34, 217, 138, .2);
+    }
+
+    .btn-green:hover {
+      background: rgba(34, 217, 138, .15);
+    }
+
+    .btn-red {
+      background: var(--red-bg);
+      color: var(--red);
+      border: 1px solid rgba(255, 94, 122, .2);
+    }
+
+    .btn-red:hover {
+      background: rgba(255, 94, 122, .15);
+    }
+
+    .btn-ghost {
+      background: none;
+      color: var(--text2);
+      border: 1px solid var(--border);
+    }
+
+    .btn-ghost:hover {
+      border-color: var(--border2);
+      color: var(--text);
+    }
+
+    .btn-sm {
+      padding: 5px 10px;
+      font-size: .78rem;
+    }
+
+    .btn-icon {
+      padding: 6px;
+      border-radius: 6px;
+    }
+
+    /* TABLE */
+    .table-wrap {
+      overflow-x: auto;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: .83rem;
+    }
+
+    th {
+      padding: 10px 12px;
+      text-align: left;
+      font-size: .7rem;
+      font-weight: 600;
+      color: var(--text3);
+      text-transform: uppercase;
+      letter-spacing: .8px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    td {
+      padding: 11px 12px;
+      border-bottom: 1px solid rgba(42, 58, 92, .5);
+      vertical-align: middle;
+    }
+
+    tr:last-child td {
+      border-bottom: none;
+    }
+
+    tr:hover td {
+      background: rgba(255, 255, 255, .02);
+    }
+
+    /* BADGES */
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      padding: 3px 10px;
+      border-radius: 20px;
+      font-size: .72rem;
+      font-weight: 500;
+    }
+
+    .badge-green {
+      background: var(--green-bg);
+      color: var(--green);
+    }
+
+    .badge-red {
+      background: var(--red-bg);
+      color: var(--red);
+    }
+
+    .badge-yellow {
+      background: var(--yellow-bg);
+      color: var(--yellow);
+    }
+
+    .badge-blue {
+      background: var(--blue-bg);
+      color: var(--blue);
+    }
+
+    .badge-purple {
+      background: rgba(167, 139, 250, .1);
+      color: var(--purple);
+    }
+
+    .badge-gray {
+      background: rgba(255, 255, 255, .05);
+      color: var(--text3);
+    }
+
+    /* SALARY INPUT */
+    .salary-input-wrap {
+      display: flex;
+      gap: 10px;
+      align-items: flex-end;
+    }
+
+    .salary-big {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 2rem;
+      font-weight: 600;
+      color: var(--gold);
+      padding: 8px 0;
+    }
+
+    /* PROGRESS BAR */
+    .progress-wrap {
+      margin-bottom: 12px;
+    }
+
+    .progress-label {
+      display: flex;
+      justify-content: space-between;
+      font-size: .75rem;
+      color: var(--text2);
+      margin-bottom: 5px;
+    }
+
+    .progress-bar {
+      height: 6px;
+      background: var(--bg2);
+      border-radius: 3px;
+      overflow: hidden;
+    }
+
+    .progress-fill {
+      height: 100%;
+      border-radius: 3px;
+      transition: width .5s ease;
+    }
+
+    /* PLANNED LIST */
+    .planned-item {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 12px;
+      border: 1px solid var(--border);
+      border-radius: var(--radius2);
+      margin-bottom: 8px;
+      transition: all .2s;
+    }
+
+    .planned-item.checked {
+      opacity: .5;
+    }
+
+    .planned-item:hover {
+      border-color: var(--border2);
+    }
+
+    .checkbox {
+      width: 20px;
+      height: 20px;
+      border: 2px solid var(--border2);
+      border-radius: 5px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      transition: all .2s;
+    }
+
+    .checkbox.checked {
+      background: var(--green);
+      border-color: var(--green);
+    }
+
+    .checkbox svg {
+      width: 12px;
+      height: 12px;
+      stroke: #fff;
+      fill: none;
+      stroke-width: 2.5;
+    }
+
+    .planned-info {
+      flex: 1;
+    }
+
+    .planned-name {
+      font-size: .85rem;
+      font-weight: 500;
+      color: var(--text);
+    }
+
+    .planned-cat {
+      font-size: .73rem;
+      color: var(--text3);
+      margin-top: 2px;
+    }
+
+    .planned-amount {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: .9rem;
+      font-weight: 600;
+      color: var(--red);
+    }
+
+    /* EMPTY STATE */
+    .empty {
+      text-align: center;
+      padding: 40px 20px;
+      color: var(--text3);
+    }
+
+    .empty-icon {
+      font-size: 2.5rem;
+      margin-bottom: 10px;
+      opacity: .5;
+    }
+
+    .empty p {
+      font-size: .85rem;
+    }
+
+    /* MODAL */
+    .modal-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, .7);
+      backdrop-filter: blur(4px);
+      z-index: 100;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 16px;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity .2s;
+    }
+
+    .modal-overlay.open {
+      opacity: 1;
+      pointer-events: all;
+    }
+
+    .modal {
+      background: var(--card);
+      border: 1px solid var(--border2);
+      border-radius: var(--radius);
+      padding: 24px;
+      width: 100%;
+      max-width: 480px;
+      transform: translateY(20px);
+      transition: transform .2s;
+    }
+
+    .modal-overlay.open .modal {
+      transform: translateY(0);
+    }
+
+    .modal-title {
+      font-size: 1.1rem;
+      font-weight: 600;
+      margin-bottom: 20px;
+      color: var(--text);
+    }
+
+    .modal-actions {
+      display: flex;
+      gap: 8px;
+      justify-content: flex-end;
+      margin-top: 16px;
+    }
+
+    /* DIVIDER */
+    .divider {
+      height: 1px;
+      background: var(--border);
+      margin: 16px 0;
+    }
+
+    /* TOTAL ROW */
+    .total-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 12px 0;
+    }
+
+    .total-row+.total-row {
+      border-top: 1px solid rgba(42, 58, 92, .5);
+    }
+
+    .total-label {
+      font-size: .82rem;
+      color: var(--text2);
+    }
+
+    .total-val {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: .95rem;
+      font-weight: 600;
+    }
+
+    /* PIUTANG STATUS */
+    .status-toggle {
+      cursor: pointer;
+    }
+
+    /* RESPONSIVE */
+    @media(max-width: 640px) {
+      .balance-panel {
+        grid-template-columns: 1fr 1fr;
+      }
+
+      .bal-amount {
+        font-size: 1.1rem;
+      }
+
+      .tabs {
+        gap: 2px;
+      }
+
+      .tab {
+        padding: 7px 12px;
+        font-size: .8rem;
+      }
+    }
+
+    @media(max-width: 400px) {
+      .balance-panel {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    /* ANIMATIONS */
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+        transform: translateY(8px);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .section.active {
+      animation: fadeIn .2s ease;
+    }
+
+    /* SALARY SECTION */
+    .salary-section {
+      display: flex;
+      align-items: center;
+      gap: 20px;
+      flex-wrap: wrap;
+    }
+
+    .salary-display {
+      flex: 1;
+      min-width: 200px;
+    }
+
+    .salary-edit {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+      flex: 1;
+      min-width: 200px;
+    }
+
+    .salary-edit input {
+      flex: 1;
+    }
+
+    /* CATEG COLORS */
+    .cat-gaji {
+      color: #e8c96d;
+    }
+
+    .cat-freelance {
+      color: var(--blue);
+    }
+
+    .cat-bonus {
+      color: var(--green);
+    }
+
+    .cat-piutang {
+      color: var(--purple);
+    }
+
+    .cat-other {
+      color: var(--text2);
+    }
+
+    .cat-makanan {
+      color: #fb923c;
+    }
+
+    .cat-transport {
+      color: #60a5fa;
+    }
+
+    .cat-tagihan {
+      color: var(--red);
+    }
+
+    .cat-kesehatan {
+      color: #34d399;
+    }
+
+    .cat-hiburan {
+      color: #c084fc;
+    }
+
+    .cat-belanja {
+      color: #f472b6;
+    }
+
+    /* SUMMARY SECTION */
+    .summary-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+    }
+
+    @media(max-width: 600px) {
+      .summary-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    /* TUTORIAL OVERLAY */
+    .tut-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, .75);
+      backdrop-filter: blur(3px);
+      z-index: 200;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 16px;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity .3s;
+    }
+
+    .tut-overlay.open {
+      opacity: 1;
+      pointer-events: all;
+    }
+
+    .tut-box {
+      background: var(--card);
+      border: 1px solid var(--border2);
+      border-radius: 16px;
+      padding: 28px;
+      width: 100%;
+      max-width: 520px;
+      transform: scale(.95);
+      transition: transform .3s;
+    }
+
+    .tut-overlay.open .tut-box {
+      transform: scale(1);
+    }
+
+    .tut-step-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: var(--blue-bg);
+      color: var(--blue);
+      border: 1px solid rgba(77, 159, 255, .2);
+      border-radius: 20px;
+      padding: 4px 12px;
+      font-size: .72rem;
+      font-weight: 600;
+      letter-spacing: .8px;
+      text-transform: uppercase;
+      margin-bottom: 14px;
+    }
+
+    .tut-icon {
+      font-size: 2.5rem;
+      margin-bottom: 12px;
+    }
+
+    .tut-title {
+      font-size: 1.2rem;
+      font-weight: 700;
+      color: var(--text);
+      margin-bottom: 10px;
+    }
+
+    .tut-desc {
+      font-size: .87rem;
+      color: var(--text2);
+      line-height: 1.6;
+      margin-bottom: 20px;
+    }
+
+    .tut-desc b {
+      color: var(--text);
+    }
+
+    .tut-dots {
+      display: flex;
+      gap: 6px;
+      margin-bottom: 20px;
+    }
+
+    .tut-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 4px;
+      background: var(--border2);
+      transition: all .3s;
+    }
+
+    .tut-dot.active {
+      background: var(--blue);
+      width: 24px;
+    }
+
+    .tut-actions {
+      display: flex;
+      gap: 8px;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .tut-nav {
+      display: flex;
+      gap: 8px;
+    }
+
+    .tut-progress {
+      font-size: .75rem;
+      color: var(--text3);
+    }
+
+    /* PANDUAN TAB */
+    .guide-section {
+      margin-bottom: 24px;
+    }
+
+    .guide-step {
+      display: flex;
+      gap: 16px;
+      padding: 16px;
+      border: 1px solid var(--border);
+      border-radius: var(--radius2);
+      margin-bottom: 10px;
+      transition: border-color .2s;
+    }
+
+    .guide-step:hover {
+      border-color: var(--border2);
+    }
+
+    .guide-num {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      background: var(--blue-bg);
+      border: 1px solid rgba(77, 159, 255, .25);
+      color: var(--blue);
+      font-weight: 700;
+      font-size: .85rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+
+    .guide-content h4 {
+      font-size: .9rem;
+      font-weight: 600;
+      color: var(--text);
+      margin-bottom: 5px;
+    }
+
+    .guide-content p {
+      font-size: .82rem;
+      color: var(--text2);
+      line-height: 1.55;
+    }
+
+    .guide-tag {
+      display: inline-block;
+      padding: 2px 8px;
+      border-radius: 4px;
+      font-size: .7rem;
+      font-weight: 600;
+      margin-right: 4px;
+    }
+
+    .guide-section-title {
+      font-size: .8rem;
+      font-weight: 600;
+      color: var(--text3);
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      margin-bottom: 12px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .guide-section-title::after {
+      content: '';
+      flex: 1;
+      height: 1px;
+      background: var(--border);
+    }
+
+    /* EXPORT/IMPORT */
+    .export-area {
+      background: var(--bg2);
+      border: 1px solid var(--border);
+      border-radius: var(--radius2);
+      padding: 14px;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: .75rem;
+      color: var(--text2);
+      word-break: break-all;
+      line-height: 1.5;
+      min-height: 80px;
+      max-height: 180px;
+      overflow-y: auto;
+      user-select: all;
+      cursor: text;
+    }
+
+    .import-area {
+      background: var(--bg2);
+      border: 1px solid var(--border);
+      border-radius: var(--radius2);
+      padding: 14px;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: .75rem;
+      color: var(--text2);
+      width: 100%;
+      min-height: 100px;
+      resize: vertical;
+      outline: none;
+      transition: border-color .2s;
+    }
+
+    .import-area:focus {
+      border-color: var(--blue);
+    }
+
+    /* TOAST */
+    .toast {
+      position: fixed;
+      bottom: 24px;
+      left: 50%;
+      transform: translateX(-50%) translateY(80px);
+      background: var(--card2);
+      border: 1px solid var(--border2);
+      border-radius: 10px;
+      padding: 10px 20px;
+      font-size: .85rem;
+      font-weight: 500;
+      color: var(--text);
+      z-index: 300;
+      transition: transform .3s ease;
+      box-shadow: 0 8px 32px rgba(0, 0, 0, .4);
+      white-space: nowrap;
+    }
+
+    .toast.show {
+      transform: translateX(-50%) translateY(0);
+    }
+
+    .toast.success {
+      border-color: var(--green);
+      color: var(--green);
+    }
+
+    .toast.error {
+      border-color: var(--red);
+      color: var(--red);
+    }
+  </style>
 </head>
+
 <body>
-<div class="app">
-  <!-- HEADER -->
-  <div class="header">
-    <div class="header-title">
-      <div class="logo">💰</div>
-      <h1>Catatan <span>Keuangan</span></h1>
-    </div>
-    <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap;">
-      <button class="btn btn-ghost btn-sm" onclick="openTutorial()" title="Lihat Tutorial">❓ Panduan</button>
-      <div class="month-nav">
-        <button onclick="changeMonth(-1)">&#8249;</button>
-        <div class="month-label" id="monthLabel">Jan 2025</div>
-        <button onclick="changeMonth(1)">&#8250;</button>
+  <div class="app">
+    <!-- HEADER -->
+    <div class="header">
+      <div class="header-title">
+        <div class="logo">💰</div>
+        <h1>Catatan <span>Keuangan</span></h1>
       </div>
-    </div>
-  </div>
-
-  <!-- BALANCE PANEL -->
-  <div class="balance-panel">
-    <div class="bal-card green">
-      <div class="bal-label">Saldo Terkini</div>
-      <div class="bal-amount" id="balCurrent">Rp 0</div>
-      <div class="bal-sub" id="balCurrentSub">Pemasukan − Pengeluaran</div>
-    </div>
-    <div class="bal-card red">
-      <div class="bal-label">Total Rencana Keluar</div>
-      <div class="bal-amount" id="balPlanned">Rp 0</div>
-      <div class="bal-sub" id="balPlannedSub">Belum terceklis</div>
-    </div>
-    <div class="bal-card yellow">
-      <div class="bal-label">Saldo Bayangan</div>
-      <div class="bal-amount" id="balShadow">Rp 0</div>
-      <div class="bal-sub">Saldo − Rencana Keluar</div>
-    </div>
-    <div class="bal-card blue">
-      <div class="bal-label">Total Pemasukan</div>
-      <div class="bal-amount" id="balIncome">Rp 0</div>
-      <div class="bal-sub" id="balIncomeSub">Gaji + Tambahan</div>
-    </div>
-  </div>
-
-  <!-- TABS -->
-  <div class="tabs">
-    <button class="tab active" onclick="showTab('pemasukan')">💵 Pemasukan</button>
-    <button class="tab" onclick="showTab('pengeluaran')">💸 Pengeluaran</button>
-    <button class="tab" onclick="showTab('rencana')">📋 Rencana Keluar</button>
-    <button class="tab" onclick="showTab('piutang')">🤝 Piutang</button>
-    <button class="tab" onclick="showTab('budget')">📊 Budget</button>
-    <button class="tab" onclick="showTab('ringkasan')">📈 Ringkasan</button>
-    <button class="tab" onclick="showTab('data')">💾 Data</button>
-    <button class="tab" onclick="showTab('panduan')">📖 Panduan</button>
-  </div>
-
-  <!-- TAB: PEMASUKAN -->
-  <div id="tab-pemasukan" class="section active">
-    <!-- Gaji -->
-    <div class="card">
-      <div class="card-header">
-        <div class="card-title"><span class="dot dot-yellow"></span> Gaji Bulanan</div>
-        <button class="btn btn-ghost btn-sm" onclick="toggleSalaryEdit()" id="btnSalaryEdit">✏️ Edit</button>
-      </div>
-      <div class="salary-section">
-        <div class="salary-display">
-          <div class="salary-big" id="salaryDisplay">Rp 0</div>
-          <div style="font-size:.78rem;color:var(--text3);margin-top:4px">Gaji pokok bulan ini</div>
+      <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap;">
+        <button class="btn btn-ghost btn-sm" onclick="openTutorial()" title="Lihat Tutorial">❓ Panduan</button>
+        <div class="month-nav">
+          <button onclick="changeMonth(-1)">&#8249;</button>
+          <div class="month-label" id="monthLabel">Jan 2025</div>
+          <button onclick="changeMonth(1)">&#8250;</button>
         </div>
-        <div class="salary-edit" id="salaryEditForm" style="display:none">
-          <div class="form-group" style="flex:1">
-            <label>Nominal Gaji</label>
-            <input type="number" id="salaryInput" placeholder="5000000" min="0">
+      </div>
+    </div>
+
+    <!-- BALANCE PANEL -->
+    <div class="balance-panel">
+      <div class="bal-card green">
+        <div class="bal-label">Saldo Terkini</div>
+        <div class="bal-amount" id="balCurrent">Rp 0</div>
+        <div class="bal-sub" id="balCurrentSub">Pemasukan − Pengeluaran</div>
+      </div>
+      <div class="bal-card red">
+        <div class="bal-label">Total Rencana Keluar</div>
+        <div class="bal-amount" id="balPlanned">Rp 0</div>
+        <div class="bal-sub" id="balPlannedSub">Belum terceklis</div>
+      </div>
+      <div class="bal-card yellow">
+        <div class="bal-label">Saldo Bayangan</div>
+        <div class="bal-amount" id="balShadow">Rp 0</div>
+        <div class="bal-sub">Saldo − Rencana Keluar</div>
+      </div>
+      <div class="bal-card blue">
+        <div class="bal-label">Total Pemasukan</div>
+        <div class="bal-amount" id="balIncome">Rp 0</div>
+        <div class="bal-sub" id="balIncomeSub">Gaji + Tambahan</div>
+      </div>
+    </div>
+
+    <!-- TABS -->
+    <div class="tabs">
+      <button class="tab active" onclick="showTab('pemasukan')">💵 Pemasukan</button>
+      <button class="tab" onclick="showTab('pengeluaran')">💸 Pengeluaran</button>
+      <button class="tab" onclick="showTab('rencana')">📋 Rencana Keluar</button>
+      <button class="tab" onclick="showTab('piutang')">🤝 Piutang</button>
+      <button class="tab" onclick="showTab('budget')">📊 Budget</button>
+      <button class="tab" onclick="showTab('ringkasan')">📈 Ringkasan</button>
+      <button class="tab" onclick="showTab('data')">💾 Data</button>
+      <button class="tab" onclick="showTab('panduan')">📖 Panduan</button>
+    </div>
+
+    <!-- TAB: PEMASUKAN -->
+    <div id="tab-pemasukan" class="section active">
+      <!-- Gaji -->
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title"><span class="dot dot-yellow"></span> Gaji Bulanan</div>
+          <button class="btn btn-ghost btn-sm" onclick="toggleSalaryEdit()" id="btnSalaryEdit">✏️ Edit</button>
+        </div>
+        <div class="salary-section">
+          <div class="salary-display">
+            <div class="salary-big" id="salaryDisplay">Rp 0</div>
+            <div style="font-size:.78rem;color:var(--text3);margin-top:4px">Gaji pokok bulan ini</div>
           </div>
-          <button class="btn btn-green" onclick="saveSalary()">Simpan</button>
+          <div class="salary-edit" id="salaryEditForm" style="display:none">
+            <div class="form-group" style="flex:1">
+              <label>Nominal Gaji</label>
+              <input type="number" id="salaryInput" placeholder="5000000" min="0">
+            </div>
+            <button class="btn btn-green" onclick="saveSalary()">Simpan</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Tambahan Income -->
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title"><span class="dot dot-blue"></span> Penghasilan Tambahan</div>
+          <button class="btn btn-primary btn-sm" onclick="openModal('modalIncome')">+ Tambah</button>
+        </div>
+        <div id="incomeList">
+          <div class="empty">
+            <div class="empty-icon">💼</div>
+            <p>Belum ada penghasilan tambahan</p>
+          </div>
         </div>
       </div>
     </div>
 
-    <!-- Tambahan Income -->
-    <div class="card">
-      <div class="card-header">
-        <div class="card-title"><span class="dot dot-blue"></span> Penghasilan Tambahan</div>
-        <button class="btn btn-primary btn-sm" onclick="openModal('modalIncome')">+ Tambah</button>
-      </div>
-      <div id="incomeList">
-        <div class="empty"><div class="empty-icon">💼</div><p>Belum ada penghasilan tambahan</p></div>
-      </div>
-    </div>
-  </div>
-
-  <!-- TAB: PENGELUARAN -->
-  <div id="tab-pengeluaran" class="section">
-    <div class="card">
-      <div class="card-header">
-        <div class="card-title"><span class="dot dot-red"></span> Pengeluaran Aktual</div>
-        <button class="btn btn-primary btn-sm" onclick="openModal('modalExpense')">+ Tambah</button>
-      </div>
-      <div id="expenseList">
-        <div class="empty"><div class="empty-icon">🧾</div><p>Belum ada pengeluaran</p></div>
-      </div>
-    </div>
-  </div>
-
-  <!-- TAB: RENCANA KELUAR -->
-  <div id="tab-rencana" class="section">
-    <div class="card">
-      <div class="card-header">
-        <div class="card-title"><span class="dot dot-yellow"></span> Rencana Pengeluaran</div>
-        <button class="btn btn-primary btn-sm" onclick="openModal('modalPlanned')">+ Tambah</button>
-      </div>
-      <div style="font-size:.78rem;color:var(--text3);margin-bottom:14px;">
-        ✅ Centang item untuk memindahkan ke pengeluaran aktual
-      </div>
-      <div id="plannedList">
-        <div class="empty"><div class="empty-icon">📋</div><p>Belum ada rencana pengeluaran</p></div>
-      </div>
-    </div>
-  </div>
-
-  <!-- TAB: PIUTANG -->
-  <div id="tab-piutang" class="section">
-    <div class="card">
-      <div class="card-header">
-        <div class="card-title"><span class="dot dot-purple"></span> Piutang (Uang Dipinjam)</div>
-        <button class="btn btn-primary btn-sm" onclick="openModal('modalPiutang')">+ Tambah</button>
-      </div>
-      <div style="font-size:.78rem;color:var(--text3);margin-bottom:14px;">
-        💸 Piutang otomatis <b style="color:var(--red)">mengurangi saldo</b> saat dicatat. Ketika ditandai <b style="color:var(--green)">Lunas</b>, uang kembali dan <b style="color:var(--green)">menambah saldo</b>.
-      </div>
-      <div id="piutangList">
-        <div class="empty"><div class="empty-icon">🤝</div><p>Belum ada catatan piutang</p></div>
-      </div>
-    </div>
-  </div>
-
-  <!-- TAB: BUDGET -->
-  <div id="tab-budget" class="section">
-    <div class="card">
-      <div class="card-header">
-        <div class="card-title"><span class="dot dot-blue"></span> Budget per Kategori</div>
-        <button class="btn btn-primary btn-sm" onclick="openModal('modalBudget')">⚙️ Atur Budget</button>
-      </div>
-      <div id="budgetList">
-        <div class="empty"><div class="empty-icon">📊</div><p>Atur batas budget per kategori</p></div>
-      </div>
-    </div>
-  </div>
-
-  <!-- TAB: RINGKASAN -->
-  <div id="tab-ringkasan" class="section">
-    <div class="summary-grid">
+    <!-- TAB: PENGELUARAN -->
+    <div id="tab-pengeluaran" class="section">
       <div class="card">
-        <div class="card-title" style="margin-bottom:14px"><span class="dot dot-green"></span> Ringkasan Pemasukan</div>
-        <div id="summaryIncome"></div>
+        <div class="card-header">
+          <div class="card-title"><span class="dot dot-red"></span> Pengeluaran Aktual</div>
+          <button class="btn btn-primary btn-sm" onclick="openModal('modalExpense')">+ Tambah</button>
+        </div>
+        <div id="expenseList">
+          <div class="empty">
+            <div class="empty-icon">🧾</div>
+            <p>Belum ada pengeluaran</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- TAB: RENCANA KELUAR -->
+    <div id="tab-rencana" class="section">
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title"><span class="dot dot-yellow"></span> Rencana Pengeluaran</div>
+          <button class="btn btn-primary btn-sm" onclick="openModal('modalPlanned')">+ Tambah</button>
+        </div>
+        <div style="font-size:.78rem;color:var(--text3);margin-bottom:14px;">
+          ✅ Centang item untuk memindahkan ke pengeluaran aktual
+        </div>
+        <div id="plannedList">
+          <div class="empty">
+            <div class="empty-icon">📋</div>
+            <p>Belum ada rencana pengeluaran</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- TAB: PIUTANG -->
+    <div id="tab-piutang" class="section">
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title"><span class="dot dot-purple"></span> Piutang (Uang Dipinjam)</div>
+          <button class="btn btn-primary btn-sm" onclick="openModal('modalPiutang')">+ Tambah</button>
+        </div>
+        <div style="font-size:.78rem;color:var(--text3);margin-bottom:14px;">
+          💸 Piutang otomatis <b style="color:var(--red)">mengurangi saldo</b> saat dicatat. Ketika ditandai <b
+            style="color:var(--green)">Lunas</b>, uang kembali dan <b style="color:var(--green)">menambah saldo</b>.
+        </div>
+        <div id="piutangList">
+          <div class="empty">
+            <div class="empty-icon">🤝</div>
+            <p>Belum ada catatan piutang</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- TAB: BUDGET -->
+    <div id="tab-budget" class="section">
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title"><span class="dot dot-blue"></span> Budget per Kategori</div>
+          <button class="btn btn-primary btn-sm" onclick="openModal('modalBudget')">⚙️ Atur Budget</button>
+        </div>
+        <div id="budgetList">
+          <div class="empty">
+            <div class="empty-icon">📊</div>
+            <p>Atur batas budget per kategori</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- TAB: RINGKASAN -->
+    <div id="tab-ringkasan" class="section">
+      <div class="summary-grid">
+        <div class="card">
+          <div class="card-title" style="margin-bottom:14px"><span class="dot dot-green"></span> Ringkasan Pemasukan
+          </div>
+          <div id="summaryIncome"></div>
+        </div>
+        <div class="card">
+          <div class="card-title" style="margin-bottom:14px"><span class="dot dot-red"></span> Ringkasan Pengeluaran
+          </div>
+          <div id="summaryExpense"></div>
+        </div>
       </div>
       <div class="card">
-        <div class="card-title" style="margin-bottom:14px"><span class="dot dot-red"></span> Ringkasan Pengeluaran</div>
-        <div id="summaryExpense"></div>
+        <div class="card-title" style="margin-bottom:14px"><span class="dot dot-yellow"></span> Pengeluaran per Kategori
+        </div>
+        <div id="summaryCat"></div>
       </div>
     </div>
-    <div class="card">
-      <div class="card-title" style="margin-bottom:14px"><span class="dot dot-yellow"></span> Pengeluaran per Kategori</div>
-      <div id="summaryCat"></div>
+
+    <!-- TAB: DATA -->
+    <div id="tab-data" class="section">
+      <!-- EXPORT -->
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title"><span class="dot dot-green"></span> 📤 Export Data</div>
+        </div>
+        <p style="font-size:.82rem;color:var(--text2);margin-bottom:14px;">Salin semua data keuangan kamu (seluruh
+          bulan) ke clipboard. Simpan di tempat aman sebagai backup.</p>
+        <div class="export-area" id="exportArea">Klik tombol di bawah untuk generate data...</div>
+        <div style="display:flex;gap:8px;margin-top:12px;flex-wrap:wrap;">
+          <button class="btn btn-primary" onclick="generateExport()">🔄 Generate Data</button>
+          <button class="btn btn-green" onclick="copyExport()" id="btnCopy" style="display:none">📋 Salin ke
+            Clipboard</button>
+        </div>
+      </div>
+      <!-- IMPORT -->
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title"><span class="dot dot-blue"></span> 📥 Import Data</div>
+        </div>
+        <p style="font-size:.82rem;color:var(--text2);margin-bottom:6px;">Tempel data backup di bawah lalu klik Import.
+          <b style="color:var(--red)">⚠️ Data yang sudah ada akan ditimpa.</b>
+        </p>
+        <textarea class="import-area" id="importArea"
+          placeholder='Paste data JSON di sini... (contoh: {"finance_2025_01": {...}, "finance_2025_02": {...}})'></textarea>
+        <div style="display:flex;gap:8px;margin-top:12px;flex-wrap:wrap;">
+          <button class="btn btn-primary" onclick="doImport()">📥 Import & Terapkan</button>
+          <button class="btn btn-ghost" onclick="document.getElementById('importArea').value=''">🗑️ Bersihkan</button>
+        </div>
+      </div>
+      <!-- DANGER ZONE -->
+      <div class="card" style="border-color:rgba(255,94,122,.2)">
+        <div class="card-header">
+          <div class="card-title"><span class="dot dot-red"></span> ⚠️ Hapus Data</div>
+        </div>
+        <p style="font-size:.82rem;color:var(--text2);margin-bottom:14px;">Hapus data bulan yang sedang aktif, atau
+          hapus semua data seluruh bulan.</p>
+        <div style="display:flex;gap:8px;flex-wrap:wrap;">
+          <button class="btn btn-red btn-sm" onclick="deleteCurrentMonth()">🗑️ Hapus Bulan Ini</button>
+          <button class="btn btn-red btn-sm" onclick="deleteAllData()">💥 Hapus Semua Data</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- TAB: PANDUAN -->
+    <div id="tab-panduan" class="section">
+      <div class="card">
+        <div class="card-title" style="margin-bottom:6px;font-size:1.1rem">📖 Panduan Penggunaan</div>
+        <p style="font-size:.82rem;color:var(--text3);margin-bottom:20px;">Referensi lengkap cara menggunakan Catatan
+          Keuangan.</p>
+        <button class="btn btn-primary btn-sm" onclick="openTutorial()" style="margin-bottom:20px">▶️ Mulai Tutorial
+          Interaktif</button>
+
+        <div class="guide-section">
+          <div class="guide-section-title">💰 Pemasukan</div>
+          <div class="guide-step">
+            <div class="guide-num">1</div>
+            <div class="guide-content">
+              <h4>Set Gaji Bulanan</h4>
+              <p>Masuk ke tab <b>Pemasukan</b> → klik <b>✏️ Edit</b> di kartu Gaji Bulanan → masukkan nominal gaji pokok
+                bulan ini → klik Simpan. Gaji ini menjadi basis pemasukan bulan tersebut.</p>
+            </div>
+          </div>
+          <div class="guide-step">
+            <div class="guide-num">2</div>
+            <div class="guide-content">
+              <h4>Tambah Penghasilan Tambahan</h4>
+              <p>Klik tombol <b>+ Tambah</b> di kartu Penghasilan Tambahan. Isi tanggal, kategori (Freelance / Bonus /
+                Lainnya), deskripsi, dan jumlah. Data ini otomatis ditambahkan ke total pemasukan.</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="guide-section">
+          <div class="guide-section-title">💸 Pengeluaran</div>
+          <div class="guide-step">
+            <div class="guide-num">3</div>
+            <div class="guide-content">
+              <h4>Catat Pengeluaran Aktual</h4>
+              <p>Tab <b>Pengeluaran</b> → klik <b>+ Tambah</b>. Isi tanggal, kategori, deskripsi, dan jumlah.
+                Pengeluaran langsung mengurangi <b>Saldo Terkini</b>. Entry bertanda "piutang" hanya bisa dihapus
+                melalui tab Piutang.</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="guide-section">
+          <div class="guide-section-title">📋 Rencana Keluar</div>
+          <div class="guide-step">
+            <div class="guide-num">4</div>
+            <div class="guide-content">
+              <h4>Tambah Rencana Pengeluaran</h4>
+              <p>Tab <b>Rencana Keluar</b> → klik <b>+ Tambah</b>. Masukkan deskripsi, kategori, dan estimasi nominal.
+                Item akan muncul di daftar rencana dan menambah <b>Total Rencana Keluar</b> (merah) serta mengurangi
+                <b>Saldo Bayangan</b>.
+              </p>
+            </div>
+          </div>
+          <div class="guide-step">
+            <div class="guide-num">5</div>
+            <div class="guide-content">
+              <h4>Ceklis = Pindah ke Pengeluaran</h4>
+              <p>Klik kotak centang ☐ di sebelah kiri item rencana. Saat diceklis ✅, item otomatis pindah ke
+                <b>Pengeluaran Aktual</b> dengan tanggal hari ini. Item yang sudah diceklis <b>tidak bisa diedit atau
+                  dihapus</b> (ikon 🔒).
+              </p>
+            </div>
+          </div>
+          <div class="guide-step">
+            <div class="guide-num">6</div>
+            <div class="guide-content">
+              <h4>Edit Rencana</h4>
+              <p>Selama belum diceklis, kamu bisa klik tombol <b>✏️</b> untuk mengubah deskripsi, kategori, atau nominal
+                estimasi.</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="guide-section">
+          <div class="guide-section-title">🤝 Piutang</div>
+          <div class="guide-step">
+            <div class="guide-num">7</div>
+            <div class="guide-content">
+              <h4>Catat Piutang (Uang yang Dipinjam Orang)</h4>
+              <p>Tab <b>Piutang</b> → klik <b>+ Tambah</b>. Isi nama peminjam, tanggal, jumlah, dan jatuh tempo. Saat
+                dicatat, saldo <b>langsung berkurang</b> (uang keluar ke peminjam). Entry pengeluaran piutang otomatis
+                muncul di tab Pengeluaran dengan badge ungu.</p>
+            </div>
+          </div>
+          <div class="guide-step">
+            <div class="guide-num">8</div>
+            <div class="guide-content">
+              <h4>Tandai Lunas</h4>
+              <p>Klik badge status <b>Belum Lunas ↔</b> untuk toggle menjadi <b>Lunas</b>. Saat lunas, entry pengeluaran
+                piutang dihapus otomatis sehingga <b>saldo kembali ke semula</b>. Piutang <b>tidak menambah</b> panel
+                Pemasukan — saldo hanya pulih.</p>
+            </div>
+          </div>
+          <div class="guide-step">
+            <div class="guide-num">9</div>
+            <div class="guide-content">
+              <h4>Jatuh Tempo</h4>
+              <p>Jika tanggal jatuh tempo sudah lewat dan belum lunas, item akan ditandai ⚠️ dengan teks merah sebagai
+                pengingat.</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="guide-section">
+          <div class="guide-section-title">📊 Budget & Panel Saldo</div>
+          <div class="guide-step">
+            <div class="guide-num">10</div>
+            <div class="guide-content">
+              <h4>Atur Budget per Kategori</h4>
+              <p>Tab <b>Budget</b> → klik <b>⚙️ Atur Budget</b>. Set batas pengeluaran per kategori. Progress bar akan
+                berwarna <span class="guide-tag" style="background:var(--yellow-bg);color:var(--yellow)">kuning</span>
+                saat >75% dan <span class="guide-tag" style="background:var(--red-bg);color:var(--red)">merah</span>
+                saat melebihi batas.</p>
+            </div>
+          </div>
+          <div class="guide-step">
+            <div class="guide-num">11</div>
+            <div class="guide-content">
+              <h4>Memahami Panel Saldo</h4>
+              <p><span class="guide-tag" style="background:var(--green-bg);color:var(--green)">Saldo Terkini</span> =
+                Pemasukan − Pengeluaran aktual. <span class="guide-tag"
+                  style="background:var(--red-bg);color:var(--red)">Total Rencana</span> = semua item rencana belum
+                terceklis. <span class="guide-tag" style="background:var(--yellow-bg);color:var(--yellow)">Saldo
+                  Bayangan</span> = Saldo Terkini − Total Rencana (jadi merah jika negatif).</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="guide-section">
+          <div class="guide-section-title">💾 Export & Import Data</div>
+          <div class="guide-step">
+            <div class="guide-num">12</div>
+            <div class="guide-content">
+              <h4>Backup Data (Export)</h4>
+              <p>Tab <b>Data</b> → klik <b>Generate Data</b> → klik <b>Salin ke Clipboard</b>. Simpan teks JSON tersebut
+                di notes, email, atau Google Drive sebagai backup.</p>
+            </div>
+          </div>
+          <div class="guide-step">
+            <div class="guide-num">13</div>
+            <div class="guide-content">
+              <h4>Pulihkan Data (Import)</h4>
+              <p>Tab <b>Data</b> → tempel teks JSON backup di kotak Import → klik <b>Import & Terapkan</b>. Semua data
+                akan dipulihkan ke localStorage browser ini. ⚠️ Data existing akan ditimpa.</p>
+            </div>
+          </div>
+          <div class="guide-step">
+            <div class="guide-num">14</div>
+            <div class="guide-content">
+              <h4>Navigasi Bulan</h4>
+              <p>Gunakan tombol <b>‹</b> dan <b>›</b> di pojok kanan atas untuk melihat data bulan lain. Setiap bulan
+                memiliki data yang terpisah dan independen.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- TOAST -->
+  <div class="toast" id="toast"></div>
+
+  <!-- TUTORIAL OVERLAY -->
+  <div class="tut-overlay" id="tutOverlay">
+    <div class="tut-box">
+      <div class="tut-step-badge" id="tutBadge">Langkah 1 dari 7</div>
+      <div class="tut-icon" id="tutIcon">👋</div>
+      <div class="tut-title" id="tutTitle">Selamat Datang!</div>
+      <div class="tut-desc" id="tutDesc">Tutorial singkat cara menggunakan aplikasi ini.</div>
+      <div class="tut-dots" id="tutDots"></div>
+      <div class="tut-actions">
+        <button class="btn btn-ghost btn-sm" onclick="closeTutorial()">Lewati</button>
+        <div class="tut-nav">
+          <button class="btn btn-ghost btn-sm" id="tutPrev" onclick="tutStep(-1)">‹ Kembali</button>
+          <button class="btn btn-primary btn-sm" id="tutNext" onclick="tutStep(1)">Lanjut ›</button>
+        </div>
+      </div>
     </div>
   </div>
 
-  <!-- TAB: DATA -->
-  <div id="tab-data" class="section">
-    <!-- EXPORT -->
-    <div class="card">
-      <div class="card-header">
-        <div class="card-title"><span class="dot dot-green"></span> 📤 Export Data</div>
+  <!-- MODALS -->
+  <!-- Modal Income -->
+  <div class="modal-overlay" id="modalIncome">
+    <div class="modal">
+      <div class="modal-title">💵 Tambah Penghasilan Tambahan</div>
+      <div class="form-grid">
+        <div class="form-group">
+          <label>Tanggal</label>
+          <input type="date" id="inDate">
+        </div>
+        <div class="form-group">
+          <label>Kategori</label>
+          <select id="inCat">
+            <option value="Freelance">Freelance</option>
+            <option value="Bonus">Bonus</option>
+            <option value="Lainnya">Lainnya</option>
+          </select>
+        </div>
       </div>
-      <p style="font-size:.82rem;color:var(--text2);margin-bottom:14px;">Salin semua data keuangan kamu (seluruh bulan) ke clipboard. Simpan di tempat aman sebagai backup.</p>
-      <div class="export-area" id="exportArea">Klik tombol di bawah untuk generate data...</div>
-      <div style="display:flex;gap:8px;margin-top:12px;flex-wrap:wrap;">
-        <button class="btn btn-primary" onclick="generateExport()">🔄 Generate Data</button>
-        <button class="btn btn-green" onclick="copyExport()" id="btnCopy" style="display:none">📋 Salin ke Clipboard</button>
+      <div class="form-grid">
+        <div class="form-group" style="grid-column:1/-1">
+          <label>Deskripsi</label>
+          <input type="text" id="inDesc" placeholder="Contoh: Proyek desain website">
+        </div>
+      </div>
+      <div class="form-grid">
+        <div class="form-group">
+          <label>Jumlah (Rp)</label>
+          <input type="number" id="inAmount" placeholder="500000" min="0">
+        </div>
+        <div class="form-group">
+          <label>Catatan (opsional)</label>
+          <input type="text" id="inNote" placeholder="Catatan tambahan">
+        </div>
+      </div>
+      <div class="modal-actions">
+        <button class="btn btn-ghost" onclick="closeModal('modalIncome')">Batal</button>
+        <button class="btn btn-primary" onclick="addIncome()">Simpan</button>
       </div>
     </div>
-    <!-- IMPORT -->
-    <div class="card">
-      <div class="card-header">
-        <div class="card-title"><span class="dot dot-blue"></span> 📥 Import Data</div>
+  </div>
+
+  <!-- Modal Expense -->
+  <div class="modal-overlay" id="modalExpense">
+    <div class="modal">
+      <div class="modal-title">💸 Tambah Pengeluaran</div>
+      <div class="form-grid">
+        <div class="form-group">
+          <label>Tanggal</label>
+          <input type="date" id="exDate">
+        </div>
+        <div class="form-group">
+          <label>Kategori</label>
+          <select id="exCat">
+            <option value="Makanan">Makanan & Minuman</option>
+            <option value="Transport">Transport</option>
+            <option value="Tagihan">Tagihan & Utilitas</option>
+            <option value="Kesehatan">Kesehatan</option>
+            <option value="Hiburan">Hiburan</option>
+            <option value="Belanja">Belanja</option>
+            <option value="Pendidikan">Pendidikan</option>
+            <option value="Lainnya">Lainnya</option>
+          </select>
+        </div>
       </div>
-      <p style="font-size:.82rem;color:var(--text2);margin-bottom:6px;">Tempel data backup di bawah lalu klik Import. <b style="color:var(--red)">⚠️ Data yang sudah ada akan ditimpa.</b></p>
-      <textarea class="import-area" id="importArea" placeholder='Paste data JSON di sini... (contoh: {"finance_2025_01": {...}, "finance_2025_02": {...}})'></textarea>
-      <div style="display:flex;gap:8px;margin-top:12px;flex-wrap:wrap;">
-        <button class="btn btn-primary" onclick="doImport()">📥 Import & Terapkan</button>
-        <button class="btn btn-ghost" onclick="document.getElementById('importArea').value=''">🗑️ Bersihkan</button>
+      <div class="form-grid">
+        <div class="form-group" style="grid-column:1/-1">
+          <label>Deskripsi</label>
+          <input type="text" id="exDesc" placeholder="Contoh: Makan siang kantor">
+        </div>
       </div>
-    </div>
-    <!-- DANGER ZONE -->
-    <div class="card" style="border-color:rgba(255,94,122,.2)">
-      <div class="card-header">
-        <div class="card-title"><span class="dot dot-red"></span> ⚠️ Hapus Data</div>
+      <div class="form-grid">
+        <div class="form-group">
+          <label>Jumlah (Rp)</label>
+          <input type="number" id="exAmount" placeholder="50000" min="0">
+        </div>
+        <div class="form-group">
+          <label>Catatan (opsional)</label>
+          <input type="text" id="exNote" placeholder="Catatan tambahan">
+        </div>
       </div>
-      <p style="font-size:.82rem;color:var(--text2);margin-bottom:14px;">Hapus data bulan yang sedang aktif, atau hapus semua data seluruh bulan.</p>
-      <div style="display:flex;gap:8px;flex-wrap:wrap;">
-        <button class="btn btn-red btn-sm" onclick="deleteCurrentMonth()">🗑️ Hapus Bulan Ini</button>
-        <button class="btn btn-red btn-sm" onclick="deleteAllData()">💥 Hapus Semua Data</button>
+      <div class="modal-actions">
+        <button class="btn btn-ghost" onclick="closeModal('modalExpense')">Batal</button>
+        <button class="btn btn-primary" onclick="addExpense()">Simpan</button>
       </div>
     </div>
   </div>
 
-  <!-- TAB: PANDUAN -->
-  <div id="tab-panduan" class="section">
-    <div class="card">
-      <div class="card-title" style="margin-bottom:6px;font-size:1.1rem">📖 Panduan Penggunaan</div>
-      <p style="font-size:.82rem;color:var(--text3);margin-bottom:20px;">Referensi lengkap cara menggunakan Catatan Keuangan.</p>
-      <button class="btn btn-primary btn-sm" onclick="openTutorial()" style="margin-bottom:20px">▶️ Mulai Tutorial Interaktif</button>
-
-      <div class="guide-section">
-        <div class="guide-section-title">💰 Pemasukan</div>
-        <div class="guide-step"><div class="guide-num">1</div><div class="guide-content"><h4>Set Gaji Bulanan</h4><p>Masuk ke tab <b>Pemasukan</b> → klik <b>✏️ Edit</b> di kartu Gaji Bulanan → masukkan nominal gaji pokok bulan ini → klik Simpan. Gaji ini menjadi basis pemasukan bulan tersebut.</p></div></div>
-        <div class="guide-step"><div class="guide-num">2</div><div class="guide-content"><h4>Tambah Penghasilan Tambahan</h4><p>Klik tombol <b>+ Tambah</b> di kartu Penghasilan Tambahan. Isi tanggal, kategori (Freelance / Bonus / Lainnya), deskripsi, dan jumlah. Data ini otomatis ditambahkan ke total pemasukan.</p></div></div>
+  <!-- Modal Planned -->
+  <div class="modal-overlay" id="modalPlanned">
+    <div class="modal">
+      <div class="modal-title">📋 Tambah Rencana Pengeluaran</div>
+      <div class="form-grid">
+        <div class="form-group" style="grid-column:1/-1">
+          <label>Deskripsi</label>
+          <input type="text" id="plDesc" placeholder="Contoh: Bayar listrik">
+        </div>
       </div>
-
-      <div class="guide-section">
-        <div class="guide-section-title">💸 Pengeluaran</div>
-        <div class="guide-step"><div class="guide-num">3</div><div class="guide-content"><h4>Catat Pengeluaran Aktual</h4><p>Tab <b>Pengeluaran</b> → klik <b>+ Tambah</b>. Isi tanggal, kategori, deskripsi, dan jumlah. Pengeluaran langsung mengurangi <b>Saldo Terkini</b>. Entry bertanda "piutang" hanya bisa dihapus melalui tab Piutang.</p></div></div>
+      <div class="form-grid">
+        <div class="form-group">
+          <label>Kategori</label>
+          <select id="plCat">
+            <option value="Makanan">Makanan & Minuman</option>
+            <option value="Transport">Transport</option>
+            <option value="Tagihan">Tagihan & Utilitas</option>
+            <option value="Kesehatan">Kesehatan</option>
+            <option value="Hiburan">Hiburan</option>
+            <option value="Belanja">Belanja</option>
+            <option value="Pendidikan">Pendidikan</option>
+            <option value="Lainnya">Lainnya</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Estimasi Jumlah (Rp)</label>
+          <input type="number" id="plAmount" placeholder="100000" min="0">
+        </div>
       </div>
-
-      <div class="guide-section">
-        <div class="guide-section-title">📋 Rencana Keluar</div>
-        <div class="guide-step"><div class="guide-num">4</div><div class="guide-content"><h4>Tambah Rencana Pengeluaran</h4><p>Tab <b>Rencana Keluar</b> → klik <b>+ Tambah</b>. Masukkan deskripsi, kategori, dan estimasi nominal. Item akan muncul di daftar rencana dan menambah <b>Total Rencana Keluar</b> (merah) serta mengurangi <b>Saldo Bayangan</b>.</p></div></div>
-        <div class="guide-step"><div class="guide-num">5</div><div class="guide-content"><h4>Ceklis = Pindah ke Pengeluaran</h4><p>Klik kotak centang ☐ di sebelah kiri item rencana. Saat diceklis ✅, item otomatis pindah ke <b>Pengeluaran Aktual</b> dengan tanggal hari ini. Item yang sudah diceklis <b>tidak bisa diedit atau dihapus</b> (ikon 🔒).</p></div></div>
-        <div class="guide-step"><div class="guide-num">6</div><div class="guide-content"><h4>Edit Rencana</h4><p>Selama belum diceklis, kamu bisa klik tombol <b>✏️</b> untuk mengubah deskripsi, kategori, atau nominal estimasi.</p></div></div>
-      </div>
-
-      <div class="guide-section">
-        <div class="guide-section-title">🤝 Piutang</div>
-        <div class="guide-step"><div class="guide-num">7</div><div class="guide-content"><h4>Catat Piutang (Uang yang Dipinjam Orang)</h4><p>Tab <b>Piutang</b> → klik <b>+ Tambah</b>. Isi nama peminjam, tanggal, jumlah, dan jatuh tempo. Saat dicatat, saldo <b>langsung berkurang</b> (uang keluar ke peminjam). Entry pengeluaran piutang otomatis muncul di tab Pengeluaran dengan badge ungu.</p></div></div>
-        <div class="guide-step"><div class="guide-num">8</div><div class="guide-content"><h4>Tandai Lunas</h4><p>Klik badge status <b>Belum Lunas ↔</b> untuk toggle menjadi <b>Lunas</b>. Saat lunas, entry pengeluaran piutang dihapus otomatis sehingga <b>saldo kembali ke semula</b>. Piutang <b>tidak menambah</b> panel Pemasukan — saldo hanya pulih.</p></div></div>
-        <div class="guide-step"><div class="guide-num">9</div><div class="guide-content"><h4>Jatuh Tempo</h4><p>Jika tanggal jatuh tempo sudah lewat dan belum lunas, item akan ditandai ⚠️ dengan teks merah sebagai pengingat.</p></div></div>
-      </div>
-
-      <div class="guide-section">
-        <div class="guide-section-title">📊 Budget & Panel Saldo</div>
-        <div class="guide-step"><div class="guide-num">10</div><div class="guide-content"><h4>Atur Budget per Kategori</h4><p>Tab <b>Budget</b> → klik <b>⚙️ Atur Budget</b>. Set batas pengeluaran per kategori. Progress bar akan berwarna <span class="guide-tag" style="background:var(--yellow-bg);color:var(--yellow)">kuning</span> saat >75% dan <span class="guide-tag" style="background:var(--red-bg);color:var(--red)">merah</span> saat melebihi batas.</p></div></div>
-        <div class="guide-step"><div class="guide-num">11</div><div class="guide-content"><h4>Memahami Panel Saldo</h4><p><span class="guide-tag" style="background:var(--green-bg);color:var(--green)">Saldo Terkini</span> = Pemasukan − Pengeluaran aktual. <span class="guide-tag" style="background:var(--red-bg);color:var(--red)">Total Rencana</span> = semua item rencana belum terceklis. <span class="guide-tag" style="background:var(--yellow-bg);color:var(--yellow)">Saldo Bayangan</span> = Saldo Terkini − Total Rencana (jadi merah jika negatif).</p></div></div>
-      </div>
-
-      <div class="guide-section">
-        <div class="guide-section-title">💾 Export & Import Data</div>
-        <div class="guide-step"><div class="guide-num">12</div><div class="guide-content"><h4>Backup Data (Export)</h4><p>Tab <b>Data</b> → klik <b>Generate Data</b> → klik <b>Salin ke Clipboard</b>. Simpan teks JSON tersebut di notes, email, atau Google Drive sebagai backup.</p></div></div>
-        <div class="guide-step"><div class="guide-num">13</div><div class="guide-content"><h4>Pulihkan Data (Import)</h4><p>Tab <b>Data</b> → tempel teks JSON backup di kotak Import → klik <b>Import & Terapkan</b>. Semua data akan dipulihkan ke localStorage browser ini. ⚠️ Data existing akan ditimpa.</p></div></div>
-        <div class="guide-step"><div class="guide-num">14</div><div class="guide-content"><h4>Navigasi Bulan</h4><p>Gunakan tombol <b>‹</b> dan <b>›</b> di pojok kanan atas untuk melihat data bulan lain. Setiap bulan memiliki data yang terpisah dan independen.</p></div></div>
+      <div class="modal-actions">
+        <button class="btn btn-ghost" onclick="closeModal('modalPlanned')">Batal</button>
+        <button class="btn btn-primary" onclick="addPlanned()">Simpan</button>
       </div>
     </div>
   </div>
-</div>
 
-<!-- TOAST -->
-<div class="toast" id="toast"></div>
-
-<!-- TUTORIAL OVERLAY -->
-<div class="tut-overlay" id="tutOverlay">
-  <div class="tut-box">
-    <div class="tut-step-badge" id="tutBadge">Langkah 1 dari 7</div>
-    <div class="tut-icon" id="tutIcon">👋</div>
-    <div class="tut-title" id="tutTitle">Selamat Datang!</div>
-    <div class="tut-desc" id="tutDesc">Tutorial singkat cara menggunakan aplikasi ini.</div>
-    <div class="tut-dots" id="tutDots"></div>
-    <div class="tut-actions">
-      <button class="btn btn-ghost btn-sm" onclick="closeTutorial()">Lewati</button>
-      <div class="tut-nav">
-        <button class="btn btn-ghost btn-sm" id="tutPrev" onclick="tutStep(-1)">‹ Kembali</button>
-        <button class="btn btn-primary btn-sm" id="tutNext" onclick="tutStep(1)">Lanjut ›</button>
+  <!-- Modal Piutang -->
+  <div class="modal-overlay" id="modalPiutang">
+    <div class="modal">
+      <div class="modal-title">🤝 Tambah Piutang</div>
+      <div class="form-grid">
+        <div class="form-group">
+          <label>Nama Peminjam</label>
+          <input type="text" id="ptName" placeholder="Nama orang">
+        </div>
+        <div class="form-group">
+          <label>Tanggal Pinjam</label>
+          <input type="date" id="ptDate">
+        </div>
+      </div>
+      <div class="form-grid">
+        <div class="form-group">
+          <label>Jumlah (Rp)</label>
+          <input type="number" id="ptAmount" placeholder="500000" min="0">
+        </div>
+        <div class="form-group">
+          <label>Jatuh Tempo</label>
+          <input type="date" id="ptDue">
+        </div>
+      </div>
+      <div class="form-grid">
+        <div class="form-group" style="grid-column:1/-1">
+          <label>Catatan (opsional)</label>
+          <input type="text" id="ptNote" placeholder="Keperluan pinjaman">
+        </div>
+      </div>
+      <div class="modal-actions">
+        <button class="btn btn-ghost" onclick="closeModal('modalPiutang')">Batal</button>
+        <button class="btn btn-primary" onclick="addPiutang()">Simpan</button>
       </div>
     </div>
   </div>
-</div>
 
-<!-- MODALS -->
-<!-- Modal Income -->
-<div class="modal-overlay" id="modalIncome">
-  <div class="modal">
-    <div class="modal-title">💵 Tambah Penghasilan Tambahan</div>
-    <div class="form-grid">
-      <div class="form-group">
-        <label>Tanggal</label>
-        <input type="date" id="inDate">
+  <!-- Modal Budget -->
+  <div class="modal-overlay" id="modalBudget">
+    <div class="modal">
+      <div class="modal-title">📊 Atur Budget per Kategori</div>
+      <div style="font-size:.8rem;color:var(--text3);margin-bottom:14px;">Kosongkan untuk tidak ada batas budget</div>
+      <div id="budgetForm"></div>
+      <div class="modal-actions">
+        <button class="btn btn-ghost" onclick="closeModal('modalBudget')">Batal</button>
+        <button class="btn btn-primary" onclick="saveBudgets()">Simpan</button>
       </div>
-      <div class="form-group">
-        <label>Kategori</label>
-        <select id="inCat">
-          <option value="Freelance">Freelance</option>
-          <option value="Bonus">Bonus</option>
-          <option value="Lainnya">Lainnya</option>
-        </select>
-      </div>
-    </div>
-    <div class="form-grid">
-      <div class="form-group" style="grid-column:1/-1">
-        <label>Deskripsi</label>
-        <input type="text" id="inDesc" placeholder="Contoh: Proyek desain website">
-      </div>
-    </div>
-    <div class="form-grid">
-      <div class="form-group">
-        <label>Jumlah (Rp)</label>
-        <input type="number" id="inAmount" placeholder="500000" min="0">
-      </div>
-      <div class="form-group">
-        <label>Catatan (opsional)</label>
-        <input type="text" id="inNote" placeholder="Catatan tambahan">
-      </div>
-    </div>
-    <div class="modal-actions">
-      <button class="btn btn-ghost" onclick="closeModal('modalIncome')">Batal</button>
-      <button class="btn btn-primary" onclick="addIncome()">Simpan</button>
     </div>
   </div>
-</div>
 
-<!-- Modal Expense -->
-<div class="modal-overlay" id="modalExpense">
-  <div class="modal">
-    <div class="modal-title">💸 Tambah Pengeluaran</div>
-    <div class="form-grid">
-      <div class="form-group">
-        <label>Tanggal</label>
-        <input type="date" id="exDate">
+  <!-- Modal Edit Planned -->
+  <div class="modal-overlay" id="modalEditPlanned">
+    <div class="modal">
+      <div class="modal-title">✏️ Edit Rencana Pengeluaran</div>
+      <input type="hidden" id="editPlannedId">
+      <div class="form-grid">
+        <div class="form-group" style="grid-column:1/-1">
+          <label>Deskripsi</label>
+          <input type="text" id="editPlDesc" placeholder="Contoh: Bayar listrik">
+        </div>
       </div>
-      <div class="form-group">
-        <label>Kategori</label>
-        <select id="exCat">
-          <option value="Makanan">Makanan & Minuman</option>
-          <option value="Transport">Transport</option>
-          <option value="Tagihan">Tagihan & Utilitas</option>
-          <option value="Kesehatan">Kesehatan</option>
-          <option value="Hiburan">Hiburan</option>
-          <option value="Belanja">Belanja</option>
-          <option value="Pendidikan">Pendidikan</option>
-          <option value="Lainnya">Lainnya</option>
-        </select>
+      <div class="form-grid">
+        <div class="form-group">
+          <label>Kategori</label>
+          <select id="editPlCat">
+            <option value="Makanan">Makanan & Minuman</option>
+            <option value="Transport">Transport</option>
+            <option value="Tagihan">Tagihan & Utilitas</option>
+            <option value="Kesehatan">Kesehatan</option>
+            <option value="Hiburan">Hiburan</option>
+            <option value="Belanja">Belanja</option>
+            <option value="Pendidikan">Pendidikan</option>
+            <option value="Lainnya">Lainnya</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Estimasi Jumlah (Rp)</label>
+          <input type="number" id="editPlAmount" placeholder="100000" min="0">
+        </div>
       </div>
-    </div>
-    <div class="form-grid">
-      <div class="form-group" style="grid-column:1/-1">
-        <label>Deskripsi</label>
-        <input type="text" id="exDesc" placeholder="Contoh: Makan siang kantor">
+      <div class="modal-actions">
+        <button class="btn btn-ghost" onclick="closeModal('modalEditPlanned')">Batal</button>
+        <button class="btn btn-primary" onclick="saveEditPlanned()">Simpan Perubahan</button>
       </div>
-    </div>
-    <div class="form-grid">
-      <div class="form-group">
-        <label>Jumlah (Rp)</label>
-        <input type="number" id="exAmount" placeholder="50000" min="0">
-      </div>
-      <div class="form-group">
-        <label>Catatan (opsional)</label>
-        <input type="text" id="exNote" placeholder="Catatan tambahan">
-      </div>
-    </div>
-    <div class="modal-actions">
-      <button class="btn btn-ghost" onclick="closeModal('modalExpense')">Batal</button>
-      <button class="btn btn-primary" onclick="addExpense()">Simpan</button>
     </div>
   </div>
-</div>
 
-<!-- Modal Planned -->
-<div class="modal-overlay" id="modalPlanned">
-  <div class="modal">
-    <div class="modal-title">📋 Tambah Rencana Pengeluaran</div>
-    <div class="form-grid">
-      <div class="form-group" style="grid-column:1/-1">
-        <label>Deskripsi</label>
-        <input type="text" id="plDesc" placeholder="Contoh: Bayar listrik">
+  <!-- Modal Konfirmasi Hapus -->
+  <div class="modal-overlay" id="modalDelete">
+    <div class="modal" style="max-width:360px">
+      <div class="modal-title">🗑️ Hapus Item?</div>
+      <p style="font-size:.85rem;color:var(--text2);margin-bottom:4px">Item ini akan dihapus permanen.</p>
+      <div class="modal-actions">
+        <button class="btn btn-ghost" onclick="closeModal('modalDelete')">Batal</button>
+        <button class="btn btn-red" onclick="confirmDelete()">Hapus</button>
       </div>
-    </div>
-    <div class="form-grid">
-      <div class="form-group">
-        <label>Kategori</label>
-        <select id="plCat">
-          <option value="Makanan">Makanan & Minuman</option>
-          <option value="Transport">Transport</option>
-          <option value="Tagihan">Tagihan & Utilitas</option>
-          <option value="Kesehatan">Kesehatan</option>
-          <option value="Hiburan">Hiburan</option>
-          <option value="Belanja">Belanja</option>
-          <option value="Pendidikan">Pendidikan</option>
-          <option value="Lainnya">Lainnya</option>
-        </select>
-      </div>
-      <div class="form-group">
-        <label>Estimasi Jumlah (Rp)</label>
-        <input type="number" id="plAmount" placeholder="100000" min="0">
-      </div>
-    </div>
-    <div class="modal-actions">
-      <button class="btn btn-ghost" onclick="closeModal('modalPlanned')">Batal</button>
-      <button class="btn btn-primary" onclick="addPlanned()">Simpan</button>
     </div>
   </div>
-</div>
 
-<!-- Modal Piutang -->
-<div class="modal-overlay" id="modalPiutang">
-  <div class="modal">
-    <div class="modal-title">🤝 Tambah Piutang</div>
-    <div class="form-grid">
-      <div class="form-group">
-        <label>Nama Peminjam</label>
-        <input type="text" id="ptName" placeholder="Nama orang">
-      </div>
-      <div class="form-group">
-        <label>Tanggal Pinjam</label>
-        <input type="date" id="ptDate">
-      </div>
-    </div>
-    <div class="form-grid">
-      <div class="form-group">
-        <label>Jumlah (Rp)</label>
-        <input type="number" id="ptAmount" placeholder="500000" min="0">
-      </div>
-      <div class="form-group">
-        <label>Jatuh Tempo</label>
-        <input type="date" id="ptDue">
-      </div>
-    </div>
-    <div class="form-grid">
-      <div class="form-group" style="grid-column:1/-1">
-        <label>Catatan (opsional)</label>
-        <input type="text" id="ptNote" placeholder="Keperluan pinjaman">
-      </div>
-    </div>
-    <div class="modal-actions">
-      <button class="btn btn-ghost" onclick="closeModal('modalPiutang')">Batal</button>
-      <button class="btn btn-primary" onclick="addPiutang()">Simpan</button>
-    </div>
-  </div>
-</div>
+  <script>
+    // ===== STATE =====
+    let currentDate = new Date();
+    let deleteCallback = null;
 
-<!-- Modal Budget -->
-<div class="modal-overlay" id="modalBudget">
-  <div class="modal">
-    <div class="modal-title">📊 Atur Budget per Kategori</div>
-    <div style="font-size:.8rem;color:var(--text3);margin-bottom:14px;">Kosongkan untuk tidak ada batas budget</div>
-    <div id="budgetForm"></div>
-    <div class="modal-actions">
-      <button class="btn btn-ghost" onclick="closeModal('modalBudget')">Batal</button>
-      <button class="btn btn-primary" onclick="saveBudgets()">Simpan</button>
-    </div>
-  </div>
-</div>
-
-<!-- Modal Edit Planned -->
-<div class="modal-overlay" id="modalEditPlanned">
-  <div class="modal">
-    <div class="modal-title">✏️ Edit Rencana Pengeluaran</div>
-    <input type="hidden" id="editPlannedId">
-    <div class="form-grid">
-      <div class="form-group" style="grid-column:1/-1">
-        <label>Deskripsi</label>
-        <input type="text" id="editPlDesc" placeholder="Contoh: Bayar listrik">
-      </div>
-    </div>
-    <div class="form-grid">
-      <div class="form-group">
-        <label>Kategori</label>
-        <select id="editPlCat">
-          <option value="Makanan">Makanan & Minuman</option>
-          <option value="Transport">Transport</option>
-          <option value="Tagihan">Tagihan & Utilitas</option>
-          <option value="Kesehatan">Kesehatan</option>
-          <option value="Hiburan">Hiburan</option>
-          <option value="Belanja">Belanja</option>
-          <option value="Pendidikan">Pendidikan</option>
-          <option value="Lainnya">Lainnya</option>
-        </select>
-      </div>
-      <div class="form-group">
-        <label>Estimasi Jumlah (Rp)</label>
-        <input type="number" id="editPlAmount" placeholder="100000" min="0">
-      </div>
-    </div>
-    <div class="modal-actions">
-      <button class="btn btn-ghost" onclick="closeModal('modalEditPlanned')">Batal</button>
-      <button class="btn btn-primary" onclick="saveEditPlanned()">Simpan Perubahan</button>
-    </div>
-  </div>
-</div>
-
-<!-- Modal Konfirmasi Hapus -->
-<div class="modal-overlay" id="modalDelete">
-  <div class="modal" style="max-width:360px">
-    <div class="modal-title">🗑️ Hapus Item?</div>
-    <p style="font-size:.85rem;color:var(--text2);margin-bottom:4px">Item ini akan dihapus permanen.</p>
-    <div class="modal-actions">
-      <button class="btn btn-ghost" onclick="closeModal('modalDelete')">Batal</button>
-      <button class="btn btn-red" onclick="confirmDelete()">Hapus</button>
-    </div>
-  </div>
-</div>
-
-<script>
-// ===== STATE =====
-let currentDate = new Date();
-let deleteCallback = null;
-
-const EXPENSE_CATS = ['Makanan','Transport','Tagihan','Kesehatan','Hiburan','Belanja','Pendidikan','Lainnya'];
-const CAT_COLORS = {
-  Makanan:'#fb923c', Transport:'#60a5fa', Tagihan:'#ff5e7a', Kesehatan:'#34d399',
-  Hiburan:'#c084fc', Belanja:'#f472b6', Pendidikan:'#a78bfa', Lainnya:'#8fa3c8',
-  Freelance:'#4d9fff', Bonus:'#22d98a', Piutang:'#e879f9', Gaji:'#e8c96d'
-};
-
-// ===== LOCAL STORAGE =====
-function getKey() {
-  return `finance_${currentDate.getFullYear()}_${String(currentDate.getMonth()+1).padStart(2,'0')}`;
-}
-
-function loadData() {
-  try {
-    const raw = localStorage.getItem(getKey());
-    if (!raw) return defaultData();
-    return JSON.parse(raw);
-  } catch(e) { return defaultData(); }
-}
-
-function saveData(data) {
-  localStorage.setItem(getKey(), JSON.stringify(data));
-}
-
-function defaultData() {
-  return { salary: 0, income: [], expenses: [], planned: [], piutang: [], budgets: {} };
-}
-
-// ===== FORMATTING =====
-function fmtRp(n) {
-  if (isNaN(n)) return 'Rp 0';
-  return 'Rp ' + Math.abs(n).toLocaleString('id-ID');
-}
-
-function fmtDate(d) {
-  if (!d) return '-';
-  const dt = new Date(d);
-  return dt.toLocaleDateString('id-ID', {day:'numeric', month:'short', year:'numeric'});
-}
-
-function today() {
-  return new Date().toISOString().split('T')[0];
-}
-
-// ===== MONTH NAV =====
-function changeMonth(dir) {
-  currentDate = new Date(currentDate.getFullYear(), currentDate.getMonth() + dir, 1);
-  document.getElementById('monthLabel').textContent =
-    currentDate.toLocaleDateString('id-ID', {month:'long', year:'numeric'});
-  render();
-}
-
-// ===== TABS =====
-function showTab(name) {
-  document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
-  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
-  document.getElementById('tab-'+name).classList.add('active');
-  event.target.classList.add('active');
-}
-
-// ===== MODALS =====
-function openModal(id) {
-  // Pre-fill dates
-  if (id === 'modalIncome') document.getElementById('inDate').value = today();
-  if (id === 'modalExpense') document.getElementById('exDate').value = today();
-  if (id === 'modalPiutang') document.getElementById('ptDate').value = today();
-  if (id === 'modalBudget') renderBudgetForm();
-  document.getElementById(id).classList.add('open');
-}
-
-function closeModal(id) {
-  document.getElementById(id).classList.remove('open');
-  // Clear inputs
-  const modal = document.getElementById(id);
-  modal.querySelectorAll('input[type=text], input[type=number]').forEach(i => i.value = '');
-}
-
-// Close on overlay click
-document.querySelectorAll('.modal-overlay').forEach(el => {
-  el.addEventListener('click', function(e) {
-    if (e.target === this) this.classList.remove('open');
-  });
-});
-
-// ===== SALARY =====
-function toggleSalaryEdit() {
-  const form = document.getElementById('salaryEditForm');
-  const btn = document.getElementById('btnSalaryEdit');
-  const d = loadData();
-  if (form.style.display === 'none') {
-    form.style.display = 'flex';
-    document.getElementById('salaryInput').value = d.salary || '';
-    btn.textContent = '✕ Tutup';
-  } else {
-    form.style.display = 'none';
-    btn.textContent = '✏️ Edit';
-  }
-}
-
-function saveSalary() {
-  const val = parseFloat(document.getElementById('salaryInput').value) || 0;
-  const d = loadData();
-  d.salary = val;
-  saveData(d);
-  toggleSalaryEdit();
-  render();
-}
-
-// ===== INCOME =====
-function addIncome() {
-  const desc = document.getElementById('inDesc').value.trim();
-  const amount = parseFloat(document.getElementById('inAmount').value);
-  if (!desc || !amount || amount <= 0) { alert('Lengkapi deskripsi dan jumlah!'); return; }
-  const d = loadData();
-  d.income.push({
-    id: Date.now(),
-    date: document.getElementById('inDate').value,
-    category: document.getElementById('inCat').value,
-    description: desc,
-    amount: amount,
-    note: document.getElementById('inNote').value
-  });
-  saveData(d);
-  closeModal('modalIncome');
-  render();
-}
-
-// ===== EXPENSE =====
-function addExpense(data) {
-  if (!data) {
-    const desc = document.getElementById('exDesc').value.trim();
-    const amount = parseFloat(document.getElementById('exAmount').value);
-    if (!desc || !amount || amount <= 0) { alert('Lengkapi deskripsi dan jumlah!'); return; }
-    data = {
-      id: Date.now(),
-      date: document.getElementById('exDate').value,
-      category: document.getElementById('exCat').value,
-      description: desc,
-      amount: amount,
-      note: document.getElementById('exNote').value,
-      fromPlanned: false
+    const EXPENSE_CATS = ['Makanan', 'Transport', 'Tagihan', 'Kesehatan', 'Hiburan', 'Belanja', 'Pendidikan', 'Lainnya'];
+    const CAT_COLORS = {
+      Makanan: '#fb923c', Transport: '#60a5fa', Tagihan: '#ff5e7a', Kesehatan: '#34d399',
+      Hiburan: '#c084fc', Belanja: '#f472b6', Pendidikan: '#a78bfa', Lainnya: '#8fa3c8',
+      Freelance: '#4d9fff', Bonus: '#22d98a', Piutang: '#e879f9', Gaji: '#e8c96d'
     };
-    closeModal('modalExpense');
-  }
-  const d = loadData();
-  d.expenses.push(data);
-  saveData(d);
-  render();
-}
 
-// ===== PLANNED =====
-function addPlanned() {
-  const desc = document.getElementById('plDesc').value.trim();
-  const amount = parseFloat(document.getElementById('plAmount').value);
-  if (!desc || !amount || amount <= 0) { alert('Lengkapi deskripsi dan jumlah!'); return; }
-  const d = loadData();
-  d.planned.push({
-    id: Date.now(),
-    category: document.getElementById('plCat').value,
-    description: desc,
-    amount: amount,
-    checked: false
-  });
-  saveData(d);
-  closeModal('modalPlanned');
-  render();
-}
+    // ===== LOCAL STORAGE =====
+    function getKey() {
+      return `finance_${currentDate.getFullYear()}_${String(currentDate.getMonth() + 1).padStart(2, '0')}`;
+    }
 
-function togglePlanned(id) {
-  const d = loadData();
-  const item = d.planned.find(p => p.id === id);
-  if (!item) return;
-  if (!item.checked) {
-    // Move to actual expenses
-    item.checked = true;
-    addExpense({
-      id: Date.now(),
-      date: today(),
-      category: item.category,
-      description: item.description,
-      amount: item.amount,
-      note: 'Dari rencana pengeluaran',
-      fromPlanned: true
+    function loadData() {
+      try {
+        const raw = localStorage.getItem(getKey());
+        if (!raw) return defaultData();
+        return JSON.parse(raw);
+      } catch (e) { return defaultData(); }
+    }
+
+    function saveData(data) {
+      localStorage.setItem(getKey(), JSON.stringify(data));
+    }
+
+    function defaultData() {
+      return { salary: 0, income: [], expenses: [], planned: [], piutang: [], budgets: {} };
+    }
+
+    // ===== FORMATTING =====
+    function fmtRp(n) {
+      if (isNaN(n)) return 'Rp 0';
+      return 'Rp ' + Math.abs(n).toLocaleString('id-ID');
+    }
+
+    function fmtDate(d) {
+      if (!d) return '-';
+      const dt = new Date(d);
+      return dt.toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' });
+    }
+
+    function today() {
+      return new Date().toISOString().split('T')[0];
+    }
+
+    // ===== MONTH NAV =====
+    function changeMonth(dir) {
+      currentDate = new Date(currentDate.getFullYear(), currentDate.getMonth() + dir, 1);
+      document.getElementById('monthLabel').textContent =
+        currentDate.toLocaleDateString('id-ID', { month: 'long', year: 'numeric' });
+      render();
+    }
+
+    // ===== TABS =====
+    function showTab(name) {
+      document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+      document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+      document.getElementById('tab-' + name).classList.add('active');
+      event.target.classList.add('active');
+    }
+
+    // ===== MODALS =====
+    function openModal(id) {
+      // Pre-fill dates
+      if (id === 'modalIncome') document.getElementById('inDate').value = today();
+      if (id === 'modalExpense') document.getElementById('exDate').value = today();
+      if (id === 'modalPiutang') document.getElementById('ptDate').value = today();
+      if (id === 'modalBudget') renderBudgetForm();
+      document.getElementById(id).classList.add('open');
+    }
+
+    function closeModal(id) {
+      document.getElementById(id).classList.remove('open');
+      // Clear inputs
+      const modal = document.getElementById(id);
+      modal.querySelectorAll('input[type=text], input[type=number]').forEach(i => i.value = '');
+    }
+
+    // Close on overlay click
+    document.querySelectorAll('.modal-overlay').forEach(el => {
+      el.addEventListener('click', function (e) {
+        if (e.target === this) this.classList.remove('open');
+      });
     });
-    // saveData happens in addExpense via loadData, so reload
-    const d2 = loadData();
-    const pi = d2.planned.find(p => p.id === id);
-    if (pi) pi.checked = true;
-    saveData(d2);
-  } else {
-    item.checked = false;
-    // Remove the auto-created expense
-    d.expenses = d.expenses.filter(e => !(e.fromPlanned && e.description === item.description && e.amount === item.amount));
-    saveData(d);
-  }
-  render();
-}
 
-// ===== PIUTANG =====
-function addPiutang() {
-  const name = document.getElementById('ptName').value.trim();
-  const amount = parseFloat(document.getElementById('ptAmount').value);
-  if (!name || !amount || amount <= 0) { alert('Lengkapi nama dan jumlah!'); return; }
-  const d = loadData();
-  const id = Date.now();
-  d.piutang.push({
-    id: id,
-    name: name,
-    date: document.getElementById('ptDate').value,
-    amount: amount,
-    due: document.getElementById('ptDue').value,
-    note: document.getElementById('ptNote').value,
-    status: 'Belum Lunas'
-  });
-  // Piutang mengurangi saldo (uang keluar ke peminjam)
-  d.expenses.push({
-    id: id + 1,
-    piutangId: id,
-    date: document.getElementById('ptDate').value,
-    category: 'Piutang',
-    description: 'Piutang ke: ' + name,
-    amount: amount,
-    note: document.getElementById('ptNote').value,
-    fromPiutang: true
-  });
-  saveData(d);
-  closeModal('modalPiutang');
-  render();
-}
+    // ===== SALARY =====
+    function toggleSalaryEdit() {
+      const form = document.getElementById('salaryEditForm');
+      const btn = document.getElementById('btnSalaryEdit');
+      const d = loadData();
+      if (form.style.display === 'none') {
+        form.style.display = 'flex';
+        document.getElementById('salaryInput').value = d.salary || '';
+        btn.textContent = '✕ Tutup';
+      } else {
+        form.style.display = 'none';
+        btn.textContent = '✏️ Edit';
+      }
+    }
 
-function togglePiutangStatus(id) {
-  const d = loadData();
-  const pt = d.piutang.find(p => p.id === id);
-  if (!pt) return;
+    function saveSalary() {
+      const val = parseFloat(document.getElementById('salaryInput').value) || 0;
+      const d = loadData();
+      d.salary = val;
+      saveData(d);
+      toggleSalaryEdit();
+      render();
+    }
 
-  if (pt.status === 'Belum Lunas') {
-    // Tandai LUNAS → hapus expense piutang agar saldo kembali ke semula
-    pt.status = 'Lunas';
-    d.expenses = d.expenses.filter(e => e.piutangId !== id);
-    // Bersihkan income piutangLunasId lama jika ada (legacy)
-    d.income = d.income.filter(i => i.piutangLunasId !== id);
-  } else {
-    // Batalkan lunas → kembalikan expense agar saldo berkurang lagi
-    pt.status = 'Belum Lunas';
-    d.expenses.push({
-      id: Date.now(),
-      piutangId: id,
-      date: pt.date,
-      category: 'Piutang',
-      description: 'Piutang ke: ' + pt.name,
-      amount: pt.amount,
-      note: pt.note || '',
-      fromPiutang: true
-    });
-  }
-  saveData(d);
-  render();
-}
+    // ===== INCOME =====
+    function addIncome() {
+      const desc = document.getElementById('inDesc').value.trim();
+      const amount = parseFloat(document.getElementById('inAmount').value);
+      if (!desc || !amount || amount <= 0) { alert('Lengkapi deskripsi dan jumlah!'); return; }
+      const d = loadData();
+      d.income.push({
+        id: Date.now(),
+        date: document.getElementById('inDate').value,
+        category: document.getElementById('inCat').value,
+        description: desc,
+        amount: amount,
+        note: document.getElementById('inNote').value
+      });
+      saveData(d);
+      closeModal('modalIncome');
+      render();
+    }
 
-// ===== BUDGET =====
-function renderBudgetForm() {
-  const d = loadData();
-  const html = EXPENSE_CATS.map(cat => `
+    // ===== EXPENSE =====
+    function addExpense(data) {
+      if (!data) {
+        const desc = document.getElementById('exDesc').value.trim();
+        const amount = parseFloat(document.getElementById('exAmount').value);
+        if (!desc || !amount || amount <= 0) { alert('Lengkapi deskripsi dan jumlah!'); return; }
+        data = {
+          id: Date.now(),
+          date: document.getElementById('exDate').value,
+          category: document.getElementById('exCat').value,
+          description: desc,
+          amount: amount,
+          note: document.getElementById('exNote').value,
+          fromPlanned: false
+        };
+        closeModal('modalExpense');
+      }
+      const d = loadData();
+      d.expenses.push(data);
+      saveData(d);
+      render();
+    }
+
+    // ===== PLANNED =====
+    function addPlanned() {
+      const desc = document.getElementById('plDesc').value.trim();
+      const amount = parseFloat(document.getElementById('plAmount').value);
+      if (!desc || !amount || amount <= 0) { alert('Lengkapi deskripsi dan jumlah!'); return; }
+      const d = loadData();
+      d.planned.push({
+        id: Date.now(),
+        category: document.getElementById('plCat').value,
+        description: desc,
+        amount: amount,
+        checked: false
+      });
+      saveData(d);
+      closeModal('modalPlanned');
+      render();
+    }
+
+    function togglePlanned(id) {
+      const d = loadData();
+      const item = d.planned.find(p => p.id === id);
+      if (!item) return;
+      if (!item.checked) {
+        // Move to actual expenses
+        item.checked = true;
+        addExpense({
+          id: Date.now(),
+          date: today(),
+          category: item.category,
+          description: item.description,
+          amount: item.amount,
+          note: 'Dari rencana pengeluaran',
+          fromPlanned: true
+        });
+        // saveData happens in addExpense via loadData, so reload
+        const d2 = loadData();
+        const pi = d2.planned.find(p => p.id === id);
+        if (pi) pi.checked = true;
+        saveData(d2);
+      } else {
+        item.checked = false;
+        // Remove the auto-created expense
+        d.expenses = d.expenses.filter(e => !(e.fromPlanned && e.description === item.description && e.amount === item.amount));
+        saveData(d);
+      }
+      render();
+    }
+
+    // ===== PIUTANG =====
+    function addPiutang() {
+      const name = document.getElementById('ptName').value.trim();
+      const amount = parseFloat(document.getElementById('ptAmount').value);
+      if (!name || !amount || amount <= 0) { alert('Lengkapi nama dan jumlah!'); return; }
+      const d = loadData();
+      const id = Date.now();
+      d.piutang.push({
+        id: id,
+        name: name,
+        date: document.getElementById('ptDate').value,
+        amount: amount,
+        due: document.getElementById('ptDue').value,
+        note: document.getElementById('ptNote').value,
+        status: 'Belum Lunas'
+      });
+      // Piutang mengurangi saldo (uang keluar ke peminjam)
+      d.expenses.push({
+        id: id + 1,
+        piutangId: id,
+        date: document.getElementById('ptDate').value,
+        category: 'Piutang',
+        description: 'Piutang ke: ' + name,
+        amount: amount,
+        note: document.getElementById('ptNote').value,
+        fromPiutang: true
+      });
+      saveData(d);
+      closeModal('modalPiutang');
+      render();
+    }
+
+    function togglePiutangStatus(id) {
+      const d = loadData();
+      const pt = d.piutang.find(p => p.id === id);
+      if (!pt) return;
+
+      if (pt.status === 'Belum Lunas') {
+        // Tandai LUNAS → hapus expense piutang agar saldo kembali ke semula
+        pt.status = 'Lunas';
+        d.expenses = d.expenses.filter(e => e.piutangId !== id);
+        // Bersihkan income piutangLunasId lama jika ada (legacy)
+        d.income = d.income.filter(i => i.piutangLunasId !== id);
+      } else {
+        // Batalkan lunas → kembalikan expense agar saldo berkurang lagi
+        pt.status = 'Belum Lunas';
+        d.expenses.push({
+          id: Date.now(),
+          piutangId: id,
+          date: pt.date,
+          category: 'Piutang',
+          description: 'Piutang ke: ' + pt.name,
+          amount: pt.amount,
+          note: pt.note || '',
+          fromPiutang: true
+        });
+      }
+      saveData(d);
+      render();
+    }
+
+    // ===== BUDGET =====
+    function renderBudgetForm() {
+      const d = loadData();
+      const html = EXPENSE_CATS.map(cat => `
     <div class="form-grid" style="margin-bottom:8px">
       <div class="form-group">
-        <label style="color:${CAT_COLORS[cat]||'var(--text3)'}">${cat}</label>
+        <label style="color:${CAT_COLORS[cat] || 'var(--text3)'}">${cat}</label>
         <input type="number" id="budget_${cat}" placeholder="Tidak ada batas" min="0"
           value="${d.budgets[cat] || ''}">
       </div>
     </div>
   `).join('');
-  document.getElementById('budgetForm').innerHTML = html;
-}
+      document.getElementById('budgetForm').innerHTML = html;
+    }
 
-function saveBudgets() {
-  const d = loadData();
-  EXPENSE_CATS.forEach(cat => {
-    const val = parseFloat(document.getElementById('budget_'+cat).value);
-    if (val > 0) d.budgets[cat] = val;
-    else delete d.budgets[cat];
-  });
-  saveData(d);
-  closeModal('modalBudget');
-  render();
-}
+    function saveBudgets() {
+      const d = loadData();
+      EXPENSE_CATS.forEach(cat => {
+        const val = parseFloat(document.getElementById('budget_' + cat).value);
+        if (val > 0) d.budgets[cat] = val;
+        else delete d.budgets[cat];
+      });
+      saveData(d);
+      closeModal('modalBudget');
+      render();
+    }
 
-// ===== DELETE =====
-function askDelete(callback) {
-  deleteCallback = callback;
-  openModal('modalDelete');
-}
+    // ===== DELETE =====
+    function askDelete(callback) {
+      deleteCallback = callback;
+      openModal('modalDelete');
+    }
 
-function confirmDelete() {
-  if (deleteCallback) deleteCallback();
-  deleteCallback = null;
-  closeModal('modalDelete');
-}
+    function confirmDelete() {
+      if (deleteCallback) deleteCallback();
+      deleteCallback = null;
+      closeModal('modalDelete');
+    }
 
-function deleteIncome(id) {
-  const d = loadData();
-  const item = d.income.find(i => i.id === id);
-  // Jika ini entry pelunasan piutang (legacy), cascade ke piutang
-  if (item && item.piutangLunasId) {
-    askDelete(() => {
-      const d2 = loadData();
-      d2.income = d2.income.filter(i => i.id !== id);
-      // Kembalikan status piutang ke belum lunas & restore expense
-      const pt = d2.piutang.find(p => p.id === item.piutangLunasId);
-      if (pt) {
-        pt.status = 'Belum Lunas';
-        if (!d2.expenses.find(e => e.piutangId === pt.id)) {
-          d2.expenses.push({ id: Date.now(), piutangId: pt.id, date: pt.date, category: 'Piutang', description: 'Piutang ke: ' + pt.name, amount: pt.amount, note: pt.note||'', fromPiutang: true });
-        }
+    function deleteIncome(id) {
+      const d = loadData();
+      const item = d.income.find(i => i.id === id);
+      // Jika ini entry pelunasan piutang (legacy), cascade ke piutang
+      if (item && item.piutangLunasId) {
+        askDelete(() => {
+          const d2 = loadData();
+          d2.income = d2.income.filter(i => i.id !== id);
+          // Kembalikan status piutang ke belum lunas & restore expense
+          const pt = d2.piutang.find(p => p.id === item.piutangLunasId);
+          if (pt) {
+            pt.status = 'Belum Lunas';
+            if (!d2.expenses.find(e => e.piutangId === pt.id)) {
+              d2.expenses.push({ id: Date.now(), piutangId: pt.id, date: pt.date, category: 'Piutang', description: 'Piutang ke: ' + pt.name, amount: pt.amount, note: pt.note || '', fromPiutang: true });
+            }
+          }
+          saveData(d2);
+          render();
+        });
+      } else {
+        askDelete(() => {
+          const d2 = loadData();
+          d2.income = d2.income.filter(i => i.id !== id);
+          saveData(d2);
+          render();
+        });
       }
-      saveData(d2);
+    }
+
+    function deleteExpense(id) {
+      const d = loadData();
+      const item = d.expenses.find(e => e.id === id);
+      if (item && item.fromPiutang) {
+        // Jangan bisa dihapus manual dari tab pengeluaran
+        return;
+      }
+      askDelete(() => {
+        const d2 = loadData();
+        d2.expenses = d2.expenses.filter(e => e.id !== id);
+        saveData(d2);
+        render();
+      });
+    }
+
+    function deletePlanned(id) {
+      askDelete(() => {
+        const d = loadData();
+        d.planned = d.planned.filter(p => p.id !== id);
+        saveData(d);
+        render();
+      });
+    }
+
+    function editPlanned(id) {
+      const d = loadData();
+      const item = d.planned.find(p => p.id === id);
+      if (!item || item.checked) return;
+      document.getElementById('editPlannedId').value = id;
+      document.getElementById('editPlDesc').value = item.description;
+      document.getElementById('editPlAmount').value = item.amount;
+      document.getElementById('editPlCat').value = item.category;
+      openModal('modalEditPlanned');
+    }
+
+    function saveEditPlanned() {
+      const id = parseInt(document.getElementById('editPlannedId').value);
+      const desc = document.getElementById('editPlDesc').value.trim();
+      const amount = parseFloat(document.getElementById('editPlAmount').value);
+      if (!desc || !amount || amount <= 0) { alert('Lengkapi deskripsi dan jumlah!'); return; }
+      const d = loadData();
+      const item = d.planned.find(p => p.id === id);
+      if (!item) return;
+      item.description = desc;
+      item.category = document.getElementById('editPlCat').value;
+      item.amount = amount;
+      saveData(d);
+      closeModal('modalEditPlanned');
       render();
-    });
-  } else {
-    askDelete(() => {
-      const d2 = loadData();
-      d2.income = d2.income.filter(i => i.id !== id);
-      saveData(d2);
-      render();
-    });
-  }
-}
+    }
 
-function deleteExpense(id) {
-  const d = loadData();
-  const item = d.expenses.find(e => e.id === id);
-  if (item && item.fromPiutang) {
-    // Jangan bisa dihapus manual dari tab pengeluaran
-    return;
-  }
-  askDelete(() => {
-    const d2 = loadData();
-    d2.expenses = d2.expenses.filter(e => e.id !== id);
-    saveData(d2);
-    render();
-  });
-}
+    function deletePiutang(id) {
+      askDelete(() => {
+        const d = loadData();
+        d.piutang = d.piutang.filter(p => p.id !== id);
+        d.expenses = d.expenses.filter(e => e.piutangId !== id);
+        d.income = d.income.filter(i => i.piutangLunasId !== id); // bersihkan legacy
+        saveData(d);
+        render();
+      });
+    }
 
-function deletePlanned(id) {
-  askDelete(() => {
-    const d = loadData();
-    d.planned = d.planned.filter(p => p.id !== id);
-    saveData(d);
-    render();
-  });
-}
+    // ===== RENDER =====
+    function render() {
+      const d = loadData();
 
-function editPlanned(id) {
-  const d = loadData();
-  const item = d.planned.find(p => p.id === id);
-  if (!item || item.checked) return;
-  document.getElementById('editPlannedId').value = id;
-  document.getElementById('editPlDesc').value = item.description;
-  document.getElementById('editPlAmount').value = item.amount;
-  document.getElementById('editPlCat').value = item.category;
-  openModal('modalEditPlanned');
-}
+      // Bersihkan income legacy piutangLunasId agar tidak masuk hitungan
+      // (dari versi sebelumnya yang pakai model lama)
+      const cleanIncome = d.income.filter(i => !i.piutangLunasId);
 
-function saveEditPlanned() {
-  const id = parseInt(document.getElementById('editPlannedId').value);
-  const desc = document.getElementById('editPlDesc').value.trim();
-  const amount = parseFloat(document.getElementById('editPlAmount').value);
-  if (!desc || !amount || amount <= 0) { alert('Lengkapi deskripsi dan jumlah!'); return; }
-  const d = loadData();
-  const item = d.planned.find(p => p.id === id);
-  if (!item) return;
-  item.description = desc;
-  item.category = document.getElementById('editPlCat').value;
-  item.amount = amount;
-  saveData(d);
-  closeModal('modalEditPlanned');
-  render();
-}
+      const salary = d.salary || 0;
 
-function deletePiutang(id) {
-  askDelete(() => {
-    const d = loadData();
-    d.piutang = d.piutang.filter(p => p.id !== id);
-    d.expenses = d.expenses.filter(e => e.piutangId !== id);
-    d.income = d.income.filter(i => i.piutangLunasId !== id); // bersihkan legacy
-    saveData(d);
-    render();
-  });
-}
+      // Total pemasukan panel: hanya gaji + income non-piutang
+      const totalAdditional = cleanIncome.reduce((s, i) => s + i.amount, 0);
+      const totalIncomePanel = salary + totalAdditional;
 
-// ===== RENDER =====
-function render() {
-  const d = loadData();
+      // Saldo terkini = (gaji + semua income non-piutang) - (semua expenses non-piutang) - (piutang belum lunas)
+      // Cara paling sederhana: gaji + cleanIncome - expenses (piutang belum lunas sudah masuk expenses via fromPiutang)
+      const totalExpenses = d.expenses.reduce((s, e) => s + e.amount, 0);
+      const currentBalance = (salary + cleanIncome.reduce((s, i) => s + i.amount, 0)) - totalExpenses;
 
-  // Bersihkan income legacy piutangLunasId agar tidak masuk hitungan
-  // (dari versi sebelumnya yang pakai model lama)
-  const cleanIncome = d.income.filter(i => !i.piutangLunasId);
+      const totalPlanned = d.planned.filter(p => !p.checked).reduce((s, p) => s + p.amount, 0);
+      const shadowBalance = currentBalance - totalPlanned;
 
-  const salary = d.salary || 0;
+      // Balance panel
+      document.getElementById('salaryDisplay').textContent = fmtRp(salary);
+      document.getElementById('balIncome').textContent = fmtRp(totalIncomePanel);
+      document.getElementById('balIncomeSub').textContent = fmtRp(salary) + ' + ' + fmtRp(totalAdditional);
+      document.getElementById('balCurrent').textContent = fmtRp(currentBalance);
+      document.getElementById('balCurrentSub').textContent = fmtRp(salary + totalAdditional) + ' − ' + fmtRp(totalExpenses);
+      document.getElementById('balPlanned').textContent = fmtRp(totalPlanned);
+      document.getElementById('balPlannedSub').textContent = d.planned.filter(p => !p.checked).length + ' item belum terceklis';
+      document.getElementById('balShadow').textContent = (shadowBalance < 0 ? '−' : '') + fmtRp(shadowBalance);
 
-  // Total pemasukan panel: hanya gaji + income non-piutang
-  const totalAdditional = cleanIncome.reduce((s,i) => s+i.amount, 0);
-  const totalIncomePanel = salary + totalAdditional;
+      if (shadowBalance < 0) {
+        document.getElementById('balShadow').style.color = 'var(--red)';
+      } else {
+        document.getElementById('balShadow').style.color = 'var(--yellow)';
+      }
 
-  // Saldo terkini = (gaji + semua income non-piutang) - (semua expenses non-piutang) - (piutang belum lunas)
-  // Cara paling sederhana: gaji + cleanIncome - expenses (piutang belum lunas sudah masuk expenses via fromPiutang)
-  const totalExpenses = d.expenses.reduce((s,e) => s+e.amount, 0);
-  const currentBalance = (salary + cleanIncome.reduce((s,i)=>s+i.amount,0)) - totalExpenses;
+      renderIncomeList(d, cleanIncome);
+      renderExpenseList(d);
+      renderPlannedList(d);
+      renderPiutangList(d);
+      renderBudgetProgress(d);
+      renderSummary(d, totalIncomePanel, totalExpenses, salary);
+    }
 
-  const totalPlanned = d.planned.filter(p => !p.checked).reduce((s,p) => s+p.amount, 0);
-  const shadowBalance = currentBalance - totalPlanned;
-
-  // Balance panel
-  document.getElementById('salaryDisplay').textContent = fmtRp(salary);
-  document.getElementById('balIncome').textContent = fmtRp(totalIncomePanel);
-  document.getElementById('balIncomeSub').textContent = fmtRp(salary) + ' + ' + fmtRp(totalAdditional);
-  document.getElementById('balCurrent').textContent = fmtRp(currentBalance);
-  document.getElementById('balCurrentSub').textContent = fmtRp(salary + totalAdditional) + ' − ' + fmtRp(totalExpenses);
-  document.getElementById('balPlanned').textContent = fmtRp(totalPlanned);
-  document.getElementById('balPlannedSub').textContent = d.planned.filter(p=>!p.checked).length + ' item belum terceklis';
-  document.getElementById('balShadow').textContent = (shadowBalance < 0 ? '−' : '') + fmtRp(shadowBalance);
-
-  if (shadowBalance < 0) {
-    document.getElementById('balShadow').style.color = 'var(--red)';
-  } else {
-    document.getElementById('balShadow').style.color = 'var(--yellow)';
-  }
-
-  renderIncomeList(d, cleanIncome);
-  renderExpenseList(d);
-  renderPlannedList(d);
-  renderPiutangList(d);
-  renderBudgetProgress(d);
-  renderSummary(d, totalIncomePanel, totalExpenses, salary);
-}
-
-function renderIncomeList(d, cleanIncome) {
-  const el = document.getElementById('incomeList');
-  const list = cleanIncome || d.income.filter(i => !i.piutangLunasId);
-  if (!list.length) {
-    el.innerHTML = '<div class="empty"><div class="empty-icon">💼</div><p>Belum ada penghasilan tambahan</p></div>';
-    return;
-  }
-  const rows = [...list].reverse().map(i => `
+    function renderIncomeList(d, cleanIncome) {
+      const el = document.getElementById('incomeList');
+      const list = cleanIncome || d.income.filter(i => !i.piutangLunasId);
+      if (!list.length) {
+        el.innerHTML = '<div class="empty"><div class="empty-icon">💼</div><p>Belum ada penghasilan tambahan</p></div>';
+        return;
+      }
+      const rows = [...list].reverse().map(i => `
     <tr>
       <td style="color:var(--text3)">${fmtDate(i.date)}</td>
-      <td><span class="badge" style="background:rgba(${hexToRgb(CAT_COLORS[i.category]||'#8fa3c8')},0.12);color:${CAT_COLORS[i.category]||'#8fa3c8'}">${i.category}</span></td>
+      <td><span class="badge" style="background:rgba(${hexToRgb(CAT_COLORS[i.category] || '#8fa3c8')},0.12);color:${CAT_COLORS[i.category] || '#8fa3c8'}">${i.category}</span></td>
       <td style="font-weight:500">${i.description}</td>
       <td style="font-family:'JetBrains Mono',monospace;color:var(--green);font-weight:600">${fmtRp(i.amount)}</td>
-      <td style="color:var(--text3);font-size:.78rem">${i.note||'-'}</td>
+      <td style="color:var(--text3);font-size:.78rem">${i.note || '-'}</td>
       <td><button class="btn btn-red btn-sm btn-icon" onclick="deleteIncome(${i.id})">🗑️</button></td>
     </tr>
   `).join('');
-  el.innerHTML = `<div class="table-wrap"><table>
+      el.innerHTML = `<div class="table-wrap"><table>
     <thead><tr><th>Tanggal</th><th>Kategori</th><th>Deskripsi</th><th>Jumlah</th><th>Catatan</th><th></th></tr></thead>
     <tbody>${rows}</tbody>
   </table></div>`;
-}
+    }
 
-function renderExpenseList(d) {
-  const el = document.getElementById('expenseList');
-  // Sembunyikan expense dari piutang yang sudah lunas (tidak perlu ditampilkan, efeknya sudah netral)
-  const visibleExpenses = d.expenses.filter(e => {
-    if (!e.fromPiutang) return true;
-    const pt = d.piutang.find(p => p.id === e.piutangId);
-    return pt && pt.status !== 'Lunas'; // tampilkan hanya piutang yang belum lunas
-  });
-  if (!visibleExpenses.length) {
-    el.innerHTML = '<div class="empty"><div class="empty-icon">🧾</div><p>Belum ada pengeluaran</p></div>';
-    return;
-  }
-  const rows = [...visibleExpenses].reverse().map(e => `
+    function renderExpenseList(d) {
+      const el = document.getElementById('expenseList');
+      // Sembunyikan expense dari piutang yang sudah lunas (tidak perlu ditampilkan, efeknya sudah netral)
+      const visibleExpenses = d.expenses.filter(e => {
+        if (!e.fromPiutang) return true;
+        const pt = d.piutang.find(p => p.id === e.piutangId);
+        return pt && pt.status !== 'Lunas'; // tampilkan hanya piutang yang belum lunas
+      });
+      if (!visibleExpenses.length) {
+        el.innerHTML = '<div class="empty"><div class="empty-icon">🧾</div><p>Belum ada pengeluaran</p></div>';
+        return;
+      }
+      const rows = [...visibleExpenses].reverse().map(e => `
     <tr>
       <td style="color:var(--text3)">${fmtDate(e.date)}</td>
-      <td><span class="badge" style="background:rgba(${hexToRgb(CAT_COLORS[e.category]||'#8fa3c8')},0.12);color:${CAT_COLORS[e.category]||'#8fa3c8'}">${e.category}</span></td>
+      <td><span class="badge" style="background:rgba(${hexToRgb(CAT_COLORS[e.category] || '#8fa3c8')},0.12);color:${CAT_COLORS[e.category] || '#8fa3c8'}">${e.category}</span></td>
       <td style="font-weight:500">${e.description}
         ${e.fromPlanned ? '<span class="badge badge-gray" style="font-size:.65rem">dari rencana</span>' : ''}
         ${e.fromPiutang ? '<span class="badge badge-purple" style="font-size:.65rem">piutang</span>' : ''}
       </td>
       <td style="font-family:'JetBrains Mono',monospace;color:var(--red);font-weight:600">−${fmtRp(e.amount)}</td>
-      <td style="color:var(--text3);font-size:.78rem">${e.note||'-'}</td>
+      <td style="color:var(--text3);font-size:.78rem">${e.note || '-'}</td>
       <td>
         ${e.fromPiutang
           ? `<span style="font-size:.72rem;color:var(--text3)">Hapus via tab Piutang</span>`
@@ -1250,23 +2238,23 @@ function renderExpenseList(d) {
       </td>
     </tr>
   `).join('');
-  el.innerHTML = `<div class="table-wrap"><table>
+      el.innerHTML = `<div class="table-wrap"><table>
     <thead><tr><th>Tanggal</th><th>Kategori</th><th>Deskripsi</th><th>Jumlah</th><th>Catatan</th><th></th></tr></thead>
     <tbody>${rows}</tbody>
   </table></div>`;
-}
+    }
 
-function renderPlannedList(d) {
-  const el = document.getElementById('plannedList');
-  if (!d.planned.length) {
-    el.innerHTML = '<div class="empty"><div class="empty-icon">📋</div><p>Belum ada rencana pengeluaran</p></div>';
-    return;
-  }
-  const unchecked = d.planned.filter(p => !p.checked);
-  const checked = d.planned.filter(p => p.checked);
-  const sorted = [...unchecked, ...checked];
-  
-  el.innerHTML = sorted.map(p => `
+    function renderPlannedList(d) {
+      const el = document.getElementById('plannedList');
+      if (!d.planned.length) {
+        el.innerHTML = '<div class="empty"><div class="empty-icon">📋</div><p>Belum ada rencana pengeluaran</p></div>';
+        return;
+      }
+      const unchecked = d.planned.filter(p => !p.checked);
+      const checked = d.planned.filter(p => p.checked);
+      const sorted = [...unchecked, ...checked];
+
+      el.innerHTML = sorted.map(p => `
     <div class="planned-item ${p.checked ? 'checked' : ''}">
       <div class="checkbox ${p.checked ? 'checked' : ''}" onclick="togglePlanned(${p.id})">
         ${p.checked ? '<svg viewBox="0 0 12 12"><polyline points="2,6 5,9 10,3"/></svg>' : ''}
@@ -1277,42 +2265,42 @@ function renderPlannedList(d) {
       </div>
       <div class="planned-amount" style="${p.checked ? 'color:var(--text3)' : ''}">−${fmtRp(p.amount)}</div>
       ${p.checked
-        ? `<span style="font-size:.72rem;color:var(--text3);padding:0 4px">🔒</span>`
-        : `<button class="btn btn-ghost btn-sm btn-icon" onclick="editPlanned(${p.id})" title="Edit">✏️</button>
+          ? `<span style="font-size:.72rem;color:var(--text3);padding:0 4px">🔒</span>`
+          : `<button class="btn btn-ghost btn-sm btn-icon" onclick="editPlanned(${p.id})" title="Edit">✏️</button>
            <button class="btn btn-red btn-sm btn-icon" onclick="deletePlanned(${p.id})">🗑️</button>`
-      }
+        }
     </div>
   `).join('');
-}
+    }
 
-function renderPiutangList(d) {
-  const el = document.getElementById('piutangList');
-  if (!d.piutang.length) {
-    el.innerHTML = '<div class="empty"><div class="empty-icon">🤝</div><p>Belum ada catatan piutang</p></div>';
-    return;
-  }
-  const totalPiutang = d.piutang.reduce((s,p) => s+p.amount, 0);
-  const totalLunas = d.piutang.filter(p=>p.status==='Lunas').reduce((s,p) => s+p.amount, 0);
-  
-  const rows = [...d.piutang].reverse().map(p => {
-    const isOverdue = p.due && new Date(p.due) < new Date() && p.status !== 'Lunas';
-    return `
+    function renderPiutangList(d) {
+      const el = document.getElementById('piutangList');
+      if (!d.piutang.length) {
+        el.innerHTML = '<div class="empty"><div class="empty-icon">🤝</div><p>Belum ada catatan piutang</p></div>';
+        return;
+      }
+      const totalPiutang = d.piutang.reduce((s, p) => s + p.amount, 0);
+      const totalLunas = d.piutang.filter(p => p.status === 'Lunas').reduce((s, p) => s + p.amount, 0);
+
+      const rows = [...d.piutang].reverse().map(p => {
+        const isOverdue = p.due && new Date(p.due) < new Date() && p.status !== 'Lunas';
+        return `
     <tr>
       <td style="font-weight:500">${p.name}</td>
       <td style="color:var(--text3)">${fmtDate(p.date)}</td>
       <td style="font-family:'JetBrains Mono',monospace;color:var(--purple);font-weight:600">${fmtRp(p.amount)}</td>
       <td style="color:${isOverdue ? 'var(--red)' : 'var(--text3)'}">${fmtDate(p.due)} ${isOverdue ? '⚠️' : ''}</td>
       <td>
-        <span class="badge ${p.status==='Lunas' ? 'badge-green' : 'badge-red'} status-toggle" onclick="togglePiutangStatus(${p.id})">
+        <span class="badge ${p.status === 'Lunas' ? 'badge-green' : 'badge-red'} status-toggle" onclick="togglePiutangStatus(${p.id})">
           ${p.status} ↔
         </span>
       </td>
-      <td style="color:var(--text3);font-size:.78rem">${p.note||'-'}</td>
+      <td style="color:var(--text3);font-size:.78rem">${p.note || '-'}</td>
       <td><button class="btn btn-red btn-sm btn-icon" onclick="deletePiutang(${p.id})">🗑️</button></td>
     </tr>
   `}).join('');
-  
-  el.innerHTML = `
+
+      el.innerHTML = `
     <div style="display:flex;gap:16px;flex-wrap:wrap;margin-bottom:16px">
       <div style="background:var(--bg2);border:1px solid var(--border);border-radius:8px;padding:12px 16px">
         <div style="font-size:.72rem;color:var(--text3);margin-bottom:4px">Total Piutang</div>
@@ -1332,24 +2320,24 @@ function renderPiutangList(d) {
       <tbody>${rows}</tbody>
     </table></div>
   `;
-}
+    }
 
-function renderBudgetProgress(d) {
-  const el = document.getElementById('budgetList');
-  const catExpenses = {};
-  d.expenses.forEach(e => {
-    catExpenses[e.category] = (catExpenses[e.category] || 0) + e.amount;
-  });
-  
-  const hasBudget = EXPENSE_CATS.some(c => d.budgets[c]);
-  const items = EXPENSE_CATS.map(cat => {
-    const spent = catExpenses[cat] || 0;
-    const budget = d.budgets[cat] || 0;
-    if (!budget && !spent) return null;
-    const pct = budget ? Math.min((spent/budget)*100, 100) : 0;
-    const color = pct > 100 ? 'var(--red)' : pct > 75 ? 'var(--yellow)' : 'var(--green)';
-    const catColor = CAT_COLORS[cat] || '#8fa3c8';
-    return `
+    function renderBudgetProgress(d) {
+      const el = document.getElementById('budgetList');
+      const catExpenses = {};
+      d.expenses.forEach(e => {
+        catExpenses[e.category] = (catExpenses[e.category] || 0) + e.amount;
+      });
+
+      const hasBudget = EXPENSE_CATS.some(c => d.budgets[c]);
+      const items = EXPENSE_CATS.map(cat => {
+        const spent = catExpenses[cat] || 0;
+        const budget = d.budgets[cat] || 0;
+        if (!budget && !spent) return null;
+        const pct = budget ? Math.min((spent / budget) * 100, 100) : 0;
+        const color = pct > 100 ? 'var(--red)' : pct > 75 ? 'var(--yellow)' : 'var(--green)';
+        const catColor = CAT_COLORS[cat] || '#8fa3c8';
+        return `
       <div class="progress-wrap">
         <div class="progress-label">
           <span style="color:${catColor};font-weight:500">${cat}</span>
@@ -1358,41 +2346,41 @@ function renderBudgetProgress(d) {
         ${budget ? `<div class="progress-bar">
           <div class="progress-fill" style="width:${pct}%;background:${color}"></div>
         </div>
-        ${pct > 100 ? '<div style="font-size:.7rem;color:var(--red);margin-top:3px">⚠️ Melebihi budget!</div>' : 
-          pct > 75 ? '<div style="font-size:.7rem;color:var(--yellow);margin-top:3px">⚡ Mendekati batas</div>' : ''}` : ''}
+        ${pct > 100 ? '<div style="font-size:.7rem;color:var(--red);margin-top:3px">⚠️ Melebihi budget!</div>' :
+              pct > 75 ? '<div style="font-size:.7rem;color:var(--yellow);margin-top:3px">⚡ Mendekati batas</div>' : ''}` : ''}
       </div>
     `;
-  }).filter(Boolean).join('');
-  
-  el.innerHTML = items || '<div class="empty"><div class="empty-icon">📊</div><p>Klik "Atur Budget" untuk menetapkan batas pengeluaran, atau tambahkan pengeluaran terlebih dahulu.</p></div>';
-}
+      }).filter(Boolean).join('');
 
-function renderSummary(d, totalIncome, totalExpenses, salary) {
-  const surplus = totalIncome - totalExpenses;
-  const cleanIncome = d.income.filter(i => !i.piutangLunasId);
-  const totalPiutangBelumLunas = d.piutang.filter(p=>p.status==='Belum Lunas').reduce((s,p)=>s+p.amount,0);
-  document.getElementById('summaryIncome').innerHTML = `
+      el.innerHTML = items || '<div class="empty"><div class="empty-icon">📊</div><p>Klik "Atur Budget" untuk menetapkan batas pengeluaran, atau tambahkan pengeluaran terlebih dahulu.</p></div>';
+    }
+
+    function renderSummary(d, totalIncome, totalExpenses, salary) {
+      const surplus = totalIncome - totalExpenses;
+      const cleanIncome = d.income.filter(i => !i.piutangLunasId);
+      const totalPiutangBelumLunas = d.piutang.filter(p => p.status === 'Belum Lunas').reduce((s, p) => s + p.amount, 0);
+      document.getElementById('summaryIncome').innerHTML = `
     <div class="total-row"><span class="total-label">Gaji Pokok</span><span class="total-val" style="color:var(--gold)">${fmtRp(salary)}</span></div>
-    <div class="total-row"><span class="total-label">Penghasilan Tambahan</span><span class="total-val" style="color:var(--blue)">${fmtRp(cleanIncome.reduce((s,i)=>s+i.amount,0))}</span></div>
+    <div class="total-row"><span class="total-label">Penghasilan Tambahan</span><span class="total-val" style="color:var(--blue)">${fmtRp(cleanIncome.reduce((s, i) => s + i.amount, 0))}</span></div>
     <div class="total-row"><span class="total-label" style="font-weight:600">Total Pemasukan</span><span class="total-val" style="color:var(--green)">${fmtRp(totalIncome)}</span></div>
   `;
-  document.getElementById('summaryExpense').innerHTML = `
+      document.getElementById('summaryExpense').innerHTML = `
     <div class="total-row"><span class="total-label">Total Pengeluaran</span><span class="total-val" style="color:var(--red)">${fmtRp(totalExpenses)}</span></div>
-    <div class="total-row"><span class="total-label">Rencana Keluar</span><span class="total-val" style="color:var(--yellow)">${fmtRp(d.planned.filter(p=>!p.checked).reduce((s,p)=>s+p.amount,0))}</span></div>
+    <div class="total-row"><span class="total-label">Rencana Keluar</span><span class="total-val" style="color:var(--yellow)">${fmtRp(d.planned.filter(p => !p.checked).reduce((s, p) => s + p.amount, 0))}</span></div>
     <div class="total-row"><span class="total-label">Piutang Belum Lunas</span><span class="total-val" style="color:var(--purple)">${fmtRp(totalPiutangBelumLunas)}</span></div>
     <div class="total-row"><span class="total-label" style="font-weight:600">Sisa / Surplus</span>
       <span class="total-val" style="color:${surplus >= 0 ? 'var(--green)' : 'var(--red)'}">${surplus < 0 ? '−' : ''}${fmtRp(surplus)}</span></div>
   `;
 
-  // Exclude piutang dari chart kategori pengeluaran
-  const catExpenses = {};
-  d.expenses.filter(e => !e.fromPiutang).forEach(e => { catExpenses[e.category] = (catExpenses[e.category]||0) + e.amount; });
-  const totalNonPiutangExpenses = Object.values(catExpenses).reduce((s,v)=>s+v, 0);
+      // Exclude piutang dari chart kategori pengeluaran
+      const catExpenses = {};
+      d.expenses.filter(e => !e.fromPiutang).forEach(e => { catExpenses[e.category] = (catExpenses[e.category] || 0) + e.amount; });
+      const totalNonPiutangExpenses = Object.values(catExpenses).reduce((s, v) => s + v, 0);
 
-  const catHtml = Object.entries(catExpenses).sort((a,b)=>b[1]-a[1]).map(([cat, amt]) => {
-    const pct = totalNonPiutangExpenses ? (amt/totalNonPiutangExpenses*100).toFixed(1) : 0;
-    const color = CAT_COLORS[cat] || '#8fa3c8';
-    return `
+      const catHtml = Object.entries(catExpenses).sort((a, b) => b[1] - a[1]).map(([cat, amt]) => {
+        const pct = totalNonPiutangExpenses ? (amt / totalNonPiutangExpenses * 100).toFixed(1) : 0;
+        const color = CAT_COLORS[cat] || '#8fa3c8';
+        return `
       <div style="margin-bottom:12px">
         <div style="display:flex;justify-content:space-between;font-size:.8rem;margin-bottom:5px">
           <span style="color:${color};font-weight:500">${cat}</span>
@@ -1403,150 +2391,151 @@ function renderSummary(d, totalIncome, totalExpenses, salary) {
         </div>
       </div>
     `;
-  }).join('');
-  document.getElementById('summaryCat').innerHTML = catHtml || '<div class="empty"><p>Belum ada data pengeluaran bulan ini</p></div>';
-}
-
-// ===== UTILS =====
-function hexToRgb(hex) {
-  const r = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
-  return r ? `${parseInt(r[1],16)},${parseInt(r[2],16)},${parseInt(r[3],16)}` : '143,163,200';
-}
-
-// ===== TOAST =====
-function showToast(msg, type='success') {
-  const el = document.getElementById('toast');
-  el.textContent = msg;
-  el.className = 'toast ' + type;
-  el.classList.add('show');
-  setTimeout(() => el.classList.remove('show'), 3000);
-}
-
-// ===== EXPORT / IMPORT =====
-function generateExport() {
-  const allData = {};
-  for (let i = 0; i < localStorage.length; i++) {
-    const key = localStorage.key(i);
-    if (key && key.startsWith('finance_')) {
-      allData[key] = JSON.parse(localStorage.getItem(key));
+      }).join('');
+      document.getElementById('summaryCat').innerHTML = catHtml || '<div class="empty"><p>Belum ada data pengeluaran bulan ini</p></div>';
     }
-  }
-  const json = JSON.stringify(allData, null, 2);
-  document.getElementById('exportArea').textContent = json;
-  document.getElementById('btnCopy').style.display = 'inline-flex';
-  showToast('✅ Data berhasil di-generate!');
-}
 
-function copyExport() {
-  const text = document.getElementById('exportArea').textContent;
-  if (!text || text.includes('Klik tombol')) { showToast('Generate data dulu!', 'error'); return; }
-  navigator.clipboard.writeText(text).then(() => {
-    showToast('📋 Data berhasil disalin ke clipboard!');
-  }).catch(() => {
-    // Fallback
-    const el = document.getElementById('exportArea');
-    const range = document.createRange();
-    range.selectNodeContents(el);
-    window.getSelection().removeAllRanges();
-    window.getSelection().addRange(range);
-    document.execCommand('copy');
-    showToast('📋 Data berhasil disalin!');
-  });
-}
+    // ===== UTILS =====
+    function hexToRgb(hex) {
+      const r = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+      return r ? `${parseInt(r[1], 16)},${parseInt(r[2], 16)},${parseInt(r[3], 16)}` : '143,163,200';
+    }
 
-function doImport() {
-  const text = document.getElementById('importArea').value.trim();
-  if (!text) { showToast('Tempel data terlebih dahulu!', 'error'); return; }
-  try {
-    const parsed = JSON.parse(text);
-    const keys = Object.keys(parsed).filter(k => k.startsWith('finance_'));
-    if (!keys.length) { showToast('Format data tidak valid. Pastikan berupa data export dari aplikasi ini.', 'error'); return; }
-    if (!confirm(`Import akan menimpa ${keys.length} bulan data. Lanjutkan?`)) return;
-    keys.forEach(k => localStorage.setItem(k, JSON.stringify(parsed[k])));
-    document.getElementById('importArea').value = '';
+    // ===== TOAST =====
+    function showToast(msg, type = 'success') {
+      const el = document.getElementById('toast');
+      el.textContent = msg;
+      el.className = 'toast ' + type;
+      el.classList.add('show');
+      setTimeout(() => el.classList.remove('show'), 3000);
+    }
+
+    // ===== EXPORT / IMPORT =====
+    function generateExport() {
+      const allData = {};
+      for (let i = 0; i < localStorage.length; i++) {
+        const key = localStorage.key(i);
+        if (key && key.startsWith('finance_')) {
+          allData[key] = JSON.parse(localStorage.getItem(key));
+        }
+      }
+      const json = JSON.stringify(allData, null, 2);
+      document.getElementById('exportArea').textContent = json;
+      document.getElementById('btnCopy').style.display = 'inline-flex';
+      showToast('✅ Data berhasil di-generate!');
+    }
+
+    function copyExport() {
+      const text = document.getElementById('exportArea').textContent;
+      if (!text || text.includes('Klik tombol')) { showToast('Generate data dulu!', 'error'); return; }
+      navigator.clipboard.writeText(text).then(() => {
+        showToast('📋 Data berhasil disalin ke clipboard!');
+      }).catch(() => {
+        // Fallback
+        const el = document.getElementById('exportArea');
+        const range = document.createRange();
+        range.selectNodeContents(el);
+        window.getSelection().removeAllRanges();
+        window.getSelection().addRange(range);
+        document.execCommand('copy');
+        showToast('📋 Data berhasil disalin!');
+      });
+    }
+
+    function doImport() {
+      const text = document.getElementById('importArea').value.trim();
+      if (!text) { showToast('Tempel data terlebih dahulu!', 'error'); return; }
+      try {
+        const parsed = JSON.parse(text);
+        const keys = Object.keys(parsed).filter(k => k.startsWith('finance_'));
+        if (!keys.length) { showToast('Format data tidak valid. Pastikan berupa data export dari aplikasi ini.', 'error'); return; }
+        if (!confirm(`Import akan menimpa ${keys.length} bulan data. Lanjutkan?`)) return;
+        keys.forEach(k => localStorage.setItem(k, JSON.stringify(parsed[k])));
+        document.getElementById('importArea').value = '';
+        render();
+        showToast(`✅ Berhasil import ${keys.length} bulan data!`);
+      } catch (e) {
+        showToast('❌ Format JSON tidak valid. Cek kembali data yang ditempel.', 'error');
+      }
+    }
+
+    function deleteCurrentMonth() {
+      if (!confirm('Hapus semua data bulan ' + currentDate.toLocaleDateString('id-ID', { month: 'long', year: 'numeric' }) + '?')) return;
+      localStorage.removeItem(getKey());
+      render();
+      showToast('🗑️ Data bulan ini berhasil dihapus.');
+    }
+
+    function deleteAllData() {
+      if (!confirm('HAPUS SEMUA DATA seluruh bulan? Tindakan ini tidak bisa dibatalkan!')) return;
+      const keys = [];
+      for (let i = 0; i < localStorage.length; i++) {
+        const k = localStorage.key(i);
+        if (k && k.startsWith('finance_')) keys.push(k);
+      }
+      keys.forEach(k => localStorage.removeItem(k));
+      render();
+      showToast('💥 Semua data berhasil dihapus.');
+    }
+
+    // ===== TUTORIAL =====
+    const TUT_STEPS = [
+      { icon: '👋', title: 'Selamat Datang di Catatan Keuangan!', desc: 'Aplikasi ini membantu kamu mencatat <b>pemasukan, pengeluaran, rencana belanja, dan piutang</b> secara terorganisir. Tutorial ini hanya butuh 1 menit. Yuk mulai!' },
+      { icon: '📅', title: 'Navigasi Bulan', desc: 'Gunakan tombol <b>‹</b> dan <b>›</b> di pojok kanan atas untuk berpindah bulan. Setiap bulan menyimpan data yang terpisah. Mulailah dengan bulan yang sedang berjalan (sudah otomatis terpilih).' },
+      { icon: '💵', title: 'Tab Pemasukan — Catat Gaji', desc: 'Buka tab <b>💵 Pemasukan</b> → klik <b>✏️ Edit</b> untuk mengisi gaji pokok bulan ini. Untuk pendapatan lain (freelance, bonus, dll) klik <b>+ Tambah</b> di kartu Penghasilan Tambahan.' },
+      { icon: '💸', title: 'Tab Pengeluaran — Catat Biaya', desc: 'Buka tab <b>💸 Pengeluaran</b> → klik <b>+ Tambah</b>. Pilih kategori (Makanan, Transport, Tagihan, dll), isi deskripsi dan jumlah. Setiap pengeluaran langsung mengurangi <b>Saldo Terkini</b>.' },
+      { icon: '📋', title: 'Rencana Keluar — Rencanakan Dulu', desc: 'Di tab <b>📋 Rencana Keluar</b>, tambahkan pengeluaran yang <i>belum terjadi</i>. Totalnya ditampilkan merah di panel atas sebagai peringatan. Saat sudah dibayar, <b>centang ☐ item</b> — otomatis pindah ke Pengeluaran Aktual.' },
+      { icon: '🤝', title: 'Piutang — Uang yang Dipinjamkan', desc: 'Di tab <b>🤝 Piutang</b>, catat uang yang kamu pinjamkan ke orang lain. Saldo <b>langsung berkurang</b>. Saat uang kembali, klik badge status <b>Belum Lunas ↔</b> jadi Lunas — saldo otomatis pulih kembali.' },
+      { icon: '💾', title: 'Backup Data — Jangan Sampai Hilang!', desc: 'Data tersimpan di <b>localStorage browser</b> ini saja. Agar tidak hilang saat ganti browser/device, rutin backup via tab <b>💾 Data</b>: klik Generate → Salin → simpan teks JSON-nya. Import kapan saja untuk memulihkan.' },
+    ];
+
+    let tutCurrent = 0;
+
+    function openTutorial() {
+      tutCurrent = 0;
+      renderTutStep();
+      document.getElementById('tutOverlay').classList.add('open');
+    }
+
+    function closeTutorial() {
+      document.getElementById('tutOverlay').classList.remove('open');
+      localStorage.setItem('keuangan_tutorial_done', '1');
+    }
+
+    function tutStep(dir) {
+      tutCurrent += dir;
+      if (tutCurrent < 0) tutCurrent = 0;
+      if (tutCurrent >= TUT_STEPS.length) { closeTutorial(); return; }
+      renderTutStep();
+    }
+
+    function renderTutStep() {
+      const s = TUT_STEPS[tutCurrent];
+      document.getElementById('tutBadge').textContent = `Langkah ${tutCurrent + 1} dari ${TUT_STEPS.length}`;
+      document.getElementById('tutIcon').textContent = s.icon;
+      document.getElementById('tutTitle').textContent = s.title;
+      document.getElementById('tutDesc').innerHTML = s.desc;
+      document.getElementById('tutPrev').style.display = tutCurrent === 0 ? 'none' : 'inline-flex';
+      document.getElementById('tutNext').textContent = tutCurrent === TUT_STEPS.length - 1 ? '✅ Selesai' : 'Lanjut ›';
+
+      // Dots
+      document.getElementById('tutDots').innerHTML = TUT_STEPS.map((_, i) =>
+        `<div class="tut-dot ${i === tutCurrent ? 'active' : ''}"></div>`
+      ).join('');
+    }
+
+    // ===== INIT =====
+    // Fix: pastikan bulan yang tampil sesuai bulan sekarang
+    currentDate = new Date();
+    document.getElementById('monthLabel').textContent =
+      currentDate.toLocaleDateString('id-ID', { month: 'long', year: 'numeric' });
     render();
-    showToast(`✅ Berhasil import ${keys.length} bulan data!`);
-  } catch(e) {
-    showToast('❌ Format JSON tidak valid. Cek kembali data yang ditempel.', 'error');
-  }
-}
 
-function deleteCurrentMonth() {
-  if (!confirm('Hapus semua data bulan ' + currentDate.toLocaleDateString('id-ID', {month:'long', year:'numeric'}) + '?')) return;
-  localStorage.removeItem(getKey());
-  render();
-  showToast('🗑️ Data bulan ini berhasil dihapus.');
-}
-
-function deleteAllData() {
-  if (!confirm('HAPUS SEMUA DATA seluruh bulan? Tindakan ini tidak bisa dibatalkan!')) return;
-  const keys = [];
-  for (let i = 0; i < localStorage.length; i++) {
-    const k = localStorage.key(i);
-    if (k && k.startsWith('finance_')) keys.push(k);
-  }
-  keys.forEach(k => localStorage.removeItem(k));
-  render();
-  showToast('💥 Semua data berhasil dihapus.');
-}
-
-// ===== TUTORIAL =====
-const TUT_STEPS = [
-  { icon:'👋', title:'Selamat Datang di Catatan Keuangan!', desc:'Aplikasi ini membantu kamu mencatat <b>pemasukan, pengeluaran, rencana belanja, dan piutang</b> secara terorganisir. Tutorial ini hanya butuh 1 menit. Yuk mulai!' },
-  { icon:'📅', title:'Navigasi Bulan', desc:'Gunakan tombol <b>‹</b> dan <b>›</b> di pojok kanan atas untuk berpindah bulan. Setiap bulan menyimpan data yang terpisah. Mulailah dengan bulan yang sedang berjalan (sudah otomatis terpilih).' },
-  { icon:'💵', title:'Tab Pemasukan — Catat Gaji', desc:'Buka tab <b>💵 Pemasukan</b> → klik <b>✏️ Edit</b> untuk mengisi gaji pokok bulan ini. Untuk pendapatan lain (freelance, bonus, dll) klik <b>+ Tambah</b> di kartu Penghasilan Tambahan.' },
-  { icon:'💸', title:'Tab Pengeluaran — Catat Biaya', desc:'Buka tab <b>💸 Pengeluaran</b> → klik <b>+ Tambah</b>. Pilih kategori (Makanan, Transport, Tagihan, dll), isi deskripsi dan jumlah. Setiap pengeluaran langsung mengurangi <b>Saldo Terkini</b>.' },
-  { icon:'📋', title:'Rencana Keluar — Rencanakan Dulu', desc:'Di tab <b>📋 Rencana Keluar</b>, tambahkan pengeluaran yang <i>belum terjadi</i>. Totalnya ditampilkan merah di panel atas sebagai peringatan. Saat sudah dibayar, <b>centang ☐ item</b> — otomatis pindah ke Pengeluaran Aktual.' },
-  { icon:'🤝', title:'Piutang — Uang yang Dipinjamkan', desc:'Di tab <b>🤝 Piutang</b>, catat uang yang kamu pinjamkan ke orang lain. Saldo <b>langsung berkurang</b>. Saat uang kembali, klik badge status <b>Belum Lunas ↔</b> jadi Lunas — saldo otomatis pulih kembali.' },
-  { icon:'💾', title:'Backup Data — Jangan Sampai Hilang!', desc:'Data tersimpan di <b>localStorage browser</b> ini saja. Agar tidak hilang saat ganti browser/device, rutin backup via tab <b>💾 Data</b>: klik Generate → Salin → simpan teks JSON-nya. Import kapan saja untuk memulihkan.' },
-];
-
-let tutCurrent = 0;
-
-function openTutorial() {
-  tutCurrent = 0;
-  renderTutStep();
-  document.getElementById('tutOverlay').classList.add('open');
-}
-
-function closeTutorial() {
-  document.getElementById('tutOverlay').classList.remove('open');
-  localStorage.setItem('keuangan_tutorial_done', '1');
-}
-
-function tutStep(dir) {
-  tutCurrent += dir;
-  if (tutCurrent < 0) tutCurrent = 0;
-  if (tutCurrent >= TUT_STEPS.length) { closeTutorial(); return; }
-  renderTutStep();
-}
-
-function renderTutStep() {
-  const s = TUT_STEPS[tutCurrent];
-  document.getElementById('tutBadge').textContent = `Langkah ${tutCurrent + 1} dari ${TUT_STEPS.length}`;
-  document.getElementById('tutIcon').textContent = s.icon;
-  document.getElementById('tutTitle').textContent = s.title;
-  document.getElementById('tutDesc').innerHTML = s.desc;
-  document.getElementById('tutPrev').style.display = tutCurrent === 0 ? 'none' : 'inline-flex';
-  document.getElementById('tutNext').textContent = tutCurrent === TUT_STEPS.length - 1 ? '✅ Selesai' : 'Lanjut ›';
-
-  // Dots
-  document.getElementById('tutDots').innerHTML = TUT_STEPS.map((_, i) =>
-    `<div class="tut-dot ${i === tutCurrent ? 'active' : ''}"></div>`
-  ).join('');
-}
-
-// ===== INIT =====
-// Fix: pastikan bulan yang tampil sesuai bulan sekarang
-currentDate = new Date();
-document.getElementById('monthLabel').textContent =
-  currentDate.toLocaleDateString('id-ID', {month:'long', year:'numeric'});
-render();
-
-// Tampilkan tutorial jika pertama kali
-if (!localStorage.getItem('keuangan_tutorial_done')) {
-  setTimeout(() => openTutorial(), 600);
-}
-</script>
+    // Tampilkan tutorial jika pertama kali
+    if (!localStorage.getItem('keuangan_tutorial_done')) {
+      setTimeout(() => openTutorial(), 600);
+    }
+  </script>
 </body>
+
 </html>
