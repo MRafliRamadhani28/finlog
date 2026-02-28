@@ -404,6 +404,86 @@
       margin-top: 4px
     }
 
+    /* ACCOUNT BALANCE CARDS */
+    .bal-card.green .bal-accounts {
+      margin-top: 14px;
+      padding-top: 12px;
+      border-top: 1px solid rgba(var(--green-rgb), .15)
+    }
+
+    .bal-acc-grid {
+      display: flex;
+      flex-direction: column;
+      gap: 8px
+    }
+
+    .bal-acc-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      padding: 8px 10px;
+      background: rgba(var(--bg-rgb), .5);
+      border: 1px solid var(--border);
+      border-radius: var(--r2);
+      transition: border-color .2s
+    }
+
+    .bal-acc-item:hover {
+      border-color: var(--border2)
+    }
+
+    .bal-acc-left {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      min-width: 0
+    }
+
+    .bal-acc-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      flex-shrink: 0
+    }
+
+    .bal-acc-name {
+      font-size: .75rem;
+      font-weight: 600;
+      color: var(--text);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis
+    }
+
+    .bal-acc-bank {
+      font-size: .62rem;
+      color: var(--text3);
+      text-transform: uppercase;
+      letter-spacing: .5px
+    }
+
+    .bal-acc-amount {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: .78rem;
+      font-weight: 600;
+      white-space: nowrap
+    }
+
+    .bal-acc-warn {
+      font-size: .6rem;
+      color: var(--red);
+      margin-top: 2px;
+      text-align: right
+    }
+
+    .bal-no-acc {
+      font-size: .72rem;
+      color: var(--text3);
+      font-style: italic;
+      padding: 6px 0
+    }
+
     /* LAYOUT */
     .layout {
       display: flex;
@@ -1830,6 +1910,7 @@
         <div class="bal-label">Saldo Terkini</div>
         <div class="bal-amount" id="balCurrent">Rp 0</div>
         <div class="bal-sub" id="balCurrentSub">Pemasukan − Pengeluaran</div>
+        <div class="bal-accounts" id="balAccounts"></div>
       </div>
       <div class="bal-card red">
         <div class="bal-label">Total Rencana Keluar</div>
@@ -2291,7 +2372,8 @@
   <!-- Modal Expense -->
   <div class="modal-overlay" id="modalExpense">
     <div class="modal">
-      <div class="modal-title">💸 Tambah Pengeluaran</div>
+      <div class="modal-title" id="modalExpenseTitle">💸 Tambah Pengeluaran</div>
+      <input type="hidden" id="exEditId">
       <div class="form-grid">
         <div class="form-group"><label>Tanggal</label><input type="date" id="exDate"></div>
         <div class="form-group"><label>Kategori</label><select id="exCat">
@@ -2657,7 +2739,7 @@
     // ===== MODALS =====
     function openModal(id) {
       if (id === 'modalIncome') document.getElementById('inDate').value = today();
-      if (id === 'modalExpense') { document.getElementById('exDate').value = today(); populateAccountSelect('exAccount'); }
+      if (id === 'modalExpense') { document.getElementById('exEditId').value = ''; document.getElementById('modalExpenseTitle').textContent = '💸 Tambah Pengeluaran'; document.getElementById('exDate').value = today(); document.getElementById('exCat').selectedIndex = 0; populateAccountSelect('exAccount'); }
       if (id === 'modalCash') { document.getElementById('cashDate').value = today(); populateAccountSelect('cashAccount'); }
       if (id === 'modalPiutang') document.getElementById('ptDate').value = today();
       if (id === 'modalBudget') renderBudgetForm();
@@ -2767,10 +2849,63 @@
         const desc = document.getElementById('exDesc').value.trim();
         const amount = parseFloat(document.getElementById('exAmount').value);
         if (!desc || !amount || amount <= 0) { alert('Lengkapi deskripsi dan jumlah!'); return; }
-        data = { id: Date.now(), date: document.getElementById('exDate').value, category: document.getElementById('exCat').value, description: desc, amount, note: document.getElementById('exNote').value, accountId: document.getElementById('exAccount').value || null, fromPlanned: false };
+        const editId = document.getElementById('exEditId').value;
+        const d = loadData();
+        if (editId) {
+          const idx = d.expenses.findIndex(e => e.id === parseInt(editId));
+          if (idx > -1) {
+            const newAccountId = document.getElementById('exAccount').value || null;
+            // Validate balance if account changed or amount increased
+            if (newAccountId) {
+              const oldExp = d.expenses[idx];
+              const isSameAccount = oldExp.accountId == newAccountId;
+              const bal = getAccountBalance(parseInt(newAccountId), d);
+              const addedCost = isSameAccount ? (amount - oldExp.amount) : amount;
+              if (addedCost > 0 && addedCost > bal.effective) {
+                if (!confirm(`⚠️ Perubahan ini melebihi saldo akun (${fmtRp(bal.effective)}). Tetap lanjutkan?`)) return;
+              }
+            }
+            d.expenses[idx].date = document.getElementById('exDate').value;
+            d.expenses[idx].category = document.getElementById('exCat').value;
+            d.expenses[idx].description = desc;
+            d.expenses[idx].amount = amount;
+            d.expenses[idx].note = document.getElementById('exNote').value;
+            d.expenses[idx].accountId = newAccountId ? parseInt(newAccountId) : null;
+          }
+          saveData(d); closeModal('modalExpense'); render(); return;
+        }
+        const accountId = document.getElementById('exAccount').value || null;
+        if (accountId) {
+          const dCheck = loadData();
+          const bal = getAccountBalance(parseInt(accountId), dCheck);
+          if (amount > bal.effective) {
+            if (bal.effective <= 0) {
+              if (!confirm(`⚠️ Saldo akun ini sudah habis (${fmtRp(bal.effective)}). Tetap lanjutkan?`)) return;
+            } else {
+              if (!confirm(`⚠️ Jumlah (${fmtRp(amount)}) melebihi saldo akun (${fmtRp(bal.effective)}). Tetap lanjutkan?`)) return;
+            }
+          }
+        }
+        data = { id: Date.now(), date: document.getElementById('exDate').value, category: document.getElementById('exCat').value, description: desc, amount, note: document.getElementById('exNote').value, accountId: accountId ? parseInt(accountId) : null, fromPlanned: false };
         closeModal('modalExpense');
       }
       const d = loadData(); d.expenses.push(data); saveData(d); render();
+    }
+
+    function editExpense(id) {
+      const d = loadData();
+      const item = d.expenses.find(e => e.id === id);
+      if (!item || item.fromPiutang || item.fromCash) return;
+      document.getElementById('exEditId').value = id;
+      document.getElementById('modalExpenseTitle').textContent = '💸 Edit Pengeluaran';
+      document.getElementById('exDate').value = item.date || today();
+      document.getElementById('exCat').value = item.category;
+      document.getElementById('exDesc').value = item.description;
+      document.getElementById('exAmount').value = item.amount;
+      document.getElementById('exNote').value = item.note || '';
+      populateAccountSelect('exAccount');
+      if (item.accountId) document.getElementById('exAccount').value = item.accountId;
+      document.getElementById('modalExpense').classList.add('open');
     }
 
     // ===== CASH WITHDRAWAL =====
@@ -2781,8 +2916,18 @@
       const d = loadData();
       const id = Date.now();
       const accountId = document.getElementById('cashAccount').value || null;
+      if (accountId) {
+        const bal = getAccountBalance(parseInt(accountId), d);
+        if (amount > bal.effective) {
+          if (bal.effective <= 0) {
+            if (!confirm(`⚠️ Saldo akun ini sudah habis (${fmtRp(bal.effective)}). Tetap tarik tunai?`)) return;
+          } else {
+            if (!confirm(`⚠️ Jumlah tarik (${fmtRp(amount)}) melebihi saldo akun (${fmtRp(bal.effective)}). Tetap lanjutkan?`)) return;
+          }
+        }
+      }
       d.cashWithdrawals = d.cashWithdrawals || [];
-      d.cashWithdrawals.push({ id, date: document.getElementById('cashDate').value, accountId, amount, description: desc, items: [] });
+      d.cashWithdrawals.push({ id, date: document.getElementById('cashDate').value, accountId: accountId ? parseInt(accountId) : null, amount, description: desc, items: [] });
       // Create expense entry
       const accounts = loadAccounts();
       const acc = accounts.find(a => a.id === accountId);
@@ -3162,6 +3307,7 @@
       document.getElementById('balShadow').textContent = (shadowBalance < 0 ? '−' : '') + fmtRp(shadowBalance);
       document.getElementById('balShadow').style.color = shadowBalance < 0 ? 'var(--red)' : 'var(--yellow)';
 
+      renderBalanceAccounts(d);
       renderSalarySplit();
       renderIncomeList(d, cleanIncome);
       renderExpenseList(d);
@@ -3172,6 +3318,47 @@
       renderBudgetProgress(d);
       renderWishlistTab();
       renderSummary(d, salary + totalAdditional, totalExpenses, salary);
+    }
+
+    function getAccountBalance(accountId, d) {
+      const alloc = (d.salaryAllocations || []).find(x => x.accountId === accountId);
+      const allocAmt = alloc ? alloc.amount : 0;
+      const cashOut = (d.cashWithdrawals || []).filter(c => c.accountId == accountId).reduce((s, c) => s + c.amount, 0);
+      const expOut = d.expenses.filter(e => e.accountId == accountId && !e.fromCash).reduce((s, e) => s + e.amount, 0);
+      return { allocAmt, cashOut, expOut, effective: allocAmt - cashOut - expOut };
+    }
+
+    function renderBalanceAccounts(d) {
+      const el = document.getElementById('balAccounts');
+      const accounts = loadAccounts();
+      if (!accounts.length) { el.innerHTML = ''; return; }
+      const hasAnyAlloc = accounts.some(a => {
+        const b = getAccountBalance(a.id, d);
+        return b.allocAmt > 0 || b.cashOut > 0 || b.expOut > 0;
+      });
+      if (!hasAnyAlloc) { el.innerHTML = '<div class="bal-no-acc">Belum ada alokasi ke akun bank</div>'; return; }
+
+      el.innerHTML = `<div style="font-size:.62rem;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:1px;margin-bottom:6px">Saldo per Akun</div>
+        <div class="bal-acc-grid">${accounts.map(a => {
+          const b = getAccountBalance(a.id, d);
+          if (b.allocAmt === 0 && b.cashOut === 0 && b.expOut === 0) return '';
+          const isNeg = b.effective < 0;
+          const color = isNeg ? 'var(--red)' : 'var(--green)';
+          return `<div class="bal-acc-item">
+            <div class="bal-acc-left">
+              <div class="bal-acc-dot" style="background:${a.color}"></div>
+              <div>
+                <div class="bal-acc-name">${a.name}</div>
+                <div class="bal-acc-bank">${a.bank}</div>
+              </div>
+            </div>
+            <div style="text-align:right">
+              <div class="bal-acc-amount" style="color:${color}">${isNeg ? '−' : ''}${fmtRp(b.effective)}</div>
+              ${isNeg ? '<div class="bal-acc-warn">⚠️ Saldo minus</div>' : ''}
+              ${!isNeg && b.effective > 0 && b.effective < b.allocAmt * 0.2 ? '<div class="bal-acc-warn" style="color:var(--yellow)">⚡ Hampir habis</div>' : ''}
+            </div>
+          </div>`;
+        }).filter(Boolean).join('')}</div>`;
     }
 
     function renderIncomeList(d, cleanIncome) {
@@ -3210,7 +3397,7 @@
       </td>
       <td style="font-family:'JetBrains Mono',monospace;color:var(--red);font-weight:600">−${fmtRp(e.amount)}</td>
       <td>${acc ? `<span style="display:inline-flex;align-items:center;gap:4px"><span style="width:8px;height:8px;border-radius:50%;background:${acc.color};flex-shrink:0"></span><span style="font-size:.78rem;color:var(--text3)">${acc.bank}</span></span>` : '-'}</td>
-      <td>${locked ? `<span style="font-size:.7rem;color:var(--text3)">${e.fromPiutang ? 'Via Piutang' : 'Via Tunai'}</span>` : `<button class="btn btn-red btn-sm btn-icon" onclick="deleteExpense(${e.id})">🗑️</button>`}</td>
+      <td>${locked ? `<span style="font-size:.7rem;color:var(--text3)">${e.fromPiutang ? 'Via Piutang' : 'Via Tunai'}</span>` : `<div style="display:flex;gap:4px"><button class="btn btn-ghost btn-sm btn-icon" onclick="editExpense(${e.id})" title="Edit">✏️</button><button class="btn btn-red btn-sm btn-icon" onclick="deleteExpense(${e.id})">🗑️</button></div>`}</td>
     </tr>`;
       }).join('');
       el.innerHTML = `<div class="table-wrap"><table><thead><tr><th>Tanggal</th><th>Kategori</th><th>Deskripsi</th><th>Jumlah</th><th>Akun</th><th></th></tr></thead><tbody>${rows}</tbody></table></div>`;
