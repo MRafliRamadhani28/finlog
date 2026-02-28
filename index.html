@@ -6,868 +6,23 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Catatan Keuangan</title>
   <link
-    href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap"
+    href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap"
     rel="stylesheet">
   <style>
-    :root {
-      --bg: #0a0e1a;
-      --bg2: #111827;
-      --bg3: #1a2235;
-      --card: #141c2e;
-      --card2: #1e2a42;
-      --border: #2a3a5c;
-      --border2: #3a4f78;
-      --text: #e8edf5;
-      --text2: #8fa3c8;
-      --text3: #5a7099;
-      --green: #22d98a;
-      --green2: #16a362;
-      --green-bg: rgba(34, 217, 138, 0.08);
-      --red: #ff5e7a;
-      --red2: #c23358;
-      --red-bg: rgba(255, 94, 122, 0.08);
-      --yellow: #ffc947;
-      --yellow-bg: rgba(255, 201, 71, 0.08);
-      --blue: #4d9fff;
-      --blue-bg: rgba(77, 159, 255, 0.08);
-      --purple: #a78bfa;
-      --gold: #e8c96d;
-      --radius: 12px;
-      --radius2: 8px;
-    }
-
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-    }
-
-    body {
-      font-family: 'Sora', sans-serif;
-      background: var(--bg);
-      color: var(--text);
-      min-height: 100vh;
-    }
-
-    /* SCROLLBAR */
-    ::-webkit-scrollbar {
-      width: 6px;
-      height: 6px;
-    }
-
-    ::-webkit-scrollbar-track {
-      background: var(--bg2);
-    }
-
-    ::-webkit-scrollbar-thumb {
-      background: var(--border2);
-      border-radius: 3px;
-    }
-
-    /* LAYOUT */
-    .app {
-      max-width: 1200px;
-      margin: 0 auto;
-      padding: 24px 16px;
-    }
-
-    /* HEADER */
-    .header {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      margin-bottom: 28px;
-      flex-wrap: wrap;
-      gap: 12px;
-    }
-
-    .header-title {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-    }
-
-    .logo {
-      width: 40px;
-      height: 40px;
-      background: linear-gradient(135deg, var(--gold), #f59e0b);
-      border-radius: 10px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 20px;
-    }
-
-    .header h1 {
-      font-size: 1.5rem;
-      font-weight: 700;
-      color: var(--text);
-      letter-spacing: -0.5px;
-    }
-
-    .header h1 span {
-      color: var(--gold);
-    }
-
-    /* MONTH NAV */
-    .month-nav {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      background: var(--card);
-      border: 1px solid var(--border);
-      border-radius: var(--radius);
-      padding: 6px 10px;
-    }
-
-    .month-nav button {
-      background: none;
-      border: none;
-      color: var(--text2);
-      cursor: pointer;
-      padding: 4px 8px;
-      border-radius: 6px;
-      font-size: 16px;
-      transition: all .2s;
-    }
-
-    .month-nav button:hover {
-      background: var(--card2);
-      color: var(--text);
-    }
-
-    .month-label {
-      font-family: 'JetBrains Mono', monospace;
-      font-size: .9rem;
-      font-weight: 500;
-      color: var(--gold);
-      min-width: 120px;
-      text-align: center;
-    }
-
-    /* BALANCE PANEL */
-    .balance-panel {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-      gap: 16px;
-      margin-bottom: 28px;
-    }
-
-    .bal-card {
-      background: var(--card);
-      border: 1px solid var(--border);
-      border-radius: var(--radius);
-      padding: 20px;
-      position: relative;
-      overflow: hidden;
-    }
-
-    .bal-card::before {
-      content: '';
-      position: absolute;
-      top: 0;
-      left: 0;
-      right: 0;
-      height: 3px;
-    }
-
-    .bal-card.green::before {
-      background: linear-gradient(90deg, var(--green2), var(--green));
-    }
-
-    .bal-card.red::before {
-      background: linear-gradient(90deg, var(--red2), var(--red));
-    }
-
-    .bal-card.yellow::before {
-      background: linear-gradient(90deg, #c47f0a, var(--yellow));
-    }
-
-    .bal-card.blue::before {
-      background: linear-gradient(90deg, #2563eb, var(--blue));
-    }
-
-    .bal-label {
-      font-size: .75rem;
-      font-weight: 500;
-      color: var(--text3);
-      text-transform: uppercase;
-      letter-spacing: 1px;
-      margin-bottom: 8px;
-    }
-
-    .bal-amount {
-      font-family: 'JetBrains Mono', monospace;
-      font-size: 1.4rem;
-      font-weight: 600;
-    }
-
-    .bal-card.green .bal-amount {
-      color: var(--green);
-    }
-
-    .bal-card.red .bal-amount {
-      color: var(--red);
-    }
-
-    .bal-card.yellow .bal-amount {
-      color: var(--yellow);
-    }
-
-    .bal-card.blue .bal-amount {
-      color: var(--blue);
-    }
-
-    .bal-sub {
-      font-size: .72rem;
-      color: var(--text3);
-      margin-top: 4px;
-    }
-
-    /* TABS */
-    .tabs {
-      display: flex;
-      gap: 4px;
-      background: var(--card);
-      border: 1px solid var(--border);
-      border-radius: var(--radius);
-      padding: 5px;
-      margin-bottom: 20px;
-      overflow-x: auto;
-    }
-
-    .tab {
-      flex-shrink: 0;
-      padding: 8px 16px;
-      border-radius: 8px;
-      border: none;
-      background: none;
-      color: var(--text2);
-      font-family: 'Sora', sans-serif;
-      font-size: .85rem;
-      font-weight: 500;
-      cursor: pointer;
-      transition: all .2s;
-      white-space: nowrap;
-    }
-
-    .tab.active {
-      background: var(--card2);
-      color: var(--text);
-      box-shadow: inset 0 0 0 1px var(--border2);
-    }
-
-    .tab:hover:not(.active) {
-      color: var(--text);
-    }
-
-    /* SECTION */
-    .section {
-      display: none;
-    }
-
-    .section.active {
-      display: block;
-    }
-
-    /* CARD */
-    .card {
-      background: var(--card);
-      border: 1px solid var(--border);
-      border-radius: var(--radius);
-      padding: 20px;
-      margin-bottom: 16px;
-    }
-
-    .card-header {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      margin-bottom: 16px;
-    }
-
-    .card-title {
-      font-size: .95rem;
-      font-weight: 600;
-      color: var(--text);
-      display: flex;
-      align-items: center;
-      gap: 8px;
-    }
-
-    .card-title .dot {
-      width: 8px;
-      height: 8px;
-      border-radius: 50%;
-      flex-shrink: 0;
-    }
-
-    .dot-green {
-      background: var(--green);
-    }
-
-    .dot-red {
-      background: var(--red);
-    }
-
-    .dot-yellow {
-      background: var(--yellow);
-    }
-
-    .dot-blue {
-      background: var(--blue);
-    }
-
-    .dot-purple {
-      background: var(--purple);
-    }
-
-    /* FORM */
-    .form-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
-      gap: 10px;
-      margin-bottom: 12px;
-    }
-
-    .form-group {
-      display: flex;
-      flex-direction: column;
-      gap: 5px;
-    }
-
-    .form-group label {
-      font-size: .72rem;
-      font-weight: 500;
-      color: var(--text3);
-      text-transform: uppercase;
-      letter-spacing: .8px;
-    }
-
-    .form-group input,
-    .form-group select,
-    .form-group textarea {
-      background: var(--bg2);
-      border: 1px solid var(--border);
-      border-radius: var(--radius2);
-      color: var(--text);
-      font-family: 'Sora', sans-serif;
-      font-size: .85rem;
-      padding: 9px 12px;
-      transition: border-color .2s;
-      outline: none;
-    }
-
-    .form-group input:focus,
-    .form-group select:focus,
-    .form-group textarea:focus {
-      border-color: var(--blue);
-    }
-
-    .form-group select option {
-      background: var(--bg2);
-    }
-
-    .form-group textarea {
-      resize: vertical;
-      min-height: 60px;
-    }
-
-    /* BUTTONS */
-    .btn {
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      padding: 9px 18px;
-      border-radius: var(--radius2);
-      border: none;
-      font-family: 'Sora', sans-serif;
-      font-size: .85rem;
-      font-weight: 500;
-      cursor: pointer;
-      transition: all .2s;
-    }
-
-    .btn-primary {
-      background: linear-gradient(135deg, #2563eb, var(--blue));
-      color: #fff;
-    }
-
-    .btn-primary:hover {
-      opacity: .85;
-      transform: translateY(-1px);
-    }
-
-    .btn-green {
-      background: var(--green-bg);
-      color: var(--green);
-      border: 1px solid rgba(34, 217, 138, .2);
-    }
-
-    .btn-green:hover {
-      background: rgba(34, 217, 138, .15);
-    }
-
-    .btn-red {
-      background: var(--red-bg);
-      color: var(--red);
-      border: 1px solid rgba(255, 94, 122, .2);
-    }
-
-    .btn-red:hover {
-      background: rgba(255, 94, 122, .15);
-    }
-
-    .btn-ghost {
-      background: none;
-      color: var(--text2);
-      border: 1px solid var(--border);
-    }
-
-    .btn-ghost:hover {
-      border-color: var(--border2);
-      color: var(--text);
-    }
-
-    .btn-sm {
-      padding: 5px 10px;
-      font-size: .78rem;
-    }
-
-    .btn-icon {
-      padding: 6px;
-      border-radius: 6px;
-    }
-
-    /* TABLE */
-    .table-wrap {
-      overflow-x: auto;
-    }
-
-    table {
-      width: 100%;
-      border-collapse: collapse;
-      font-size: .83rem;
-    }
-
-    th {
-      padding: 10px 12px;
-      text-align: left;
-      font-size: .7rem;
-      font-weight: 600;
-      color: var(--text3);
-      text-transform: uppercase;
-      letter-spacing: .8px;
-      border-bottom: 1px solid var(--border);
-    }
-
-    td {
-      padding: 11px 12px;
-      border-bottom: 1px solid rgba(42, 58, 92, .5);
-      vertical-align: middle;
-    }
-
-    tr:last-child td {
-      border-bottom: none;
-    }
-
-    tr:hover td {
-      background: rgba(255, 255, 255, .02);
-    }
-
-    /* BADGES */
-    .badge {
-      display: inline-flex;
-      align-items: center;
-      gap: 4px;
-      padding: 3px 10px;
-      border-radius: 20px;
-      font-size: .72rem;
-      font-weight: 500;
-    }
-
-    .badge-green {
-      background: var(--green-bg);
-      color: var(--green);
-    }
-
-    .badge-red {
-      background: var(--red-bg);
-      color: var(--red);
-    }
-
-    .badge-yellow {
-      background: var(--yellow-bg);
-      color: var(--yellow);
-    }
-
-    .badge-blue {
-      background: var(--blue-bg);
-      color: var(--blue);
-    }
-
-    .badge-purple {
-      background: rgba(167, 139, 250, .1);
-      color: var(--purple);
-    }
-
-    .badge-gray {
-      background: rgba(255, 255, 255, .05);
-      color: var(--text3);
-    }
-
-    /* SALARY INPUT */
-    .salary-input-wrap {
-      display: flex;
-      gap: 10px;
-      align-items: flex-end;
-    }
-
-    .salary-big {
-      font-family: 'JetBrains Mono', monospace;
-      font-size: 2rem;
-      font-weight: 600;
-      color: var(--gold);
-      padding: 8px 0;
-    }
-
-    /* PROGRESS BAR */
-    .progress-wrap {
-      margin-bottom: 12px;
-    }
-
-    .progress-label {
-      display: flex;
-      justify-content: space-between;
-      font-size: .75rem;
-      color: var(--text2);
-      margin-bottom: 5px;
-    }
-
-    .progress-bar {
-      height: 6px;
-      background: var(--bg2);
-      border-radius: 3px;
-      overflow: hidden;
-    }
-
-    .progress-fill {
-      height: 100%;
-      border-radius: 3px;
-      transition: width .5s ease;
-    }
-
-    /* PLANNED LIST */
-    .planned-item {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      padding: 12px;
-      border: 1px solid var(--border);
-      border-radius: var(--radius2);
-      margin-bottom: 8px;
-      transition: all .2s;
-    }
-
-    .planned-item.checked {
-      opacity: .5;
-    }
-
-    .planned-item:hover {
-      border-color: var(--border2);
-    }
-
-    .checkbox {
-      width: 20px;
-      height: 20px;
-      border: 2px solid var(--border2);
-      border-radius: 5px;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      flex-shrink: 0;
-      transition: all .2s;
-    }
-
-    .checkbox.checked {
-      background: var(--green);
-      border-color: var(--green);
-    }
-
-    .checkbox svg {
-      width: 12px;
-      height: 12px;
-      stroke: #fff;
-      fill: none;
-      stroke-width: 2.5;
-    }
-
-    .planned-info {
-      flex: 1;
-    }
-
-    .planned-name {
-      font-size: .85rem;
-      font-weight: 500;
-      color: var(--text);
-    }
-
-    .planned-cat {
-      font-size: .73rem;
-      color: var(--text3);
-      margin-top: 2px;
-    }
-
-    .planned-amount {
-      font-family: 'JetBrains Mono', monospace;
-      font-size: .9rem;
-      font-weight: 600;
-      color: var(--red);
-    }
-
-    /* EMPTY STATE */
-    .empty {
-      text-align: center;
-      padding: 40px 20px;
-      color: var(--text3);
-    }
-
-    .empty-icon {
-      font-size: 2.5rem;
-      margin-bottom: 10px;
-      opacity: .5;
-    }
-
-    .empty p {
-      font-size: .85rem;
-    }
-
-    /* MODAL */
-    .modal-overlay {
-      position: fixed;
-      inset: 0;
-      background: rgba(0, 0, 0, .7);
-      backdrop-filter: blur(4px);
-      z-index: 100;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      padding: 16px;
-      opacity: 0;
-      pointer-events: none;
-      transition: opacity .2s;
-    }
-
-    .modal-overlay.open {
-      opacity: 1;
-      pointer-events: all;
-    }
-
-    .modal {
-      background: var(--card);
-      border: 1px solid var(--border2);
-      border-radius: var(--radius);
-      padding: 24px;
-      width: 100%;
-      max-width: 480px;
-      transform: translateY(20px);
-      transition: transform .2s;
-    }
-
-    .modal-overlay.open .modal {
-      transform: translateY(0);
-    }
-
-    .modal-title {
-      font-size: 1.1rem;
-      font-weight: 600;
-      margin-bottom: 20px;
-      color: var(--text);
-    }
-
-    .modal-actions {
-      display: flex;
-      gap: 8px;
-      justify-content: flex-end;
-      margin-top: 16px;
-    }
-
-    /* DIVIDER */
-    .divider {
-      height: 1px;
-      background: var(--border);
-      margin: 16px 0;
-    }
-
-    /* TOTAL ROW */
-    .total-row {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding: 12px 0;
-    }
-
-    .total-row+.total-row {
-      border-top: 1px solid rgba(42, 58, 92, .5);
-    }
-
-    .total-label {
-      font-size: .82rem;
-      color: var(--text2);
-    }
-
-    .total-val {
-      font-family: 'JetBrains Mono', monospace;
-      font-size: .95rem;
-      font-weight: 600;
-    }
-
-    /* PIUTANG STATUS */
-    .status-toggle {
-      cursor: pointer;
-    }
-
-    /* RESPONSIVE */
-    @media(max-width: 640px) {
-      .balance-panel {
-        grid-template-columns: 1fr 1fr;
-      }
-
-      .bal-amount {
-        font-size: 1.1rem;
-      }
-
-      .tabs {
-        gap: 2px;
-      }
-
-      .tab {
-        padding: 7px 12px;
-        font-size: .8rem;
-      }
-    }
-
-    @media(max-width: 400px) {
-      .balance-panel {
-        grid-template-columns: 1fr;
-      }
-    }
-
-    /* ANIMATIONS */
-    @keyframes fadeIn {
-      from {
-        opacity: 0;
-        transform: translateY(8px);
-      }
-
-      to {
-        opacity: 1;
-        transform: translateY(0);
-      }
-    }
-
-    .section.active {
-      animation: fadeIn .2s ease;
-    }
-
-    /* SALARY SECTION */
-    .salary-section {
-      display: flex;
-      align-items: center;
-      gap: 20px;
-      flex-wrap: wrap;
-    }
-
-    .salary-display {
-      flex: 1;
-      min-width: 200px;
-    }
-
-    .salary-edit {
-      display: flex;
-      gap: 8px;
-      align-items: center;
-      flex: 1;
-      min-width: 200px;
-    }
-
-    .salary-edit input {
-      flex: 1;
-    }
-
-    /* CATEG COLORS */
-    .cat-gaji {
-      color: #e8c96d;
-    }
-
-    .cat-freelance {
-      color: var(--blue);
-    }
-
-    .cat-bonus {
-      color: var(--green);
-    }
-
-    .cat-piutang {
-      color: var(--purple);
-    }
-
-    .cat-other {
-      color: var(--text2);
-    }
-
-    .cat-makanan {
-      color: #fb923c;
-    }
-
-    .cat-transport {
-      color: #60a5fa;
-    }
-
-    .cat-tagihan {
-      color: var(--red);
-    }
-
-    .cat-kesehatan {
-      color: #34d399;
-    }
-
-    .cat-hiburan {
-      color: #c084fc;
-    }
-
-    .cat-belanja {
-      color: #f472b6;
-    }
-
-    /* SUMMARY SECTION */
-    .summary-grid {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 16px;
-    }
-
-    @media(max-width: 600px) {
-      .summary-grid {
-        grid-template-columns: 1fr;
-      }
-    }
-
-    /* TUTORIAL OVERLAY */
+    /* ===== CUSTOM TUTORIAL OVERLAY ===== */
     .tut-overlay {
       position: fixed;
       inset: 0;
       background: rgba(0, 0, 0, .75);
       backdrop-filter: blur(3px);
-      z-index: 200;
+      z-index: 1000;
       display: flex;
       align-items: center;
       justify-content: center;
       padding: 16px;
       opacity: 0;
       pointer-events: none;
-      transition: opacity .3s;
+      transition: opacity .3s ease;
     }
 
     .tut-overlay.open {
@@ -882,12 +37,13 @@
       padding: 28px;
       width: 100%;
       max-width: 520px;
+      overflow: hidden;
       transform: scale(.95);
       transition: transform .3s;
     }
 
     .tut-overlay.open .tut-box {
-      transform: scale(1);
+      transform: translateY(0) scale(1);
     }
 
     .tut-step-badge {
@@ -896,7 +52,7 @@
       gap: 6px;
       background: var(--blue-bg);
       color: var(--blue);
-      border: 1px solid rgba(77, 159, 255, .2);
+      border: 1px solid rgba(var(--blue-rgb), .2);
       border-radius: 20px;
       padding: 4px 12px;
       font-size: .72rem;
@@ -909,6 +65,8 @@
     .tut-icon {
       font-size: 2.5rem;
       margin-bottom: 12px;
+      display: block;
+      filter: drop-shadow(0 4px 12px rgba(var(--blue-rgb), 0.25));
     }
 
     .tut-title {
@@ -929,25 +87,34 @@
       color: var(--text);
     }
 
+    /* Step dots */
     .tut-dots {
       display: flex;
-      gap: 6px;
-      margin-bottom: 20px;
+      gap: 5px;
+      align-items: center;
+      margin-bottom: 32px;
     }
 
     .tut-dot {
-      width: 8px;
-      height: 8px;
-      border-radius: 4px;
-      background: var(--border2);
-      transition: all .3s;
+      height: 5px;
+      border-radius: 3px;
+      background: var(--border);
+      transition: all 0.3s cubic-bezier(.22, .68, 0, 1.2);
+      flex-shrink: 0;
+      width: 5px;
     }
 
     .tut-dot.active {
-      background: var(--blue);
-      width: 24px;
+      background: linear-gradient(90deg, var(--blue2), var(--blue));
+      width: 22px;
+      box-shadow: 0 0 8px rgba(var(--blue-rgb), 0.4);
     }
 
+    .tut-dot.done {
+      background: var(--border2);
+    }
+
+    /* Footer */
     .tut-actions {
       display: flex;
       gap: 8px;
@@ -957,94 +124,1519 @@
 
     .tut-nav {
       display: flex;
-      gap: 8px;
+      gap: 6px;
+      align-items: center;
+    }
+  </style>
+  <style>
+    :root {
+      /* Color Channels (R,G,B) */
+      --bg-rgb: 10, 14, 26;
+      --bg2-rgb: 17, 24, 39;
+      --card-rgb: 20, 28, 46;
+      --card2-rgb: 30, 42, 66;
+      --border-rgb: 42, 58, 92;
+      --border2-rgb: 58, 79, 120;
+      --text-rgb: 232, 237, 245;
+      --text2-rgb: 143, 163, 200;
+      --text3-rgb: 90, 112, 153;
+
+      --cat-makanan-rgb: 251, 146, 60;
+      --cat-transport-rgb: 96, 165, 250;
+      --cat-kesehatan-rgb: 52, 211, 153;
+      --cat-hiburan-rgb: 192, 132, 252;
+      --cat-belanja-rgb: 244, 114, 182;
+      --cat-piutang-rgb: 232, 121, 249;
+
+      --green-rgb: 34, 217, 138;
+      --green2-rgb: 22, 163, 98;
+      --red-rgb: 255, 94, 122;
+      --red2-rgb: 194, 51, 88;
+      --yellow-rgb: 255, 201, 71;
+      --yellow2-rgb: 196, 127, 10;
+      --blue-rgb: 77, 159, 255;
+      --blue2-rgb: 37, 99, 235;
+      --purple-rgb: 167, 139, 250;
+      --gold-rgb: 232, 201, 109;
+      --gold2-rgb: 245, 158, 11;
+
+      /* Base Colors */
+      --bg: rgb(var(--bg-rgb));
+      --bg2: rgb(var(--bg2-rgb));
+      --card: rgb(var(--card-rgb));
+      --card2: rgb(var(--card2-rgb));
+      --border: rgb(var(--border-rgb));
+      --border2: rgb(var(--border2-rgb));
+      --text: rgb(var(--text-rgb));
+      --text2: rgb(var(--text2-rgb));
+      --text3: rgb(var(--text3-rgb));
+      --white: #ffffff;
+
+      --green: rgb(var(--green-rgb));
+      --green2: rgb(var(--green2-rgb));
+      --green-bg: rgba(var(--green-rgb), .08);
+
+      --red: rgb(var(--red-rgb));
+      --red2: rgb(var(--red2-rgb));
+      --red-bg: rgba(var(--red-rgb), .08);
+
+      --yellow: rgb(var(--yellow-rgb));
+      --yellow2: rgb(var(--yellow2-rgb));
+      --yellow-bg: rgba(var(--yellow-rgb), .08);
+
+      --blue: rgb(var(--blue-rgb));
+      --blue2: rgb(var(--blue2-rgb));
+      --blue-bg: rgba(var(--blue-rgb), .08);
+
+      --purple: rgb(var(--purple-rgb));
+      --purple-bg: rgba(var(--purple-rgb), .1);
+
+      --gold: rgb(var(--gold-rgb));
+      --gold2: rgb(var(--gold2-rgb));
+
+      /* Category Colors */
+      --cat-makanan: rgb(var(--cat-makanan-rgb));
+      --cat-transport: rgb(var(--cat-transport-rgb));
+      --cat-tagihan: var(--red);
+      --cat-belanja: rgb(var(--cat-belanja-rgb));
+      --cat-pendidikan: var(--purple);
+      --cat-lainnya: var(--text2);
+      --cat-freelance: var(--blue);
+      --cat-bonus: var(--green);
+      --cat-piutang: rgb(var(--cat-piutang-rgb));
+      --cat-gaji: var(--gold);
+      --cat-tunai: var(--yellow);
+
+      /* Utilities */
+      --r: 12px;
+      --r2: 8px
     }
 
-    .tut-progress {
-      font-size: .75rem;
-      color: var(--text3);
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0
     }
 
-    /* PANDUAN TAB */
-    .guide-section {
-      margin-bottom: 24px;
+    body {
+      font-family: 'Sora', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh
     }
 
-    .guide-step {
+    ::-webkit-scrollbar {
+      width: 6px;
+      height: 6px
+    }
+
+    ::-webkit-scrollbar-track {
+      background: var(--bg2)
+    }
+
+    ::-webkit-scrollbar-thumb {
+      background: var(--border2);
+      border-radius: 3px
+    }
+
+    .app {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 24px 16px
+    }
+
+    /* HEADER */
+    .header {
       display: flex;
-      gap: 16px;
-      padding: 16px;
-      border: 1px solid var(--border);
-      border-radius: var(--radius2);
-      margin-bottom: 10px;
-      transition: border-color .2s;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 28px;
+      flex-wrap: wrap;
+      gap: 12px
     }
 
-    .guide-step:hover {
-      border-color: var(--border2);
+    .header-title {
+      display: flex;
+      align-items: center;
+      gap: 12px
     }
 
-    .guide-num {
-      width: 32px;
-      height: 32px;
-      border-radius: 50%;
-      background: var(--blue-bg);
-      border: 1px solid rgba(77, 159, 255, .25);
-      color: var(--blue);
-      font-weight: 700;
-      font-size: .85rem;
+    .logo {
+      width: 40px;
+      height: 40px;
+      background: linear-gradient(135deg, var(--gold), var(--gold2));
+      border-radius: 10px;
       display: flex;
       align-items: center;
       justify-content: center;
-      flex-shrink: 0;
+      font-size: 20px
     }
 
-    .guide-content h4 {
-      font-size: .9rem;
-      font-weight: 600;
-      color: var(--text);
-      margin-bottom: 5px;
+    .header h1 {
+      font-size: 1.5rem;
+      font-weight: 700;
+      letter-spacing: -.5px
     }
 
-    .guide-content p {
-      font-size: .82rem;
+    .header h1 span {
+      color: var(--gold)
+    }
+
+    .header-right {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+      flex-wrap: wrap
+    }
+
+    /* MONTH NAV */
+    .month-nav {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: var(--r);
+      padding: 6px 10px
+    }
+
+    .month-nav button {
+      background: none;
+      border: none;
       color: var(--text2);
-      line-height: 1.55;
+      cursor: pointer;
+      padding: 4px 8px;
+      border-radius: 6px;
+      font-size: 16px;
+      transition: all .2s
     }
 
-    .guide-tag {
-      display: inline-block;
-      padding: 2px 8px;
-      border-radius: 4px;
-      font-size: .7rem;
-      font-weight: 600;
-      margin-right: 4px;
+    .month-nav button:hover {
+      background: var(--card2);
+      color: var(--text)
     }
 
-    .guide-section-title {
-      font-size: .8rem;
+    .month-label {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: .9rem;
+      font-weight: 500;
+      color: var(--gold);
+      min-width: 120px;
+      text-align: center
+    }
+
+    /* BALANCE PANEL */
+    .balance-panel {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
+      gap: 16px;
+      margin-bottom: 28px
+    }
+
+    .bal-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: var(--r);
+      padding: 20px;
+      position: relative;
+      overflow: hidden
+    }
+
+    .bal-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 3px
+    }
+
+    .bal-card.green::before {
+      background: linear-gradient(90deg, var(--green2), var(--green))
+    }
+
+    .bal-card.red::before {
+      background: linear-gradient(90deg, var(--red2), var(--red))
+    }
+
+    .bal-card.yellow::before {
+      background: linear-gradient(90deg, var(--yellow2), var(--yellow))
+    }
+
+    .bal-card.blue::before {
+      background: linear-gradient(90deg, var(--blue2), var(--blue))
+    }
+
+    .bal-label {
+      font-size: .72rem;
       font-weight: 600;
       color: var(--text3);
       text-transform: uppercase;
       letter-spacing: 1px;
-      margin-bottom: 12px;
-      display: flex;
-      align-items: center;
-      gap: 8px;
+      margin-bottom: 8px
     }
 
-    .guide-section-title::after {
-      content: '';
+    .bal-amount {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 1.35rem;
+      font-weight: 600
+    }
+
+    .bal-card.green .bal-amount {
+      color: var(--green)
+    }
+
+    .bal-card.red .bal-amount {
+      color: var(--red)
+    }
+
+    .bal-card.yellow .bal-amount {
+      color: var(--yellow)
+    }
+
+    .bal-card.blue .bal-amount {
+      color: var(--blue)
+    }
+
+    .bal-sub {
+      font-size: .7rem;
+      color: var(--text3);
+      margin-top: 4px
+    }
+
+    /* LAYOUT */
+    .layout {
+      display: flex;
+      gap: 20px;
+      align-items: flex-start
+    }
+
+    .content {
       flex: 1;
+      min-width: 0
+    }
+
+    /* SIDEBAR */
+    .sidebar {
+      width: 200px;
+      flex-shrink: 0;
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: var(--r);
+      padding: 10px 8px;
+      position: sticky;
+      top: 20px
+    }
+
+    .nav-group {
+      margin-bottom: 2px
+    }
+
+    .nav-group-label {
+      font-size: .6rem;
+      font-weight: 700;
+      color: var(--text3);
+      text-transform: uppercase;
+      letter-spacing: 1.3px;
+      padding: 10px 10px 4px;
+      display: block
+    }
+
+    .nav-item {
+      display: flex;
+      align-items: center;
+      gap: 9px;
+      width: 100%;
+      padding: 8px 10px;
+      border-radius: 7px;
+      border: none;
+      background: none;
+      color: var(--text2);
+      font-family: 'Sora', sans-serif;
+      font-size: .82rem;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all .18s;
+      text-align: left;
+      white-space: nowrap
+    }
+
+    .nav-item:hover {
+      background: rgba(255, 255, 255, .04);
+      color: var(--text)
+    }
+
+    .nav-item.active {
+      background: var(--card2);
+      color: var(--text);
+      box-shadow: inset 0 0 0 1px var(--border2)
+    }
+
+    .nav-item .nav-emoji {
+      font-size: 1rem;
+      width: 18px;
+      text-align: center;
+      flex-shrink: 0
+    }
+
+    .nav-sep {
       height: 1px;
       background: var(--border);
+      margin: 6px 4px
+    }
+
+    /* MOBILE SIDEBAR */
+    .hamburger {
+      display: none;
+      align-items: center;
+      justify-content: center;
+      gap: 5px;
+      padding: 7px 12px;
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      color: var(--text2);
+      font-family: 'Sora', sans-serif;
+      font-size: .8rem;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all .2s
+    }
+
+    .hamburger:hover {
+      border-color: var(--border2);
+      color: var(--text)
+    }
+
+    .hamburger .hb-lines {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      width: 14px
+    }
+
+    .hamburger .hb-lines span {
+      display: block;
+      height: 1.5px;
+      background: currentColor;
+      border-radius: 1px;
+      transition: all .2s
+    }
+
+    .sidebar-backdrop {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, .6);
+      z-index: 150;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity .25s
+    }
+
+    .sidebar-backdrop.open {
+      opacity: 1;
+      pointer-events: all
+    }
+
+    /* ACTIVE PAGE INDICATOR (sidebar) */
+    .nav-item::before {
+      content: '';
+      position: absolute;
+      left: -8px;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 3px;
+      height: 0;
+      background: var(--blue);
+      border-radius: 2px;
+      transition: height .2s
+    }
+
+    .nav-item {
+      position: relative
+    }
+
+    .nav-item.active::before {
+      height: 60%
+    }
+
+    /* SECTION */
+    .section {
+      display: none
+    }
+
+    .section.active {
+      display: block;
+      animation: fadeIn .2s ease
+    }
+
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+        transform: translateY(8px)
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0)
+      }
+    }
+
+    /* RESPONSIVE */
+    @media(max-width:820px) {
+      .layout {
+        display: block
+      }
+
+      .sidebar {
+        position: fixed;
+        top: 0;
+        left: -220px;
+        width: 210px;
+        height: 100vh;
+        border-radius: 0;
+        border-right: 1px solid var(--border2);
+        z-index: 160;
+        overflow-y: auto;
+        padding: 24px 8px 24px;
+        transition: left .28s cubic-bezier(.4, 0, .2, 1)
+      }
+
+      .sidebar.mobile-open {
+        left: 0
+      }
+
+      .hamburger {
+        display: flex
+      }
+    }
+
+    /* CARD */
+    .card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: var(--r);
+      padding: 20px;
+      margin-bottom: 16px
+    }
+
+    .card-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 16px
+    }
+
+    .card-title {
+      font-size: .95rem;
+      font-weight: 600;
+      color: var(--text);
+      display: flex;
+      align-items: center;
+      gap: 8px
+    }
+
+    .dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      flex-shrink: 0
+    }
+
+    .dot-green {
+      background: var(--green)
+    }
+
+    .dot-red {
+      background: var(--red)
+    }
+
+    .dot-yellow {
+      background: var(--yellow)
+    }
+
+    .dot-blue {
+      background: var(--blue)
+    }
+
+    .dot-purple {
+      background: var(--purple)
+    }
+
+    .dot-gold {
+      background: var(--gold)
+    }
+
+    /* FORM */
+    .form-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(155px, 1fr));
+      gap: 10px;
+      margin-bottom: 12px
+    }
+
+    .form-group {
+      display: flex;
+      flex-direction: column;
+      gap: 5px
+    }
+
+    .form-group label {
+      font-size: .7rem;
+      font-weight: 600;
+      color: var(--text3);
+      text-transform: uppercase;
+      letter-spacing: .8px
+    }
+
+    .form-group input,
+    .form-group select,
+    .form-group textarea {
+      background: var(--bg2);
+      border: 1px solid var(--border);
+      border-radius: var(--r2);
+      color: var(--text);
+      font-family: 'Sora', sans-serif;
+      font-size: .85rem;
+      padding: 9px 12px;
+      transition: border-color .2s;
+      outline: none
+    }
+
+    .form-group input:focus,
+    .form-group select:focus,
+    .form-group textarea:focus {
+      border-color: var(--blue)
+    }
+
+    .form-group select option {
+      background: var(--bg2)
+    }
+
+    .form-group textarea {
+      resize: vertical;
+      min-height: 60px
+    }
+
+    /* BUTTONS */
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 9px 18px;
+      border-radius: var(--r2);
+      border: none;
+      font-family: 'Sora', sans-serif;
+      font-size: .85rem;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all .2s
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, var(--blue2), var(--blue));
+      color: var(--white)
+    }
+
+    .btn-primary:hover {
+      opacity: .85;
+      transform: translateY(-1px)
+    }
+
+    .btn-green {
+      background: var(--green-bg);
+      color: var(--green);
+      border: 1px solid rgba(var(--green-rgb), .2)
+    }
+
+    .btn-green:hover {
+      background: rgba(var(--green-rgb), .15)
+    }
+
+    .btn-red {
+      background: var(--red-bg);
+      color: var(--red);
+      border: 1px solid rgba(var(--red-rgb), .2)
+    }
+
+    .btn-red:hover {
+      background: rgba(var(--red-rgb), .15)
+    }
+
+    .btn-yellow {
+      background: var(--yellow-bg);
+      color: var(--yellow);
+      border: 1px solid rgba(var(--yellow-rgb), .2)
+    }
+
+    .btn-ghost {
+      background: none;
+      color: var(--text2);
+      border: 1px solid var(--border)
+    }
+
+    .btn-ghost:hover {
+      border-color: var(--border2);
+      color: var(--text)
+    }
+
+    .btn-sm {
+      padding: 5px 10px;
+      font-size: .78rem
+    }
+
+    .btn-icon {
+      padding: 6px;
+      border-radius: 6px
+    }
+
+    /* TABLE */
+    .table-wrap {
+      overflow-x: auto
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: .83rem
+    }
+
+    th {
+      padding: 10px 12px;
+      text-align: left;
+      font-size: .68rem;
+      font-weight: 600;
+      color: var(--text3);
+      text-transform: uppercase;
+      letter-spacing: .8px;
+      border-bottom: 1px solid var(--border)
+    }
+
+    td {
+      padding: 11px 12px;
+      border-bottom: 1px solid rgba(var(--border-rgb), .5);
+      vertical-align: middle
+    }
+
+    tr:last-child td {
+      border-bottom: none
+    }
+
+    tr:hover td {
+      background: rgba(255, 255, 255, .02)
+    }
+
+    /* BADGES */
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      padding: 3px 9px;
+      border-radius: 20px;
+      font-size: .7rem;
+      font-weight: 600
+    }
+
+    .badge-green {
+      background: var(--green-bg);
+      color: var(--green)
+    }
+
+    .badge-red {
+      background: var(--red-bg);
+      color: var(--red)
+    }
+
+    .badge-yellow {
+      background: var(--yellow-bg);
+      color: var(--yellow)
+    }
+
+    .badge-blue {
+      background: var(--blue-bg);
+      color: var(--blue)
+    }
+
+    .badge-purple {
+      background: var(--purple-bg);
+      color: var(--purple)
+    }
+
+    .badge-gray {
+      background: rgba(var(--text-rgb), .05);
+      color: var(--text3)
+    }
+
+    .badge-gold {
+      background: rgba(var(--gold-rgb), .1);
+      color: var(--gold)
+    }
+
+    /* MODAL */
+    .modal-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, .75);
+      backdrop-filter: blur(4px);
+      z-index: 100;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 16px;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity .2s
+    }
+
+    .modal-overlay.open {
+      opacity: 1;
+      pointer-events: all
+    }
+
+    .modal {
+      background: var(--card);
+      border: 1px solid var(--border2);
+      border-radius: var(--r);
+      padding: 24px;
+      width: 100%;
+      max-width: 520px;
+      transform: translateY(20px);
+      transition: transform .2s;
+      max-height: 90vh;
+      overflow-y: auto
+    }
+
+    .modal-overlay.open .modal {
+      transform: translateY(0)
+    }
+
+    .modal-title {
+      font-size: 1.1rem;
+      font-weight: 700;
+      margin-bottom: 20px;
+      color: var(--text)
+    }
+
+    .modal-actions {
+      display: flex;
+      gap: 8px;
+      justify-content: flex-end;
+      margin-top: 16px
+    }
+
+    /* EMPTY */
+    .empty {
+      text-align: center;
+      padding: 40px 20px;
+      color: var(--text3)
+    }
+
+    .empty-icon {
+      font-size: 2.5rem;
+      margin-bottom: 10px;
+      opacity: .5
+    }
+
+    .empty p {
+      font-size: .85rem
+    }
+
+    /* PROGRESS BAR */
+    .progress-wrap {
+      margin-bottom: 12px
+    }
+
+    .progress-label {
+      display: flex;
+      justify-content: space-between;
+      font-size: .75rem;
+      color: var(--text2);
+      margin-bottom: 5px
+    }
+
+    .progress-bar {
+      height: 6px;
+      background: var(--bg2);
+      border-radius: 3px;
+      overflow: hidden
+    }
+
+    .progress-fill {
+      height: 100%;
+      border-radius: 3px;
+      transition: width .5s ease
+    }
+
+    /* PLANNED */
+    .planned-item {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 12px;
+      border: 1px solid var(--border);
+      border-radius: var(--r2);
+      margin-bottom: 8px;
+      transition: all .2s
+    }
+
+    .planned-item.checked {
+      opacity: .5
+    }
+
+    .planned-item:hover {
+      border-color: var(--border2)
+    }
+
+    .checkbox {
+      width: 20px;
+      height: 20px;
+      border: 2px solid var(--border2);
+      border-radius: 5px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      transition: all .2s
+    }
+
+    .checkbox.checked {
+      background: var(--green);
+      border-color: var(--green)
+    }
+
+    .checkbox svg {
+      width: 12px;
+      height: 12px;
+      stroke: #fff;
+      fill: none;
+      stroke-width: 2.5
+    }
+
+    .planned-info {
+      flex: 1
+    }
+
+    .planned-name {
+      font-size: .85rem;
+      font-weight: 500
+    }
+
+    .planned-cat {
+      font-size: .72rem;
+      color: var(--text3);
+      margin-top: 2px
+    }
+
+    .planned-amount {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: .9rem;
+      font-weight: 600;
+      color: var(--red)
+    }
+
+    /* SALARY BIG */
+    .salary-section {
+      display: flex;
+      align-items: center;
+      gap: 20px;
+      flex-wrap: wrap
+    }
+
+    .salary-display {
+      flex: 1;
+      min-width: 200px
+    }
+
+    .salary-big {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 1.8rem;
+      font-weight: 700;
+      color: var(--gold);
+      padding: 8px 0
+    }
+
+    .salary-edit {
+      display: flex;
+      gap: 8px;
+      align-items: flex-end;
+      flex: 1;
+      min-width: 200px
+    }
+
+    .salary-edit input {
+      flex: 1
+    }
+
+    /* ACCOUNT CARDS */
+    .account-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+      gap: 14px;
+      margin-bottom: 16px
+    }
+
+    .account-card {
+      background: var(--bg2);
+      border: 1px solid var(--border);
+      border-radius: var(--r);
+      padding: 18px;
+      position: relative;
+      overflow: hidden;
+      cursor: pointer;
+      transition: all .2s
+    }
+
+    .account-card:hover {
+      border-color: var(--border2);
+      transform: translateY(-2px)
+    }
+
+    .account-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      bottom: 0;
+      width: 4px;
+      border-radius: 2px 0 0 2px
+    }
+
+    .account-bank {
+      font-size: .7rem;
+      font-weight: 600;
+      color: var(--text3);
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      margin-bottom: 4px
+    }
+
+    .account-name {
+      font-size: 1rem;
+      font-weight: 700;
+      color: var(--text);
+      margin-bottom: 8px
+    }
+
+    .account-num {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: .75rem;
+      color: var(--text3)
+    }
+
+    .account-bal {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 1.1rem;
+      font-weight: 600;
+      margin-top: 10px
+    }
+
+    .account-actions {
+      display: flex;
+      gap: 6px;
+      margin-top: 10px
+    }
+
+    /* SALARY SPLIT */
+    .split-row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 10px;
+      background: var(--bg2);
+      border: 1px solid var(--border);
+      border-radius: var(--r2);
+      margin-bottom: 8px
+    }
+
+    .split-row .acc-color {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      flex-shrink: 0
+    }
+
+    .split-row .acc-label {
+      flex: 1;
+      font-size: .85rem;
+      font-weight: 500;
+      color: var(--text)
+    }
+
+    .split-row input {
+      width: 130px;
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      color: var(--text);
+      font-family: 'JetBrains Mono', monospace;
+      font-size: .85rem;
+      padding: 6px 10px;
+      outline: none;
+      transition: border-color .2s
+    }
+
+    .split-row input:focus {
+      border-color: var(--blue)
+    }
+
+    .split-remaining {
+      font-size: .8rem;
+      padding: 8px 12px;
+      border-radius: var(--r2);
+      margin-top: 4px;
+      display: flex;
+      justify-content: space-between
+    }
+
+    /* CASH WITHDRAWALS */
+    .cash-item {
+      background: var(--bg2);
+      border: 1px solid var(--border);
+      border-radius: var(--r);
+      margin-bottom: 12px;
+      overflow: hidden
+    }
+
+    .cash-header {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 14px 16px;
+      cursor: pointer;
+      transition: background .2s
+    }
+
+    .cash-header:hover {
+      background: rgba(var(--text-rgb), .02)
+    }
+
+    .cash-expand-icon {
+      color: var(--text3);
+      transition: transform .2s;
+      font-size: .8rem;
+      flex-shrink: 0
+    }
+
+    .cash-expanded .cash-expand-icon {
+      transform: rotate(90deg)
+    }
+
+    .cash-body {
+      padding: 0 16px 14px;
+      display: none
+    }
+
+    .cash-expanded .cash-body {
+      display: block
+    }
+
+    .cash-sub-items {
+      margin-top: 10px
+    }
+
+    .cash-sub-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 8px 10px;
+      background: var(--card);
+      border-radius: 6px;
+      margin-bottom: 6px;
+      font-size: .82rem
+    }
+
+    .cash-sub-item .sub-cat {
+      font-size: .7rem;
+      color: var(--text3)
+    }
+
+    .cash-sub-item .sub-amount {
+      font-family: 'JetBrains Mono', monospace;
+      color: var(--red);
+      font-weight: 600;
+      margin-left: auto
+    }
+
+    .cash-untracked {
+      font-size: .75rem;
+      padding: 6px 10px;
+      border-radius: 6px;
+      margin-top: 8px;
+      display: flex;
+      justify-content: space-between
+    }
+
+    /* WISHLIST */
+    .wl-hero {
+      background: linear-gradient(135deg, rgba(var(--purple-rgb), .12) 0%, rgba(var(--blue-rgb), .08) 50%, rgba(var(--gold-rgb), .08) 100%);
+      border: 1px solid rgba(var(--purple-rgb), .2);
+      border-radius: var(--r);
+      padding: 20px 24px;
+      margin-bottom: 20px;
+      position: relative;
+      overflow: hidden
+    }
+
+    .wl-hero::before {
+      content: '✨';
+      position: absolute;
+      right: 20px;
+      top: 50%;
+      transform: translateY(-50%);
+      font-size: 3.5rem;
+      opacity: .15;
+      pointer-events: none
+    }
+
+    .wl-hero-title {
+      font-size: 1.3rem;
+      font-weight: 800;
+      background: linear-gradient(135deg, var(--purple), var(--blue), var(--gold));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      margin-bottom: 6px;
+      letter-spacing: -.4px
+    }
+
+    .wl-hero-sub {
+      font-size: .82rem;
+      color: var(--text3)
+    }
+
+    .wishlist-stats {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+      margin-bottom: 20px
+    }
+
+    .wl-stat {
+      background: var(--bg2);
+      border: 1px solid var(--border);
+      border-radius: var(--r2);
+      padding: 12px 16px;
+      flex: 1;
+      min-width: 120px;
+      transition: border-color .2s
+    }
+
+    .wl-stat:hover {
+      border-color: var(--border2)
+    }
+
+    .wl-stat-label {
+      font-size: .68rem;
+      font-weight: 600;
+      color: var(--text3);
+      text-transform: uppercase;
+      letter-spacing: .8px;
+      margin-bottom: 4px
+    }
+
+    .wl-stat-val {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 1.1rem;
+      font-weight: 700
+    }
+
+    .wishlist-filters {
+      display: flex;
+      gap: 6px;
+      flex-wrap: wrap;
+      margin-bottom: 20px
+    }
+
+    .wl-filter {
+      padding: 6px 16px;
+      border-radius: 20px;
+      border: 1px solid var(--border);
+      background: none;
+      color: var(--text2);
+      font-family: 'Sora', sans-serif;
+      font-size: .8rem;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all .2s
+    }
+
+    .wl-filter.active {
+      background: linear-gradient(135deg, rgba(var(--purple-rgb), .15), rgba(var(--blue-rgb), .1));
+      color: var(--text);
+      border-color: rgba(var(--purple-rgb), .4);
+      box-shadow: 0 0 12px rgba(var(--purple-rgb), .1)
+    }
+
+    .wl-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+      gap: 16px
+    }
+
+    /* WISHLIST CARDS — redesigned */
+    .wl-card {
+      border-radius: 16px;
+      padding: 0;
+      position: relative;
+      overflow: hidden;
+      transition: all .3s cubic-bezier(.22, .68, 0, 1.15);
+      display: flex;
+      flex-direction: column;
+      border: 1px solid var(--border);
+      cursor: default
+    }
+
+    .wl-card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 16px 48px rgba(var(--bg-rgb), .5)
+    }
+
+    .wl-card.achieved {
+      opacity: .55
+    }
+
+    .wl-card.achieved:hover {
+      opacity: .75
+    }
+
+    /* Priority glow on hover */
+    .wl-card[data-priority="segera"]:hover {
+      border-color: rgba(var(--red-rgb), .4);
+      box-shadow: 0 16px 48px rgba(var(--red-rgb), .15)
+    }
+
+    .wl-card[data-priority="impian"]:hover {
+      border-color: rgba(var(--gold-rgb), .4);
+      box-shadow: 0 16px 48px rgba(var(--gold-rgb), .15)
+    }
+
+    .wl-card[data-priority="banget"]:hover {
+      border-color: rgba(var(--purple-rgb), .4);
+      box-shadow: 0 16px 48px rgba(var(--purple-rgb), .15)
+    }
+
+    .wl-card[data-priority="pengen"]:hover {
+      border-color: rgba(var(--blue-rgb), .4);
+      box-shadow: 0 16px 48px rgba(var(--blue-rgb), .15)
+    }
+
+    .wl-card-top {
+      padding: 20px 20px 16px;
+      flex: 1
+    }
+
+    .wl-card-bottom {
+      padding: 12px 16px;
+      border-top: 1px solid rgba(var(--text-rgb), .04);
+      background: rgba(var(--bg-rgb), .15);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px
+    }
+
+    .wl-card-ribbon {
+      height: 3px;
+      width: 100%;
+      display: block;
+      flex-shrink: 0
+    }
+
+    .wl-emoji-wrap {
+      width: 52px;
+      height: 52px;
+      border-radius: 14px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.8rem;
+      margin-bottom: 14px;
+      flex-shrink: 0
+    }
+
+    .wl-name {
+      font-size: 1rem;
+      font-weight: 700;
+      color: var(--text);
+      line-height: 1.35;
+      margin-bottom: 6px
+    }
+
+    .wl-price {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: .95rem;
+      font-weight: 700;
+      margin-bottom: 8px
+    }
+
+    .wl-note {
+      font-size: .77rem;
+      color: var(--text3);
+      line-height: 1.5;
+      margin-bottom: 8px
+    }
+
+    .wl-date {
+      font-size: .69rem;
+      color: var(--text3);
+      display: flex;
+      align-items: center;
+      gap: 4px
+    }
+
+    .wl-status-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      padding: 5px 12px;
+      border-radius: 20px;
+      border: none;
+      font-family: 'Sora', sans-serif;
+      font-size: .75rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all .2s
+    }
+
+    .wl-status-wishlist {
+      background: rgba(var(--text-rgb), .06);
+      color: var(--text2)
+    }
+
+    .wl-status-wishlist:hover {
+      background: rgba(var(--text-rgb), .1);
+      color: var(--text)
+    }
+
+    .wl-status-saving {
+      background: var(--blue-bg);
+      color: var(--blue);
+      border: 1px solid rgba(var(--blue-rgb), .2)
+    }
+
+    .wl-status-saving:hover {
+      background: rgba(var(--blue-rgb), .15)
+    }
+
+    .wl-status-achieved {
+      background: var(--green-bg);
+      color: var(--green);
+      border: 1px solid rgba(var(--green-rgb), .2)
+    }
+
+    .wl-status-achieved:hover {
+      background: rgba(var(--green-rgb), .15)
+    }
+
+    .wl-achieved-stamp {
+      position: absolute;
+      top: 14px;
+      right: 14px;
+      font-size: 1.6rem;
+      filter: drop-shadow(0 2px 6px rgba(var(--green-rgb), .4))
+    }
+
+    .priority-biasa {
+      background: rgba(var(--text-rgb), .04);
+      color: var(--text3);
+      border: 1px solid var(--border)
+    }
+
+    .priority-pengen {
+      background: var(--blue-bg);
+      color: var(--blue);
+      border: 1px solid rgba(var(--blue-rgb), .2)
+    }
+
+    .priority-banget {
+      background: var(--purple-bg);
+      color: var(--purple);
+      border: 1px solid rgba(var(--purple-rgb), .2)
+    }
+
+    .priority-impian {
+      background: rgba(var(--gold-rgb), .1);
+      color: var(--gold);
+      border: 1px solid rgba(var(--gold-rgb), .25)
+    }
+
+    .priority-segera {
+      background: var(--red-bg);
+      color: var(--red);
+      border: 1px solid rgba(var(--red-rgb), .2)
+    }
+
+    /* TOTAL ROW */
+    .total-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 11px 0
+    }
+
+    .total-row+.total-row {
+      border-top: 1px solid rgba(42, 58, 92, .5)
+    }
+
+    .total-label {
+      font-size: .82rem;
+      color: var(--text2)
+    }
+
+    .total-val {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: .95rem;
+      font-weight: 600
+    }
+
+    .divider {
+      height: 1px;
+      background: var(--border);
+      margin: 14px 0
+    }
+
+    /* SUMMARY GRID */
+    .summary-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px
+    }
+
+    @media(max-width:600px) {
+      .summary-grid {
+        grid-template-columns: 1fr
+      }
+    }
+
+    /* STATUS TOGGLE */
+    .status-toggle {
+      cursor: pointer
+    }
+
+    /* ACCOUNT BALANCE */
+    .acc-bal-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 5px 0;
+      font-size: .78rem
+    }
+
+    .acc-bal-row+.acc-bal-row {
+      border-top: 1px solid rgba(var(--text-rgb), .04)
+    }
+
+    .dot-gold {
+      background: var(--gold)
     }
 
     /* EXPORT/IMPORT */
     .export-area {
       background: var(--bg2);
       border: 1px solid var(--border);
-      border-radius: var(--radius2);
+      border-radius: var(--r2);
       padding: 14px;
       font-family: 'JetBrains Mono', monospace;
       font-size: .75rem;
@@ -1054,14 +1646,13 @@
       min-height: 80px;
       max-height: 180px;
       overflow-y: auto;
-      user-select: all;
-      cursor: text;
+      user-select: all
     }
 
     .import-area {
       background: var(--bg2);
       border: 1px solid var(--border);
-      border-radius: var(--radius2);
+      border-radius: var(--r2);
       padding: 14px;
       font-family: 'JetBrains Mono', monospace;
       font-size: .75rem;
@@ -1070,11 +1661,11 @@
       min-height: 100px;
       resize: vertical;
       outline: none;
-      transition: border-color .2s;
+      transition: border-color .2s
     }
 
     .import-area:focus {
-      border-color: var(--blue);
+      border-color: var(--blue)
     }
 
     /* TOAST */
@@ -1090,24 +1681,123 @@
       font-size: .85rem;
       font-weight: 500;
       color: var(--text);
-      z-index: 300;
+      z-index: 9999;
       transition: transform .3s ease;
       box-shadow: 0 8px 32px rgba(0, 0, 0, .4);
-      white-space: nowrap;
+      white-space: nowrap
     }
 
     .toast.show {
-      transform: translateX(-50%) translateY(0);
+      transform: translateX(-50%) translateY(0)
     }
 
     .toast.success {
       border-color: var(--green);
-      color: var(--green);
+      color: var(--green)
     }
 
     .toast.error {
       border-color: var(--red);
-      color: var(--red);
+      color: var(--red)
+    }
+
+    /* GUIDE */
+    .guide-step {
+      display: flex;
+      gap: 16px;
+      padding: 16px;
+      border: 1px solid var(--border);
+      border-radius: var(--r2);
+      margin-bottom: 10px;
+      transition: border-color .2s
+    }
+
+    .guide-step:hover {
+      border-color: var(--border2)
+    }
+
+    .guide-num {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      background: var(--blue-bg);
+      border: 1px solid rgba(77, 159, 255, .25);
+      color: var(--blue);
+      font-weight: 700;
+      font-size: .85rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0
+    }
+
+    .guide-content h4 {
+      font-size: .9rem;
+      font-weight: 600;
+      color: var(--text);
+      margin-bottom: 5px
+    }
+
+    .guide-content p {
+      font-size: .82rem;
+      color: var(--text2);
+      line-height: 1.55
+    }
+
+    .guide-section-title {
+      font-size: .76rem;
+      font-weight: 700;
+      color: var(--text3);
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      margin: 18px 0 10px;
+      display: flex;
+      align-items: center;
+      gap: 8px
+    }
+
+    .guide-section-title::after {
+      content: '';
+      flex: 1;
+      height: 1px;
+      background: var(--border)
+    }
+
+    .guide-tag {
+      display: inline-block;
+      padding: 2px 8px;
+      border-radius: 4px;
+      font-size: .7rem;
+      font-weight: 600;
+      margin-right: 3px
+    }
+
+    @media(max-width:640px) {
+      .balance-panel {
+        grid-template-columns: 1fr 1fr
+      }
+
+      .bal-amount {
+        font-size: 1.1rem
+      }
+
+      .wl-grid {
+        grid-template-columns: 1fr 1fr
+      }
+
+      .account-grid {
+        grid-template-columns: 1fr
+      }
+    }
+
+    @media(max-width:400px) {
+      .balance-panel {
+        grid-template-columns: 1fr
+      }
+
+      .wl-grid {
+        grid-template-columns: 1fr
+      }
     }
   </style>
 </head>
@@ -1120,9 +1810,13 @@
         <div class="logo">💰</div>
         <h1>Catatan <span>Keuangan</span></h1>
       </div>
-      <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap;">
-        <button class="btn btn-ghost btn-sm" onclick="openTutorial()" title="Lihat Tutorial">❓ Panduan</button>
-        <div class="month-nav">
+      <div class="header-right">
+        <button class="hamburger" onclick="toggleSidebar()" id="hamburger" aria-label="Menu">
+          <div class="hb-lines"><span></span><span></span><span></span></div>
+          Menu
+        </button>
+        <button class="btn btn-ghost btn-sm" id="btnTutorial" onclick="startTutorial()">❓ Panduan</button>
+        <div class="month-nav" id="monthNav">
           <button onclick="changeMonth(-1)">&#8249;</button>
           <div class="month-label" id="monthLabel">Jan 2025</div>
           <button onclick="changeMonth(1)">&#8250;</button>
@@ -1131,7 +1825,7 @@
     </div>
 
     <!-- BALANCE PANEL -->
-    <div class="balance-panel">
+    <div class="balance-panel" id="balancePanel">
       <div class="bal-card green">
         <div class="bal-label">Saldo Terkini</div>
         <div class="bal-amount" id="balCurrent">Rp 0</div>
@@ -1154,364 +1848,406 @@
       </div>
     </div>
 
-    <!-- TABS -->
-    <div class="tabs">
-      <button class="tab active" onclick="showTab('pemasukan')">💵 Pemasukan</button>
-      <button class="tab" onclick="showTab('pengeluaran')">💸 Pengeluaran</button>
-      <button class="tab" onclick="showTab('rencana')">📋 Rencana Keluar</button>
-      <button class="tab" onclick="showTab('piutang')">🤝 Piutang</button>
-      <button class="tab" onclick="showTab('budget')">📊 Budget</button>
-      <button class="tab" onclick="showTab('ringkasan')">📈 Ringkasan</button>
-      <button class="tab" onclick="showTab('data')">💾 Data</button>
-      <button class="tab" onclick="showTab('panduan')">📖 Panduan</button>
-    </div>
+    <!-- MAIN LAYOUT -->
+    <div class="layout">
 
-    <!-- TAB: PEMASUKAN -->
-    <div id="tab-pemasukan" class="section active">
-      <!-- Gaji -->
-      <div class="card">
-        <div class="card-header">
-          <div class="card-title"><span class="dot dot-yellow"></span> Gaji Bulanan</div>
-          <button class="btn btn-ghost btn-sm" onclick="toggleSalaryEdit()" id="btnSalaryEdit">✏️ Edit</button>
+      <!-- SIDEBAR -->
+      <nav class="sidebar" id="sidebar">
+        <div class="nav-group">
+          <span class="nav-group-label">Transaksi</span>
+          <button class="nav-item active" onclick="showTab('pemasukan',this)"><span
+              class="nav-emoji">💵</span>Pemasukan</button>
+          <button class="nav-item" onclick="showTab('pengeluaran',this)"><span
+              class="nav-emoji">💸</span>Pengeluaran</button>
+          <button class="nav-item" onclick="showTab('tunai',this)"><span class="nav-emoji">💰</span>Tunai</button>
         </div>
-        <div class="salary-section">
-          <div class="salary-display">
-            <div class="salary-big" id="salaryDisplay">Rp 0</div>
-            <div style="font-size:.78rem;color:var(--text3);margin-top:4px">Gaji pokok bulan ini</div>
-          </div>
-          <div class="salary-edit" id="salaryEditForm" style="display:none">
-            <div class="form-group" style="flex:1">
-              <label>Nominal Gaji</label>
-              <input type="number" id="salaryInput" placeholder="5000000" min="0">
+        <div class="nav-sep"></div>
+        <div class="nav-group">
+          <span class="nav-group-label">Rencanakan</span>
+          <button class="nav-item" onclick="showTab('rencana',this)"><span class="nav-emoji">📋</span>Rencana</button>
+          <button class="nav-item" onclick="showTab('piutang',this)"><span class="nav-emoji">🤝</span>Piutang</button>
+        </div>
+        <div class="nav-sep"></div>
+        <div class="nav-group">
+          <span class="nav-group-label">Kelola</span>
+          <button class="nav-item" onclick="showTab('akun',this)"><span class="nav-emoji">🏦</span>Akun Bank</button>
+          <button class="nav-item" onclick="showTab('budget',this)"><span class="nav-emoji">📊</span>Budget</button>
+          <button class="nav-item" onclick="showTab('wishlist',this)"><span class="nav-emoji">✨</span>Wishlist</button>
+        </div>
+        <div class="nav-sep"></div>
+        <div class="nav-group">
+          <span class="nav-group-label">Lainnya</span>
+          <button class="nav-item" onclick="showTab('ringkasan',this)"><span
+              class="nav-emoji">📈</span>Ringkasan</button>
+          <button class="nav-item" onclick="showTab('data',this)"><span class="nav-emoji">💾</span>Data</button>
+          <button class="nav-item" onclick="showTab('panduan',this)"><span class="nav-emoji">📖</span>Panduan</button>
+        </div>
+      </nav>
+
+      <!-- CONTENT -->
+      <div class="content">
+
+        <!-- TAB: PEMASUKAN -->
+        <div id="tab-pemasukan" class="section active">
+          <div class="card" id="salaryCard">
+            <div class="card-header">
+              <div class="card-title"><span class="dot dot-yellow"></span> Gaji Bulanan</div>
+              <button class="btn btn-ghost btn-sm" onclick="toggleSalaryEdit()" id="btnSalaryEdit">✏️ Edit</button>
             </div>
-            <button class="btn btn-green" onclick="saveSalary()">Simpan</button>
-          </div>
-        </div>
-      </div>
-
-      <!-- Tambahan Income -->
-      <div class="card">
-        <div class="card-header">
-          <div class="card-title"><span class="dot dot-blue"></span> Penghasilan Tambahan</div>
-          <button class="btn btn-primary btn-sm" onclick="openModal('modalIncome')">+ Tambah</button>
-        </div>
-        <div id="incomeList">
-          <div class="empty">
-            <div class="empty-icon">💼</div>
-            <p>Belum ada penghasilan tambahan</p>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- TAB: PENGELUARAN -->
-    <div id="tab-pengeluaran" class="section">
-      <div class="card">
-        <div class="card-header">
-          <div class="card-title"><span class="dot dot-red"></span> Pengeluaran Aktual</div>
-          <button class="btn btn-primary btn-sm" onclick="openModal('modalExpense')">+ Tambah</button>
-        </div>
-        <div id="expenseList">
-          <div class="empty">
-            <div class="empty-icon">🧾</div>
-            <p>Belum ada pengeluaran</p>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- TAB: RENCANA KELUAR -->
-    <div id="tab-rencana" class="section">
-      <div class="card">
-        <div class="card-header">
-          <div class="card-title"><span class="dot dot-yellow"></span> Rencana Pengeluaran</div>
-          <button class="btn btn-primary btn-sm" onclick="openModal('modalPlanned')">+ Tambah</button>
-        </div>
-        <div style="font-size:.78rem;color:var(--text3);margin-bottom:14px;">
-          ✅ Centang item untuk memindahkan ke pengeluaran aktual
-        </div>
-        <div id="plannedList">
-          <div class="empty">
-            <div class="empty-icon">📋</div>
-            <p>Belum ada rencana pengeluaran</p>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- TAB: PIUTANG -->
-    <div id="tab-piutang" class="section">
-      <div class="card">
-        <div class="card-header">
-          <div class="card-title"><span class="dot dot-purple"></span> Piutang (Uang Dipinjam)</div>
-          <button class="btn btn-primary btn-sm" onclick="openModal('modalPiutang')">+ Tambah</button>
-        </div>
-        <div style="font-size:.78rem;color:var(--text3);margin-bottom:14px;">
-          💸 Piutang otomatis <b style="color:var(--red)">mengurangi saldo</b> saat dicatat. Ketika ditandai <b
-            style="color:var(--green)">Lunas</b>, uang kembali dan <b style="color:var(--green)">menambah saldo</b>.
-        </div>
-        <div id="piutangList">
-          <div class="empty">
-            <div class="empty-icon">🤝</div>
-            <p>Belum ada catatan piutang</p>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- TAB: BUDGET -->
-    <div id="tab-budget" class="section">
-      <div class="card">
-        <div class="card-header">
-          <div class="card-title"><span class="dot dot-blue"></span> Budget per Kategori</div>
-          <button class="btn btn-primary btn-sm" onclick="openModal('modalBudget')">⚙️ Atur Budget</button>
-        </div>
-        <div id="budgetList">
-          <div class="empty">
-            <div class="empty-icon">📊</div>
-            <p>Atur batas budget per kategori</p>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- TAB: RINGKASAN -->
-    <div id="tab-ringkasan" class="section">
-      <div class="summary-grid">
-        <div class="card">
-          <div class="card-title" style="margin-bottom:14px"><span class="dot dot-green"></span> Ringkasan Pemasukan
-          </div>
-          <div id="summaryIncome"></div>
-        </div>
-        <div class="card">
-          <div class="card-title" style="margin-bottom:14px"><span class="dot dot-red"></span> Ringkasan Pengeluaran
-          </div>
-          <div id="summaryExpense"></div>
-        </div>
-      </div>
-      <div class="card">
-        <div class="card-title" style="margin-bottom:14px"><span class="dot dot-yellow"></span> Pengeluaran per Kategori
-        </div>
-        <div id="summaryCat"></div>
-      </div>
-    </div>
-
-    <!-- TAB: DATA -->
-    <div id="tab-data" class="section">
-      <!-- EXPORT -->
-      <div class="card">
-        <div class="card-header">
-          <div class="card-title"><span class="dot dot-green"></span> 📤 Export Data</div>
-        </div>
-        <p style="font-size:.82rem;color:var(--text2);margin-bottom:14px;">Salin semua data keuangan kamu (seluruh
-          bulan) ke clipboard. Simpan di tempat aman sebagai backup.</p>
-        <div class="export-area" id="exportArea">Klik tombol di bawah untuk generate data...</div>
-        <div style="display:flex;gap:8px;margin-top:12px;flex-wrap:wrap;">
-          <button class="btn btn-primary" onclick="generateExport()">🔄 Generate Data</button>
-          <button class="btn btn-green" onclick="copyExport()" id="btnCopy" style="display:none">📋 Salin ke
-            Clipboard</button>
-        </div>
-      </div>
-      <!-- IMPORT -->
-      <div class="card">
-        <div class="card-header">
-          <div class="card-title"><span class="dot dot-blue"></span> 📥 Import Data</div>
-        </div>
-        <p style="font-size:.82rem;color:var(--text2);margin-bottom:6px;">Tempel data backup di bawah lalu klik Import.
-          <b style="color:var(--red)">⚠️ Data yang sudah ada akan ditimpa.</b>
-        </p>
-        <textarea class="import-area" id="importArea"
-          placeholder='Paste data JSON di sini... (contoh: {"finance_2025_01": {...}, "finance_2025_02": {...}})'></textarea>
-        <div style="display:flex;gap:8px;margin-top:12px;flex-wrap:wrap;">
-          <button class="btn btn-primary" onclick="doImport()">📥 Import & Terapkan</button>
-          <button class="btn btn-ghost" onclick="document.getElementById('importArea').value=''">🗑️ Bersihkan</button>
-        </div>
-      </div>
-      <!-- DANGER ZONE -->
-      <div class="card" style="border-color:rgba(255,94,122,.2)">
-        <div class="card-header">
-          <div class="card-title"><span class="dot dot-red"></span> ⚠️ Hapus Data</div>
-        </div>
-        <p style="font-size:.82rem;color:var(--text2);margin-bottom:14px;">Hapus data bulan yang sedang aktif, atau
-          hapus semua data seluruh bulan.</p>
-        <div style="display:flex;gap:8px;flex-wrap:wrap;">
-          <button class="btn btn-red btn-sm" onclick="deleteCurrentMonth()">🗑️ Hapus Bulan Ini</button>
-          <button class="btn btn-red btn-sm" onclick="deleteAllData()">💥 Hapus Semua Data</button>
-        </div>
-      </div>
-    </div>
-
-    <!-- TAB: PANDUAN -->
-    <div id="tab-panduan" class="section">
-      <div class="card">
-        <div class="card-title" style="margin-bottom:6px;font-size:1.1rem">📖 Panduan Penggunaan</div>
-        <p style="font-size:.82rem;color:var(--text3);margin-bottom:20px;">Referensi lengkap cara menggunakan Catatan
-          Keuangan.</p>
-        <button class="btn btn-primary btn-sm" onclick="openTutorial()" style="margin-bottom:20px">▶️ Mulai Tutorial
-          Interaktif</button>
-
-        <div class="guide-section">
-          <div class="guide-section-title">💰 Pemasukan</div>
-          <div class="guide-step">
-            <div class="guide-num">1</div>
-            <div class="guide-content">
-              <h4>Set Gaji Bulanan</h4>
-              <p>Masuk ke tab <b>Pemasukan</b> → klik <b>✏️ Edit</b> di kartu Gaji Bulanan → masukkan nominal gaji pokok
-                bulan ini → klik Simpan. Gaji ini menjadi basis pemasukan bulan tersebut.</p>
+            <div class="salary-section">
+              <div class="salary-display">
+                <div class="salary-big" id="salaryDisplay">Rp 0</div>
+                <div style="font-size:.78rem;color:var(--text3);margin-top:4px">Gaji pokok bulan ini</div>
+              </div>
+              <div class="salary-edit" id="salaryEditForm" style="display:none">
+                <div class="form-group" style="flex:1">
+                  <label>Nominal Gaji</label>
+                  <input type="number" id="salaryInput" placeholder="5000000" min="0">
+                </div>
+                <button class="btn btn-green" onclick="saveSalary()">Simpan</button>
+              </div>
+            </div>
+            <!-- Salary Split -->
+            <div id="salarySplitSection" style="margin-top:16px;display:none">
+              <div
+                style="font-size:.78rem;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:.8px;margin-bottom:10px">
+                Alokasi ke Akun Bank</div>
+              <div id="salarySplitRows"></div>
+              <div class="split-remaining" id="splitRemaining"></div>
+              <button class="btn btn-green btn-sm" onclick="saveSalarySplit()" style="margin-top:8px">💾 Simpan
+                Alokasi</button>
             </div>
           </div>
-          <div class="guide-step">
-            <div class="guide-num">2</div>
-            <div class="guide-content">
-              <h4>Tambah Penghasilan Tambahan</h4>
-              <p>Klik tombol <b>+ Tambah</b> di kartu Penghasilan Tambahan. Isi tanggal, kategori (Freelance / Bonus /
-                Lainnya), deskripsi, dan jumlah. Data ini otomatis ditambahkan ke total pemasukan.</p>
+          <div class="card">
+            <div class="card-header">
+              <div class="card-title"><span class="dot dot-blue"></span> Penghasilan Tambahan</div>
+              <button class="btn btn-primary btn-sm" onclick="openModal('modalIncome')">+ Tambah</button>
+            </div>
+            <div id="incomeList">
+              <div class="empty">
+                <div class="empty-icon">💼</div>
+                <p>Belum ada penghasilan tambahan</p>
+              </div>
             </div>
           </div>
         </div>
 
-        <div class="guide-section">
-          <div class="guide-section-title">💸 Pengeluaran</div>
-          <div class="guide-step">
-            <div class="guide-num">3</div>
-            <div class="guide-content">
-              <h4>Catat Pengeluaran Aktual</h4>
-              <p>Tab <b>Pengeluaran</b> → klik <b>+ Tambah</b>. Isi tanggal, kategori, deskripsi, dan jumlah.
-                Pengeluaran langsung mengurangi <b>Saldo Terkini</b>. Entry bertanda "piutang" hanya bisa dihapus
-                melalui tab Piutang.</p>
+        <!-- TAB: PENGELUARAN -->
+        <div id="tab-pengeluaran" class="section">
+          <div class="card" id="expenseCard">
+            <div class="card-header">
+              <div class="card-title"><span class="dot dot-red"></span> Pengeluaran Aktual</div>
+              <button class="btn btn-primary btn-sm" onclick="openModal('modalExpense')">+ Tambah</button>
+            </div>
+            <div id="expenseList">
+              <div class="empty">
+                <div class="empty-icon">🧾</div>
+                <p>Belum ada pengeluaran</p>
+              </div>
             </div>
           </div>
         </div>
 
-        <div class="guide-section">
-          <div class="guide-section-title">📋 Rencana Keluar</div>
-          <div class="guide-step">
-            <div class="guide-num">4</div>
-            <div class="guide-content">
-              <h4>Tambah Rencana Pengeluaran</h4>
-              <p>Tab <b>Rencana Keluar</b> → klik <b>+ Tambah</b>. Masukkan deskripsi, kategori, dan estimasi nominal.
-                Item akan muncul di daftar rencana dan menambah <b>Total Rencana Keluar</b> (merah) serta mengurangi
-                <b>Saldo Bayangan</b>.
-              </p>
+        <!-- TAB: TUNAI -->
+        <div id="tab-tunai" class="section">
+          <div class="card" id="cashCard">
+            <div class="card-header">
+              <div class="card-title"><span class="dot dot-yellow"></span> Penarikan Tunai</div>
+              <button class="btn btn-primary btn-sm" onclick="openModal('modalCash')">+ Tarik Tunai</button>
             </div>
-          </div>
-          <div class="guide-step">
-            <div class="guide-num">5</div>
-            <div class="guide-content">
-              <h4>Ceklis = Pindah ke Pengeluaran</h4>
-              <p>Klik kotak centang ☐ di sebelah kiri item rencana. Saat diceklis ✅, item otomatis pindah ke
-                <b>Pengeluaran Aktual</b> dengan tanggal hari ini. Item yang sudah diceklis <b>tidak bisa diedit atau
-                  dihapus</b> (ikon 🔒).
-              </p>
-            </div>
-          </div>
-          <div class="guide-step">
-            <div class="guide-num">6</div>
-            <div class="guide-content">
-              <h4>Edit Rencana</h4>
-              <p>Selama belum diceklis, kamu bisa klik tombol <b>✏️</b> untuk mengubah deskripsi, kategori, atau nominal
-                estimasi.</p>
+            <div style="font-size:.78rem;color:var(--text3);margin-bottom:14px">💡 Catat penarikan uang dari rekening,
+              lalu detail pengeluaran tunainya di bawah setiap transaksi.</div>
+            <div id="cashList">
+              <div class="empty">
+                <div class="empty-icon">💰</div>
+                <p>Belum ada penarikan tunai</p>
+              </div>
             </div>
           </div>
         </div>
 
-        <div class="guide-section">
-          <div class="guide-section-title">🤝 Piutang</div>
-          <div class="guide-step">
-            <div class="guide-num">7</div>
-            <div class="guide-content">
-              <h4>Catat Piutang (Uang yang Dipinjam Orang)</h4>
-              <p>Tab <b>Piutang</b> → klik <b>+ Tambah</b>. Isi nama peminjam, tanggal, jumlah, dan jatuh tempo. Saat
-                dicatat, saldo <b>langsung berkurang</b> (uang keluar ke peminjam). Entry pengeluaran piutang otomatis
-                muncul di tab Pengeluaran dengan badge ungu.</p>
+        <!-- TAB: RENCANA -->
+        <div id="tab-rencana" class="section">
+          <div class="card" id="plannedCard">
+            <div class="card-header">
+              <div class="card-title"><span class="dot dot-yellow"></span> Rencana Pengeluaran</div>
+              <button class="btn btn-primary btn-sm" onclick="openModal('modalPlanned')">+ Tambah</button>
             </div>
-          </div>
-          <div class="guide-step">
-            <div class="guide-num">8</div>
-            <div class="guide-content">
-              <h4>Tandai Lunas</h4>
-              <p>Klik badge status <b>Belum Lunas ↔</b> untuk toggle menjadi <b>Lunas</b>. Saat lunas, entry pengeluaran
-                piutang dihapus otomatis sehingga <b>saldo kembali ke semula</b>. Piutang <b>tidak menambah</b> panel
-                Pemasukan — saldo hanya pulih.</p>
-            </div>
-          </div>
-          <div class="guide-step">
-            <div class="guide-num">9</div>
-            <div class="guide-content">
-              <h4>Jatuh Tempo</h4>
-              <p>Jika tanggal jatuh tempo sudah lewat dan belum lunas, item akan ditandai ⚠️ dengan teks merah sebagai
-                pengingat.</p>
+            <div style="font-size:.78rem;color:var(--text3);margin-bottom:14px">✅ Centang item untuk memindahkan ke
+              pengeluaran aktual</div>
+            <div id="plannedList">
+              <div class="empty">
+                <div class="empty-icon">📋</div>
+                <p>Belum ada rencana pengeluaran</p>
+              </div>
             </div>
           </div>
         </div>
 
-        <div class="guide-section">
-          <div class="guide-section-title">📊 Budget & Panel Saldo</div>
-          <div class="guide-step">
-            <div class="guide-num">10</div>
-            <div class="guide-content">
-              <h4>Atur Budget per Kategori</h4>
-              <p>Tab <b>Budget</b> → klik <b>⚙️ Atur Budget</b>. Set batas pengeluaran per kategori. Progress bar akan
-                berwarna <span class="guide-tag" style="background:var(--yellow-bg);color:var(--yellow)">kuning</span>
-                saat >75% dan <span class="guide-tag" style="background:var(--red-bg);color:var(--red)">merah</span>
-                saat melebihi batas.</p>
+        <!-- TAB: PIUTANG -->
+        <div id="tab-piutang" class="section">
+          <div class="card" id="piutangCard">
+            <div class="card-header">
+              <div class="card-title"><span class="dot dot-purple"></span> Piutang (Uang Dipinjamkan)</div>
+              <button class="btn btn-primary btn-sm" onclick="openModal('modalPiutang')">+ Tambah</button>
             </div>
-          </div>
-          <div class="guide-step">
-            <div class="guide-num">11</div>
-            <div class="guide-content">
-              <h4>Memahami Panel Saldo</h4>
-              <p><span class="guide-tag" style="background:var(--green-bg);color:var(--green)">Saldo Terkini</span> =
-                Pemasukan − Pengeluaran aktual. <span class="guide-tag"
-                  style="background:var(--red-bg);color:var(--red)">Total Rencana</span> = semua item rencana belum
-                terceklis. <span class="guide-tag" style="background:var(--yellow-bg);color:var(--yellow)">Saldo
-                  Bayangan</span> = Saldo Terkini − Total Rencana (jadi merah jika negatif).</p>
+            <div style="font-size:.78rem;color:var(--text3);margin-bottom:14px">💸 Saldo <b
+                style="color:var(--red)">berkurang</b> saat catat. <b style="color:var(--green)">Pulih</b> saat tandai
+              Lunas.</div>
+            <div id="piutangList">
+              <div class="empty">
+                <div class="empty-icon">🤝</div>
+                <p>Belum ada catatan piutang</p>
+              </div>
             </div>
           </div>
         </div>
 
-        <div class="guide-section">
-          <div class="guide-section-title">💾 Export & Import Data</div>
-          <div class="guide-step">
-            <div class="guide-num">12</div>
-            <div class="guide-content">
-              <h4>Backup Data (Export)</h4>
-              <p>Tab <b>Data</b> → klik <b>Generate Data</b> → klik <b>Salin ke Clipboard</b>. Simpan teks JSON tersebut
-                di notes, email, atau Google Drive sebagai backup.</p>
+        <!-- TAB: AKUN BANK -->
+        <div id="tab-akun" class="section">
+          <div class="card" id="accountCard">
+            <div class="card-header">
+              <div class="card-title"><span class="dot dot-blue"></span> Akun Bank</div>
+              <button class="btn btn-primary btn-sm" onclick="openModal('modalAccount')">+ Tambah Akun</button>
             </div>
-          </div>
-          <div class="guide-step">
-            <div class="guide-num">13</div>
-            <div class="guide-content">
-              <h4>Pulihkan Data (Import)</h4>
-              <p>Tab <b>Data</b> → tempel teks JSON backup di kotak Import → klik <b>Import & Terapkan</b>. Semua data
-                akan dipulihkan ke localStorage browser ini. ⚠️ Data existing akan ditimpa.</p>
-            </div>
-          </div>
-          <div class="guide-step">
-            <div class="guide-num">14</div>
-            <div class="guide-content">
-              <h4>Navigasi Bulan</h4>
-              <p>Gunakan tombol <b>‹</b> dan <b>›</b> di pojok kanan atas untuk melihat data bulan lain. Setiap bulan
-                memiliki data yang terpisah dan independen.</p>
+            <div id="accountList">
+              <div class="empty">
+                <div class="empty-icon">🏦</div>
+                <p>Belum ada akun bank. Tambahkan untuk mengatur alokasi gaji.</p>
+              </div>
             </div>
           </div>
         </div>
-      </div>
-    </div>
-  </div>
 
-  <!-- TOAST -->
-  <div class="toast" id="toast"></div>
+        <!-- TAB: BUDGET -->
+        <div id="tab-budget" class="section">
+          <div class="card" id="budgetCard">
+            <div class="card-header">
+              <div class="card-title"><span class="dot dot-blue"></span> Budget per Kategori</div>
+              <button class="btn btn-primary btn-sm" onclick="openModal('modalBudget')">⚙️ Atur Budget</button>
+            </div>
+            <div id="budgetList">
+              <div class="empty">
+                <div class="empty-icon">📊</div>
+                <p>Atur batas budget per kategori</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- TAB: WISHLIST -->
+        <div id="tab-wishlist" class="section">
+          <div class="card" style="padding:20px">
+            <div class="wl-hero">
+              <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:12px">
+                <div>
+                  <div class="wl-hero-title">✨ Daftar Keinginan</div>
+                  <div class="wl-hero-sub">Catat impianmu, track perkembangannya, rayakan saat tercapai 🎉</div>
+                </div>
+                <button class="btn btn-primary btn-sm" id="btnAddWishlist" onclick="openModal('modalWishlist')"
+                  style="flex-shrink:0">+ Tambah</button>
+              </div>
+            </div>
+            <div class="wishlist-stats" id="wishlistStats"></div>
+            <div class="wishlist-filters" id="wishlistFilters">
+              <button class="wl-filter active" onclick="filterWishlist('all',this)">🌟 Semua</button>
+              <button class="wl-filter" onclick="filterWishlist('wishlist',this)">💭 Wishlist</button>
+              <button class="wl-filter" onclick="filterWishlist('saving',this)">🏦 Ditabung</button>
+              <button class="wl-filter" onclick="filterWishlist('achieved',this)">✅ Tercapai</button>
+              <button class="wl-filter" onclick="filterWishlist('segera',this)">🔴 Segera!</button>
+              <button class="wl-filter" onclick="filterWishlist('impian',this)">⭐ Impian</button>
+            </div>
+            <div class="wl-grid" id="wishlistGrid">
+              <div class="empty">
+                <div class="empty-icon">✨</div>
+                <p>Tambahkan impianmu di sini!</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- TAB: RINGKASAN -->
+        <div id="tab-ringkasan" class="section">
+          <div class="summary-grid">
+            <div class="card">
+              <div class="card-title" style="margin-bottom:14px"><span class="dot dot-green"></span> Ringkasan Pemasukan
+              </div>
+              <div id="summaryIncome"></div>
+            </div>
+            <div class="card">
+              <div class="card-title" style="margin-bottom:14px"><span class="dot dot-red"></span> Ringkasan Pengeluaran
+              </div>
+              <div id="summaryExpense"></div>
+            </div>
+          </div>
+          <div class="card">
+            <div class="card-title" style="margin-bottom:14px"><span class="dot dot-yellow"></span> Pengeluaran per
+              Kategori</div>
+            <div id="summaryCat"></div>
+          </div>
+          <div class="card">
+            <div class="card-title" style="margin-bottom:14px"><span class="dot dot-blue"></span> Alokasi Gaji per Akun
+            </div>
+            <div id="summaryAccounts"></div>
+          </div>
+        </div>
+
+        <!-- TAB: DATA -->
+        <div id="tab-data" class="section">
+          <div class="card">
+            <div class="card-header">
+              <div class="card-title"><span class="dot dot-green"></span> 📤 Export Data</div>
+            </div>
+            <p style="font-size:.82rem;color:var(--text2);margin-bottom:14px">Salin semua data keuangan (seluruh bulan +
+              akun + wishlist) sebagai backup.</p>
+            <div class="export-area" id="exportArea">Klik tombol Generate untuk melihat data...</div>
+            <div style="display:flex;gap:8px;margin-top:12px;flex-wrap:wrap">
+              <button class="btn btn-primary" onclick="generateExport()">🔄 Generate Data</button>
+              <button class="btn btn-green" onclick="copyExport()" id="btnCopy" style="display:none">📋 Salin</button>
+            </div>
+          </div>
+          <div class="card">
+            <div class="card-header">
+              <div class="card-title"><span class="dot dot-blue"></span> 📥 Import Data</div>
+            </div>
+            <p style="font-size:.82rem;color:var(--text2);margin-bottom:6px">Tempel data backup lalu klik Import. <b
+                style="color:var(--red)">⚠️ Data existing akan ditimpa.</b></p>
+            <textarea class="import-area" id="importArea" placeholder='Paste JSON data backup di sini...'></textarea>
+            <div style="display:flex;gap:8px;margin-top:12px">
+              <button class="btn btn-primary" onclick="doImport()">📥 Import & Terapkan</button>
+              <button class="btn btn-ghost" onclick="document.getElementById('importArea').value=''">Bersihkan</button>
+            </div>
+          </div>
+          <div class="card" style="border-color:rgba(255,94,122,.2)">
+            <div class="card-header">
+              <div class="card-title"><span class="dot dot-red"></span> ⚠️ Hapus Data</div>
+            </div>
+            <div style="display:flex;gap:8px;flex-wrap:wrap">
+              <button class="btn btn-red btn-sm" onclick="deleteCurrentMonth()">🗑️ Hapus Bulan Ini</button>
+              <button class="btn btn-red btn-sm" onclick="deleteAllData()">💥 Hapus Semua Data</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- TAB: PANDUAN -->
+        <div id="tab-panduan" class="section">
+          <div class="card">
+            <div
+              style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px;margin-bottom:20px">
+              <div>
+                <div class="card-title" style="font-size:1.1rem;margin-bottom:4px">📖 Panduan Penggunaan</div>
+                <p style="font-size:.82rem;color:var(--text3)">Referensi lengkap fitur aplikasi ini</p>
+              </div>
+              <button class="btn btn-primary btn-sm" onclick="startTutorial()">▶️ Tutorial Interaktif</button>
+            </div>
+            <div class="guide-section-title">💵 Pemasukan & Akun Bank</div>
+            <div class="guide-step">
+              <div class="guide-num">1</div>
+              <div class="guide-content">
+                <h4>Setup Akun Bank</h4>
+                <p>Buka tab <b>🏦 Akun Bank</b> → klik <b>+ Tambah Akun</b>. Isi nama akun, nama bank, nomor rekening
+                  (opsional), dan pilih warna penanda. Akun ini berlaku global (tidak per bulan).</p>
+              </div>
+            </div>
+            <div class="guide-step">
+              <div class="guide-num">2</div>
+              <div class="guide-content">
+                <h4>Set Gaji & Alokasi ke Rekening</h4>
+                <p>Tab <b>💵 Pemasukan</b> → klik <b>✏️ Edit</b> → isi nominal gaji → klik Simpan. Jika sudah ada akun
+                  bank, form alokasi akan muncul otomatis. Isi berapa yang masuk ke setiap rekening.</p>
+              </div>
+            </div>
+            <div class="guide-step">
+              <div class="guide-num">3</div>
+              <div class="guide-content">
+                <h4>Penghasilan Tambahan</h4>
+                <p>Klik <b>+ Tambah</b> di kartu Penghasilan Tambahan. Isi tanggal, kategori (Freelance / Bonus /
+                  Lainnya), deskripsi, dan jumlah.</p>
+              </div>
+            </div>
+            <div class="guide-section-title">💰 Tunai & Pengeluaran</div>
+            <div class="guide-step">
+              <div class="guide-num">4</div>
+              <div class="guide-content">
+                <h4>Catat Penarikan Tunai</h4>
+                <p>Tab <b>💰 Tunai</b> → <b>+ Tarik Tunai</b>. Pilih dari akun mana, isi jumlah penarikan, dan
+                  deskripsi. Penarikan ini mengurangi saldo. Klik ▶ di item untuk expand dan tambah detail pengeluaran
+                  tunainya.</p>
+              </div>
+            </div>
+            <div class="guide-step">
+              <div class="guide-num">5</div>
+              <div class="guide-content">
+                <h4>Detail Pengeluaran Tunai</h4>
+                <p>Setelah tarik tunai, expand item → klik <b>+ Tambah Detail</b>. Isi untuk apa uang tunai itu
+                  digunakan (makan, transport, dll). Jumlah yang belum terjelaskan ditampilkan sebagai "Belum tercatat".
+                </p>
+              </div>
+            </div>
+            <div class="guide-step">
+              <div class="guide-num">6</div>
+              <div class="guide-content">
+                <h4>Pengeluaran Non-Tunai</h4>
+                <p>Tab <b>💸 Pengeluaran</b> → <b>+ Tambah</b> untuk pengeluaran langsung (transfer, kartu debit/kredit,
+                  dll). Pilih kategori, isi deskripsi, jumlah, dan rekening sumber.</p>
+              </div>
+            </div>
+            <div class="guide-section-title">📋 Rencana, Piutang & Fitur Lain</div>
+            <div class="guide-step">
+              <div class="guide-num">7</div>
+              <div class="guide-content">
+                <h4>Rencana Pengeluaran</h4>
+                <p>Tab <b>📋 Rencana</b> → tambahkan pengeluaran yang belum terjadi. Totalnya ditampilkan merah di panel
+                  atas. Centang ☐ item saat sudah dibayar → otomatis masuk Pengeluaran Aktual. Item terceklis 🔒 tidak
+                  bisa diedit/hapus.</p>
+              </div>
+            </div>
+            <div class="guide-step">
+              <div class="guide-num">8</div>
+              <div class="guide-content">
+                <h4>Piutang</h4>
+                <p>Tab <b>🤝 Piutang</b> → catat uang yang dipinjamkan. Saldo langsung berkurang. Klik badge <b>Belum
+                    Lunas ↔</b> untuk tandai lunas → saldo pulih. Entry piutang di tab Pengeluaran hanya bisa dihapus
+                  via tab Piutang.</p>
+              </div>
+            </div>
+            <div class="guide-step">
+              <div class="guide-num">9</div>
+              <div class="guide-content">
+                <h4>Wishlist</h4>
+                <p>Tab <b>✨ Wishlist</b> → catat impian belanja. Set prioritas (Biasa/Pengen/Banget/Impian/Segera),
+                  harga target, dan emoji. Wishlist bersifat global — tidak bergantung pada bulan. Update status dari
+                  Wishlist → Ditabung → Tercapai ✅.</p>
+              </div>
+            </div>
+            <div class="guide-step">
+              <div class="guide-num">10</div>
+              <div class="guide-content">
+                <h4>Export & Import Data</h4>
+                <p>Tab <b>💾 Data</b> → Generate Data → Salin untuk backup. Untuk restore: paste JSON → Import. Data
+                  tersimpan di localStorage browser — selalu backup secara rutin!</p>
+              </div>
+            </div>
+          </div>
+        </div><!-- /tab-panduan -->
+
+      </div><!-- /content -->
+    </div><!-- /layout -->
+  </div><!-- /app -->
+
+  <!-- SIDEBAR BACKDROP (mobile) -->
+  <div class="sidebar-backdrop" id="sidebarBackdrop" onclick="toggleSidebar()"></div>
 
   <!-- TUTORIAL OVERLAY -->
   <div class="tut-overlay" id="tutOverlay">
     <div class="tut-box">
-      <div class="tut-step-badge" id="tutBadge">Langkah 1 dari 7</div>
-      <div class="tut-icon" id="tutIcon">👋</div>
-      <div class="tut-title" id="tutTitle">Selamat Datang!</div>
-      <div class="tut-desc" id="tutDesc">Tutorial singkat cara menggunakan aplikasi ini.</div>
-      <div class="tut-dots" id="tutDots"></div>
+      <div class="tut-body">
+        <div class="tut-step-badge" id="tutBadge">Langkah 1 dari 9</div>
+        <div class="tut-icon" id="tutIcon">👋</div>
+        <div class="tut-title" id="tutTitle">Selamat Datang!</div>
+        <div class="tut-desc" id="tutDesc">Tutorial singkat cara menggunakan aplikasi ini.</div>
+        <div class="tut-dots" id="tutDots"></div>
+      </div>
       <div class="tut-actions">
         <button class="btn btn-ghost btn-sm" onclick="closeTutorial()">Lewati</button>
         <div class="tut-nav">
@@ -1522,45 +2258,33 @@
     </div>
   </div>
 
-  <!-- MODALS -->
+  <!-- TOAST -->
+  <div class="toast" id="toast"></div>
+
+  <!-- ===== MODALS ===== -->
   <!-- Modal Income -->
   <div class="modal-overlay" id="modalIncome">
     <div class="modal">
       <div class="modal-title">💵 Tambah Penghasilan Tambahan</div>
       <div class="form-grid">
-        <div class="form-group">
-          <label>Tanggal</label>
-          <input type="date" id="inDate">
-        </div>
-        <div class="form-group">
-          <label>Kategori</label>
-          <select id="inCat">
+        <div class="form-group"><label>Tanggal</label><input type="date" id="inDate"></div>
+        <div class="form-group"><label>Kategori</label><select id="inCat">
             <option value="Freelance">Freelance</option>
             <option value="Bonus">Bonus</option>
             <option value="Lainnya">Lainnya</option>
-          </select>
-        </div>
+          </select></div>
       </div>
       <div class="form-grid">
-        <div class="form-group" style="grid-column:1/-1">
-          <label>Deskripsi</label>
-          <input type="text" id="inDesc" placeholder="Contoh: Proyek desain website">
-        </div>
+        <div class="form-group" style="grid-column:1/-1"><label>Deskripsi</label><input type="text" id="inDesc"
+            placeholder="Contoh: Proyek desain website"></div>
       </div>
       <div class="form-grid">
-        <div class="form-group">
-          <label>Jumlah (Rp)</label>
-          <input type="number" id="inAmount" placeholder="500000" min="0">
-        </div>
-        <div class="form-group">
-          <label>Catatan (opsional)</label>
-          <input type="text" id="inNote" placeholder="Catatan tambahan">
-        </div>
+        <div class="form-group"><label>Jumlah (Rp)</label><input type="number" id="inAmount" placeholder="500000"
+            min="0"></div>
+        <div class="form-group"><label>Catatan</label><input type="text" id="inNote" placeholder="Opsional"></div>
       </div>
-      <div class="modal-actions">
-        <button class="btn btn-ghost" onclick="closeModal('modalIncome')">Batal</button>
-        <button class="btn btn-primary" onclick="addIncome()">Simpan</button>
-      </div>
+      <div class="modal-actions"><button class="btn btn-ghost" onclick="closeModal('modalIncome')">Batal</button><button
+          class="btn btn-primary" onclick="addIncome()">Simpan</button></div>
     </div>
   </div>
 
@@ -1569,44 +2293,86 @@
     <div class="modal">
       <div class="modal-title">💸 Tambah Pengeluaran</div>
       <div class="form-grid">
-        <div class="form-group">
-          <label>Tanggal</label>
-          <input type="date" id="exDate">
-        </div>
-        <div class="form-group">
-          <label>Kategori</label>
-          <select id="exCat">
-            <option value="Makanan">Makanan & Minuman</option>
-            <option value="Transport">Transport</option>
-            <option value="Tagihan">Tagihan & Utilitas</option>
-            <option value="Kesehatan">Kesehatan</option>
-            <option value="Hiburan">Hiburan</option>
-            <option value="Belanja">Belanja</option>
-            <option value="Pendidikan">Pendidikan</option>
-            <option value="Lainnya">Lainnya</option>
-          </select>
-        </div>
+        <div class="form-group"><label>Tanggal</label><input type="date" id="exDate"></div>
+        <div class="form-group"><label>Kategori</label><select id="exCat">
+            <option>Makanan</option>
+            <option>Transport</option>
+            <option>Tagihan</option>
+            <option>Kesehatan</option>
+            <option>Hiburan</option>
+            <option>Belanja</option>
+            <option>Pendidikan</option>
+            <option>Lainnya</option>
+          </select></div>
       </div>
       <div class="form-grid">
-        <div class="form-group" style="grid-column:1/-1">
-          <label>Deskripsi</label>
-          <input type="text" id="exDesc" placeholder="Contoh: Makan siang kantor">
-        </div>
+        <div class="form-group" style="grid-column:1/-1"><label>Deskripsi</label><input type="text" id="exDesc"
+            placeholder="Contoh: Makan siang"></div>
       </div>
       <div class="form-grid">
-        <div class="form-group">
-          <label>Jumlah (Rp)</label>
-          <input type="number" id="exAmount" placeholder="50000" min="0">
-        </div>
-        <div class="form-group">
-          <label>Catatan (opsional)</label>
-          <input type="text" id="exNote" placeholder="Catatan tambahan">
-        </div>
+        <div class="form-group"><label>Jumlah (Rp)</label><input type="number" id="exAmount" placeholder="50000"
+            min="0"></div>
+        <div class="form-group"><label>Dari Akun</label><select id="exAccount">
+            <option value="">— Tidak dispesifikasi —</option>
+          </select></div>
       </div>
-      <div class="modal-actions">
-        <button class="btn btn-ghost" onclick="closeModal('modalExpense')">Batal</button>
-        <button class="btn btn-primary" onclick="addExpense()">Simpan</button>
+      <div class="form-grid">
+        <div class="form-group" style="grid-column:1/-1"><label>Catatan</label><input type="text" id="exNote"
+            placeholder="Opsional"></div>
       </div>
+      <div class="modal-actions"><button class="btn btn-ghost"
+          onclick="closeModal('modalExpense')">Batal</button><button class="btn btn-primary"
+          onclick="addExpense()">Simpan</button></div>
+    </div>
+  </div>
+
+  <!-- Modal Cash Withdrawal -->
+  <div class="modal-overlay" id="modalCash">
+    <div class="modal">
+      <div class="modal-title">💰 Catat Penarikan Tunai</div>
+      <div class="form-grid">
+        <div class="form-group"><label>Tanggal</label><input type="date" id="cashDate"></div>
+        <div class="form-group"><label>Dari Akun</label><select id="cashAccount">
+            <option value="">— Pilih Akun —</option>
+          </select></div>
+      </div>
+      <div class="form-grid">
+        <div class="form-group"><label>Jumlah Tarik (Rp)</label><input type="number" id="cashAmount"
+            placeholder="500000" min="0"></div>
+        <div class="form-group"><label>Deskripsi</label><input type="text" id="cashDesc"
+            placeholder="Contoh: Keperluan mingguan"></div>
+      </div>
+      <div class="modal-actions"><button class="btn btn-ghost" onclick="closeModal('modalCash')">Batal</button><button
+          class="btn btn-primary" onclick="addCashWithdrawal()">Catat</button></div>
+    </div>
+  </div>
+
+  <!-- Modal Cash Detail Item -->
+  <div class="modal-overlay" id="modalCashItem">
+    <div class="modal">
+      <div class="modal-title">🧾 Tambah Detail Penggunaan Tunai</div>
+      <input type="hidden" id="cashItemParentId">
+      <div class="form-grid">
+        <div class="form-group" style="grid-column:1/-1"><label>Digunakan untuk</label><input type="text"
+            id="cashItemDesc" placeholder="Contoh: Makan siang warung"></div>
+      </div>
+      <div class="form-grid">
+        <div class="form-group"><label>Kategori</label><select id="cashItemCat">
+            <option>Makanan</option>
+            <option>Transport</option>
+            <option>Tagihan</option>
+            <option>Kesehatan</option>
+            <option>Hiburan</option>
+            <option>Belanja</option>
+            <option>Pendidikan</option>
+            <option>Lainnya</option>
+          </select></div>
+        <div class="form-group"><label>Jumlah (Rp)</label><input type="number" id="cashItemAmount" placeholder="50000"
+            min="0"></div>
+      </div>
+      <div class="modal-actions"><button class="btn btn-ghost"
+          onclick="closeModal('modalCashItem')">Batal</button><button class="btn btn-primary"
+          onclick="addCashItem()">Tambah</button></div>
     </div>
   </div>
 
@@ -1615,84 +2381,26 @@
     <div class="modal">
       <div class="modal-title">📋 Tambah Rencana Pengeluaran</div>
       <div class="form-grid">
-        <div class="form-group" style="grid-column:1/-1">
-          <label>Deskripsi</label>
-          <input type="text" id="plDesc" placeholder="Contoh: Bayar listrik">
-        </div>
+        <div class="form-group" style="grid-column:1/-1"><label>Deskripsi</label><input type="text" id="plDesc"
+            placeholder="Contoh: Bayar listrik"></div>
       </div>
       <div class="form-grid">
-        <div class="form-group">
-          <label>Kategori</label>
-          <select id="plCat">
-            <option value="Makanan">Makanan & Minuman</option>
-            <option value="Transport">Transport</option>
-            <option value="Tagihan">Tagihan & Utilitas</option>
-            <option value="Kesehatan">Kesehatan</option>
-            <option value="Hiburan">Hiburan</option>
-            <option value="Belanja">Belanja</option>
-            <option value="Pendidikan">Pendidikan</option>
-            <option value="Lainnya">Lainnya</option>
-          </select>
-        </div>
-        <div class="form-group">
-          <label>Estimasi Jumlah (Rp)</label>
-          <input type="number" id="plAmount" placeholder="100000" min="0">
-        </div>
+        <div class="form-group"><label>Kategori</label><select id="plCat">
+            <option>Makanan</option>
+            <option>Transport</option>
+            <option>Tagihan</option>
+            <option>Kesehatan</option>
+            <option>Hiburan</option>
+            <option>Belanja</option>
+            <option>Pendidikan</option>
+            <option>Lainnya</option>
+          </select></div>
+        <div class="form-group"><label>Estimasi (Rp)</label><input type="number" id="plAmount" placeholder="100000"
+            min="0"></div>
       </div>
-      <div class="modal-actions">
-        <button class="btn btn-ghost" onclick="closeModal('modalPlanned')">Batal</button>
-        <button class="btn btn-primary" onclick="addPlanned()">Simpan</button>
-      </div>
-    </div>
-  </div>
-
-  <!-- Modal Piutang -->
-  <div class="modal-overlay" id="modalPiutang">
-    <div class="modal">
-      <div class="modal-title">🤝 Tambah Piutang</div>
-      <div class="form-grid">
-        <div class="form-group">
-          <label>Nama Peminjam</label>
-          <input type="text" id="ptName" placeholder="Nama orang">
-        </div>
-        <div class="form-group">
-          <label>Tanggal Pinjam</label>
-          <input type="date" id="ptDate">
-        </div>
-      </div>
-      <div class="form-grid">
-        <div class="form-group">
-          <label>Jumlah (Rp)</label>
-          <input type="number" id="ptAmount" placeholder="500000" min="0">
-        </div>
-        <div class="form-group">
-          <label>Jatuh Tempo</label>
-          <input type="date" id="ptDue">
-        </div>
-      </div>
-      <div class="form-grid">
-        <div class="form-group" style="grid-column:1/-1">
-          <label>Catatan (opsional)</label>
-          <input type="text" id="ptNote" placeholder="Keperluan pinjaman">
-        </div>
-      </div>
-      <div class="modal-actions">
-        <button class="btn btn-ghost" onclick="closeModal('modalPiutang')">Batal</button>
-        <button class="btn btn-primary" onclick="addPiutang()">Simpan</button>
-      </div>
-    </div>
-  </div>
-
-  <!-- Modal Budget -->
-  <div class="modal-overlay" id="modalBudget">
-    <div class="modal">
-      <div class="modal-title">📊 Atur Budget per Kategori</div>
-      <div style="font-size:.8rem;color:var(--text3);margin-bottom:14px;">Kosongkan untuk tidak ada batas budget</div>
-      <div id="budgetForm"></div>
-      <div class="modal-actions">
-        <button class="btn btn-ghost" onclick="closeModal('modalBudget')">Batal</button>
-        <button class="btn btn-primary" onclick="saveBudgets()">Simpan</button>
-      </div>
+      <div class="modal-actions"><button class="btn btn-ghost"
+          onclick="closeModal('modalPlanned')">Batal</button><button class="btn btn-primary"
+          onclick="addPlanned()">Simpan</button></div>
     </div>
   </div>
 
@@ -1702,46 +2410,147 @@
       <div class="modal-title">✏️ Edit Rencana Pengeluaran</div>
       <input type="hidden" id="editPlannedId">
       <div class="form-grid">
-        <div class="form-group" style="grid-column:1/-1">
-          <label>Deskripsi</label>
-          <input type="text" id="editPlDesc" placeholder="Contoh: Bayar listrik">
+        <div class="form-group" style="grid-column:1/-1"><label>Deskripsi</label><input type="text" id="editPlDesc">
         </div>
       </div>
       <div class="form-grid">
-        <div class="form-group">
-          <label>Kategori</label>
-          <select id="editPlCat">
-            <option value="Makanan">Makanan & Minuman</option>
-            <option value="Transport">Transport</option>
-            <option value="Tagihan">Tagihan & Utilitas</option>
-            <option value="Kesehatan">Kesehatan</option>
-            <option value="Hiburan">Hiburan</option>
-            <option value="Belanja">Belanja</option>
-            <option value="Pendidikan">Pendidikan</option>
-            <option value="Lainnya">Lainnya</option>
-          </select>
-        </div>
-        <div class="form-group">
-          <label>Estimasi Jumlah (Rp)</label>
-          <input type="number" id="editPlAmount" placeholder="100000" min="0">
-        </div>
+        <div class="form-group"><label>Kategori</label><select id="editPlCat">
+            <option>Makanan</option>
+            <option>Transport</option>
+            <option>Tagihan</option>
+            <option>Kesehatan</option>
+            <option>Hiburan</option>
+            <option>Belanja</option>
+            <option>Pendidikan</option>
+            <option>Lainnya</option>
+          </select></div>
+        <div class="form-group"><label>Estimasi (Rp)</label><input type="number" id="editPlAmount" placeholder="100000"
+            min="0"></div>
       </div>
-      <div class="modal-actions">
-        <button class="btn btn-ghost" onclick="closeModal('modalEditPlanned')">Batal</button>
-        <button class="btn btn-primary" onclick="saveEditPlanned()">Simpan Perubahan</button>
-      </div>
+      <div class="modal-actions"><button class="btn btn-ghost"
+          onclick="closeModal('modalEditPlanned')">Batal</button><button class="btn btn-primary"
+          onclick="saveEditPlanned()">Simpan</button></div>
     </div>
   </div>
 
-  <!-- Modal Konfirmasi Hapus -->
+  <!-- Modal Piutang -->
+  <div class="modal-overlay" id="modalPiutang">
+    <div class="modal">
+      <div class="modal-title">🤝 Tambah Piutang</div>
+      <div class="form-grid">
+        <div class="form-group"><label>Nama Peminjam</label><input type="text" id="ptName" placeholder="Nama orang">
+        </div>
+        <div class="form-group"><label>Tanggal</label><input type="date" id="ptDate"></div>
+      </div>
+      <div class="form-grid">
+        <div class="form-group"><label>Jumlah (Rp)</label><input type="number" id="ptAmount" placeholder="500000"
+            min="0"></div>
+        <div class="form-group"><label>Jatuh Tempo</label><input type="date" id="ptDue"></div>
+      </div>
+      <div class="form-grid">
+        <div class="form-group" style="grid-column:1/-1"><label>Catatan</label><input type="text" id="ptNote"
+            placeholder="Keperluan pinjaman"></div>
+      </div>
+      <div class="modal-actions"><button class="btn btn-ghost"
+          onclick="closeModal('modalPiutang')">Batal</button><button class="btn btn-primary"
+          onclick="addPiutang()">Simpan</button></div>
+    </div>
+  </div>
+
+  <!-- Modal Account -->
+  <div class="modal-overlay" id="modalAccount">
+    <div class="modal">
+      <div class="modal-title">🏦 Tambah / Edit Akun Bank</div>
+      <input type="hidden" id="accEditId">
+      <div class="form-grid">
+        <div class="form-group"><label>Nama Akun</label><input type="text" id="accName"
+            placeholder="Contoh: Tabungan Utama"></div>
+        <div class="form-group"><label>Nama Bank</label><input type="text" id="accBank"
+            placeholder="Contoh: BCA, BRI, Mandiri"></div>
+      </div>
+      <div class="form-grid">
+        <div class="form-group"><label>No. Rekening (opsional)</label><input type="text" id="accNumber"
+            placeholder="xxxx-xxxx-xxxx"></div>
+        <div class="form-group"><label>Warna Penanda</label>
+          <select id="accColor">
+            <option value="#4d9fff">🔵 Biru</option>
+            <option value="#22d98a">🟢 Hijau</option>
+            <option value="#a78bfa">🟣 Ungu</option>
+            <option value="#e8c96d">🟡 Kuning</option>
+            <option value="#ff5e7a">🔴 Merah</option>
+            <option value="#fb923c">🟠 Oranye</option>
+            <option value="#f472b6">🩷 Pink</option>
+            <option value="#34d399">🩵 Teal</option>
+          </select>
+        </div>
+      </div>
+      <div class="modal-actions"><button class="btn btn-ghost"
+          onclick="closeModal('modalAccount')">Batal</button><button class="btn btn-primary"
+          onclick="saveAccount()">Simpan</button></div>
+    </div>
+  </div>
+
+  <!-- Modal Budget -->
+  <div class="modal-overlay" id="modalBudget">
+    <div class="modal">
+      <div class="modal-title">📊 Atur Budget per Kategori</div>
+      <div style="font-size:.8rem;color:var(--text3);margin-bottom:14px">Kosongkan untuk tidak ada batas</div>
+      <div id="budgetForm"></div>
+      <div class="modal-actions"><button class="btn btn-ghost" onclick="closeModal('modalBudget')">Batal</button><button
+          class="btn btn-primary" onclick="saveBudgets()">Simpan</button></div>
+    </div>
+  </div>
+
+  <!-- Modal Wishlist -->
+  <div class="modal-overlay" id="modalWishlist">
+    <div class="modal">
+      <div class="modal-title" id="modalWishlistTitle">✨ Tambah Wishlist</div>
+      <input type="hidden" id="wlEditId">
+      <div class="form-grid">
+        <div class="form-group"><label>Nama Item</label><input type="text" id="wlName"
+            placeholder="Contoh: MacBook Pro"></div>
+        <div class="form-group"><label>Emoji / Ikon</label><input type="text" id="wlEmoji" placeholder="🎯"
+            maxlength="4"></div>
+      </div>
+      <div class="form-grid">
+        <div class="form-group"><label>Harga Target (Rp)</label><input type="number" id="wlPrice" placeholder="Opsional"
+            min="0"></div>
+        <div class="form-group"><label>Prioritas</label>
+          <select id="wlPriority">
+            <option value="biasa">⚪ Biasa</option>
+            <option value="pengen">🔵 Pengen</option>
+            <option value="banget">🟣 Pengen Banget</option>
+            <option value="impian">⭐ Impian</option>
+            <option value="segera">🔴 Segera!</option>
+          </select>
+        </div>
+      </div>
+      <div class="form-grid">
+        <div class="form-group"><label>Status</label>
+          <select id="wlStatus">
+            <option value="wishlist">💭 Wishlist</option>
+            <option value="saving">🏦 Sedang Ditabung</option>
+            <option value="achieved">✅ Tercapai!</option>
+          </select>
+        </div>
+      </div>
+      <div class="form-grid">
+        <div class="form-group" style="grid-column:1/-1"><label>Catatan</label><input type="text" id="wlNote"
+            placeholder="Contoh: Untuk kerja remote, ukuran 14 inch"></div>
+      </div>
+      <div class="modal-actions"><button class="btn btn-ghost"
+          onclick="closeModal('modalWishlist')">Batal</button><button class="btn btn-primary"
+          onclick="saveWishlist()">Simpan</button></div>
+    </div>
+  </div>
+
+  <!-- Modal Delete -->
   <div class="modal-overlay" id="modalDelete">
     <div class="modal" style="max-width:360px">
       <div class="modal-title">🗑️ Hapus Item?</div>
       <p style="font-size:.85rem;color:var(--text2);margin-bottom:4px">Item ini akan dihapus permanen.</p>
-      <div class="modal-actions">
-        <button class="btn btn-ghost" onclick="closeModal('modalDelete')">Batal</button>
-        <button class="btn btn-red" onclick="confirmDelete()">Hapus</button>
-      </div>
+      <div class="modal-actions"><button class="btn btn-ghost" onclick="closeModal('modalDelete')">Batal</button><button
+          class="btn btn-red" onclick="confirmDelete()">Hapus</button></div>
     </div>
   </div>
 
@@ -1749,90 +2558,135 @@
     // ===== STATE =====
     let currentDate = new Date();
     let deleteCallback = null;
+    let wlFilter = 'all';
 
     const EXPENSE_CATS = ['Makanan', 'Transport', 'Tagihan', 'Kesehatan', 'Hiburan', 'Belanja', 'Pendidikan', 'Lainnya'];
     const CAT_COLORS = {
-      Makanan: '#fb923c', Transport: '#60a5fa', Tagihan: '#ff5e7a', Kesehatan: '#34d399',
-      Hiburan: '#c084fc', Belanja: '#f472b6', Pendidikan: '#a78bfa', Lainnya: '#8fa3c8',
-      Freelance: '#4d9fff', Bonus: '#22d98a', Piutang: '#e879f9', Gaji: '#e8c96d'
+      Makanan: 'var(--cat-makanan)', Transport: 'var(--cat-transport)', Tagihan: 'var(--cat-tagihan)', Kesehatan: 'var(--cat-kesehatan)',
+      Hiburan: 'var(--cat-hiburan)', Belanja: 'var(--cat-belanja)', Pendidikan: 'var(--cat-pendidikan)', Lainnya: 'var(--cat-lainnya)',
+      Freelance: 'var(--cat-freelance)', Bonus: 'var(--cat-bonus)', Piutang: 'var(--cat-piutang)', Gaji: 'var(--cat-gaji)', Tunai: 'var(--cat-tunai)'
+    };
+    const PRIORITY_META = {
+      biasa: { label: 'Biasa', cls: 'priority-biasa' },
+      pengen: { label: 'Pengen', cls: 'priority-pengen' },
+      banget: { label: 'Pengen Banget', cls: 'priority-banget' },
+      impian: { label: 'Impian', cls: 'priority-impian' },
+      segera: { label: 'Segera!', cls: 'priority-segera' }
     };
 
-    // ===== LOCAL STORAGE =====
-    function getKey() {
-      return `finance_${currentDate.getFullYear()}_${String(currentDate.getMonth() + 1).padStart(2, '0')}`;
-    }
-
+    // ===== STORAGE =====
+    function getKey() { return `finance_${currentDate.getFullYear()}_${String(currentDate.getMonth() + 1).padStart(2, '0')}`; }
     function loadData() {
-      try {
-        const raw = localStorage.getItem(getKey());
-        if (!raw) return defaultData();
-        return JSON.parse(raw);
-      } catch (e) { return defaultData(); }
+      try { const r = localStorage.getItem(getKey()); return r ? JSON.parse(r) : defaultData(); } catch (e) { return defaultData(); }
     }
+    function saveData(d) { localStorage.setItem(getKey(), JSON.stringify(d)); }
+    function defaultData() { return { salary: 0, salaryAllocations: [], income: [], expenses: [], cashWithdrawals: [], planned: [], piutang: [], budgets: {} }; }
 
-    function saveData(data) {
-      localStorage.setItem(getKey(), JSON.stringify(data));
+    // Global: accounts & wishlist
+    function loadAccounts() {
+      try { const r = localStorage.getItem('finance_accounts'); return r ? JSON.parse(r) : []; } catch (e) { return []; }
     }
-
-    function defaultData() {
-      return { salary: 0, income: [], expenses: [], planned: [], piutang: [], budgets: {} };
+    function saveAccounts(a) { localStorage.setItem('finance_accounts', JSON.stringify(a)); }
+    function loadWishlist() {
+      try { const r = localStorage.getItem('finance_wishlist'); return r ? JSON.parse(r) : []; } catch (e) { return []; }
     }
+    function saveWishlist2(w) { localStorage.setItem('finance_wishlist', JSON.stringify(w)); }
 
     // ===== FORMATTING =====
-    function fmtRp(n) {
-      if (isNaN(n)) return 'Rp 0';
-      return 'Rp ' + Math.abs(n).toLocaleString('id-ID');
-    }
-
-    function fmtDate(d) {
-      if (!d) return '-';
-      const dt = new Date(d);
-      return dt.toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' });
-    }
-
-    function today() {
-      return new Date().toISOString().split('T')[0];
+    function fmtRp(n) { if (isNaN(n)) return 'Rp 0'; return 'Rp ' + Math.abs(n).toLocaleString('id-ID'); }
+    function fmtDate(d) { if (!d) return '-'; return new Date(d).toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' }); }
+    function today() { return new Date().toISOString().split('T')[0]; }
+    function hexToRgb(color) {
+      if (!color) return '143,163,200';
+      const s = getComputedStyle(document.documentElement);
+      const resolveVar = (val) => {
+        if (typeof val === 'string' && val.startsWith('var(')) {
+          const match = val.match(/var\((--[^)]+)\)/);
+          if (!match) return val;
+          const name = match[1];
+          const rgb = s.getPropertyValue(name + '-rgb').trim();
+          if (rgb) return rgb;
+          return resolveVar(s.getPropertyValue(name).trim());
+        }
+        if (typeof val === 'string' && val.startsWith('rgb')) return val.replace(/rgba?\(|\)/g, '');
+        return val;
+      };
+      const final = resolveVar(color);
+      const r = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(final);
+      return r ? `${parseInt(r[1], 16)},${parseInt(r[2], 16)},${parseInt(r[3], 16)}` : final || '143,163,200';
     }
 
     // ===== MONTH NAV =====
     function changeMonth(dir) {
       currentDate = new Date(currentDate.getFullYear(), currentDate.getMonth() + dir, 1);
-      document.getElementById('monthLabel').textContent =
-        currentDate.toLocaleDateString('id-ID', { month: 'long', year: 'numeric' });
+      document.getElementById('monthLabel').textContent = currentDate.toLocaleDateString('id-ID', { month: 'long', year: 'numeric' });
       render();
     }
 
-    // ===== TABS =====
-    function showTab(name) {
+    // ===== TABS (SIDEBAR NAV) =====
+    function showTab(name, el) {
       document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
-      document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+      document.querySelectorAll('.nav-item').forEach(t => t.classList.remove('active'));
       document.getElementById('tab-' + name).classList.add('active');
-      event.target.classList.add('active');
+      if (el) el.classList.add('active');
+      // Close sidebar on mobile after nav
+      if (window.innerWidth <= 820) closeSidebar();
+    }
+
+    function toggleSidebar() {
+      const sidebar = document.getElementById('sidebar');
+      const backdrop = document.getElementById('sidebarBackdrop');
+      const isOpen = sidebar.classList.contains('mobile-open');
+      if (isOpen) {
+        sidebar.classList.remove('mobile-open');
+        backdrop.classList.remove('open');
+        document.body.style.overflow = '';
+      } else {
+        sidebar.classList.add('mobile-open');
+        backdrop.classList.add('open');
+        document.body.style.overflow = 'hidden';
+      }
+    }
+
+    function closeSidebar() {
+      document.getElementById('sidebar').classList.remove('mobile-open');
+      document.getElementById('sidebarBackdrop').classList.remove('open');
+      document.body.style.overflow = '';
     }
 
     // ===== MODALS =====
     function openModal(id) {
-      // Pre-fill dates
       if (id === 'modalIncome') document.getElementById('inDate').value = today();
-      if (id === 'modalExpense') document.getElementById('exDate').value = today();
+      if (id === 'modalExpense') { document.getElementById('exDate').value = today(); populateAccountSelect('exAccount'); }
+      if (id === 'modalCash') { document.getElementById('cashDate').value = today(); populateAccountSelect('cashAccount'); }
       if (id === 'modalPiutang') document.getElementById('ptDate').value = today();
       if (id === 'modalBudget') renderBudgetForm();
+      if (id === 'modalWishlist') { document.getElementById('wlEditId').value = ''; document.getElementById('modalWishlistTitle').textContent = '✨ Tambah Wishlist'; }
       document.getElementById(id).classList.add('open');
     }
-
     function closeModal(id) {
       document.getElementById(id).classList.remove('open');
-      // Clear inputs
-      const modal = document.getElementById(id);
-      modal.querySelectorAll('input[type=text], input[type=number]').forEach(i => i.value = '');
+      document.getElementById(id).querySelectorAll('input[type=text],input[type=number]').forEach(i => i.value = '');
+    }
+    document.querySelectorAll('.modal-overlay').forEach(el => {
+      el.addEventListener('click', function (e) { if (e.target === this) this.classList.remove('open'); });
+    });
+
+    function populateAccountSelect(selectId) {
+      const accounts = loadAccounts();
+      const sel = document.getElementById(selectId);
+      const cur = sel.value;
+      sel.innerHTML = `<option value="">— Tidak dispesifikasi —</option>` + accounts.map(a => `<option value="${a.id}">${a.bank} - ${a.name}</option>`).join('');
+      if (cur) sel.value = cur;
     }
 
-    // Close on overlay click
-    document.querySelectorAll('.modal-overlay').forEach(el => {
-      el.addEventListener('click', function (e) {
-        if (e.target === this) this.classList.remove('open');
-      });
-    });
+    // ===== TOAST =====
+    function showToast(msg, type = 'success') {
+      const el = document.getElementById('toast');
+      el.textContent = msg; el.className = 'toast ' + type;
+      el.classList.add('show');
+      setTimeout(() => el.classList.remove('show'), 3000);
+    }
 
     // ===== SALARY =====
     function toggleSalaryEdit() {
@@ -1844,18 +2698,57 @@
         document.getElementById('salaryInput').value = d.salary || '';
         btn.textContent = '✕ Tutup';
       } else {
-        form.style.display = 'none';
-        btn.textContent = '✏️ Edit';
+        form.style.display = 'none'; btn.textContent = '✏️ Edit';
       }
     }
 
     function saveSalary() {
       const val = parseFloat(document.getElementById('salaryInput').value) || 0;
+      const d = loadData(); d.salary = val; saveData(d);
+      toggleSalaryEdit(); render();
+    }
+
+    function renderSalarySplit() {
+      const accounts = loadAccounts();
       const d = loadData();
-      d.salary = val;
-      saveData(d);
-      toggleSalaryEdit();
-      render();
+      const sec = document.getElementById('salarySplitSection');
+      if (!accounts.length || !d.salary) { sec.style.display = 'none'; return; }
+      sec.style.display = 'block';
+      const rows = document.getElementById('salarySplitRows');
+      rows.innerHTML = accounts.map(a => {
+        const alloc = d.salaryAllocations.find(x => x.accountId === a.id);
+        return `<div class="split-row">
+      <div class="acc-color" style="background:${a.color}"></div>
+      <div class="acc-label">${a.bank} · ${a.name}</div>
+      <input type="number" id="split_${a.id}" placeholder="0" min="0" value="${alloc ? alloc.amount : ''}" oninput="updateSplitRemaining()">
+    </div>`;
+      }).join('');
+      updateSplitRemaining();
+    }
+
+    function updateSplitRemaining() {
+      const accounts = loadAccounts();
+      const d = loadData();
+      const salary = d.salary || 0;
+      let total = 0;
+      accounts.forEach(a => {
+        const inp = document.getElementById('split_' + a.id);
+        if (inp) total += parseFloat(inp.value) || 0;
+      });
+      const rem = salary - total;
+      const el = document.getElementById('splitRemaining');
+      el.style.background = rem < 0 ? 'var(--red-bg)' : rem === 0 ? 'var(--green-bg)' : 'var(--yellow-bg)';
+      el.style.color = rem < 0 ? 'var(--red)' : rem === 0 ? 'var(--green)' : 'var(--yellow)';
+      el.innerHTML = `<span>Total dialokasikan</span><span style="font-family:'JetBrains Mono',monospace;font-weight:600">${fmtRp(total)} / ${fmtRp(salary)}</span>`;
+      if (rem > 0) el.innerHTML += `<br><span style="font-size:.72rem;opacity:.8">Sisa belum dialokasikan: ${fmtRp(rem)}</span>`;
+      if (rem < 0) el.innerHTML += `<br><span style="font-size:.72rem;opacity:.8">⚠️ Melebihi gaji sebesar ${fmtRp(Math.abs(rem))}</span>`;
+    }
+
+    function saveSalarySplit() {
+      const accounts = loadAccounts();
+      const d = loadData();
+      d.salaryAllocations = accounts.map(a => ({ accountId: a.id, amount: parseFloat(document.getElementById('split_' + a.id)?.value) || 0 })).filter(x => x.amount > 0);
+      saveData(d); showToast('✅ Alokasi gaji disimpan!'); render();
     }
 
     // ===== INCOME =====
@@ -1864,17 +2757,8 @@
       const amount = parseFloat(document.getElementById('inAmount').value);
       if (!desc || !amount || amount <= 0) { alert('Lengkapi deskripsi dan jumlah!'); return; }
       const d = loadData();
-      d.income.push({
-        id: Date.now(),
-        date: document.getElementById('inDate').value,
-        category: document.getElementById('inCat').value,
-        description: desc,
-        amount: amount,
-        note: document.getElementById('inNote').value
-      });
-      saveData(d);
-      closeModal('modalIncome');
-      render();
+      d.income.push({ id: Date.now(), date: document.getElementById('inDate').value, category: document.getElementById('inCat').value, description: desc, amount, note: document.getElementById('inNote').value });
+      saveData(d); closeModal('modalIncome'); render();
     }
 
     // ===== EXPENSE =====
@@ -1883,21 +2767,69 @@
         const desc = document.getElementById('exDesc').value.trim();
         const amount = parseFloat(document.getElementById('exAmount').value);
         if (!desc || !amount || amount <= 0) { alert('Lengkapi deskripsi dan jumlah!'); return; }
-        data = {
-          id: Date.now(),
-          date: document.getElementById('exDate').value,
-          category: document.getElementById('exCat').value,
-          description: desc,
-          amount: amount,
-          note: document.getElementById('exNote').value,
-          fromPlanned: false
-        };
+        data = { id: Date.now(), date: document.getElementById('exDate').value, category: document.getElementById('exCat').value, description: desc, amount, note: document.getElementById('exNote').value, accountId: document.getElementById('exAccount').value || null, fromPlanned: false };
         closeModal('modalExpense');
       }
+      const d = loadData(); d.expenses.push(data); saveData(d); render();
+    }
+
+    // ===== CASH WITHDRAWAL =====
+    function addCashWithdrawal() {
+      const amount = parseFloat(document.getElementById('cashAmount').value);
+      const desc = document.getElementById('cashDesc').value.trim() || 'Penarikan Tunai';
+      if (!amount || amount <= 0) { alert('Isi jumlah penarikan!'); return; }
       const d = loadData();
-      d.expenses.push(data);
-      saveData(d);
-      render();
+      const id = Date.now();
+      const accountId = document.getElementById('cashAccount').value || null;
+      d.cashWithdrawals = d.cashWithdrawals || [];
+      d.cashWithdrawals.push({ id, date: document.getElementById('cashDate').value, accountId, amount, description: desc, items: [] });
+      // Create expense entry
+      const accounts = loadAccounts();
+      const acc = accounts.find(a => a.id === accountId);
+      d.expenses.push({ id: id + 1, cashId: id, date: document.getElementById('cashDate').value, category: 'Tunai', description: `Tarik Tunai: ${desc}${acc ? ' (' + acc.bank + ' ' + acc.name + ')' : ''}`, amount, fromCash: true });
+      saveData(d); closeModal('modalCash'); render();
+    }
+
+    function openCashItemModal(cashId) {
+      document.getElementById('cashItemParentId').value = cashId;
+      document.getElementById('cashItemDesc').value = '';
+      document.getElementById('cashItemAmount').value = '';
+      document.getElementById('modalCashItem').classList.add('open');
+    }
+
+    function addCashItem() {
+      const parentId = parseInt(document.getElementById('cashItemParentId').value);
+      const desc = document.getElementById('cashItemDesc').value.trim();
+      const amount = parseFloat(document.getElementById('cashItemAmount').value);
+      if (!desc || !amount || amount <= 0) { alert('Lengkapi deskripsi dan jumlah!'); return; }
+      const d = loadData();
+      const cash = d.cashWithdrawals.find(c => c.id === parentId);
+      if (!cash) { alert('Data tidak ditemukan!'); return; }
+      cash.items.push({ id: Date.now(), description: desc, category: document.getElementById('cashItemCat').value, amount });
+      saveData(d); closeModal('modalCashItem'); render();
+    }
+
+    function deleteCashItem(cashId, itemId) {
+      askDelete(() => {
+        const d = loadData();
+        const cash = d.cashWithdrawals.find(c => c.id === cashId);
+        if (cash) cash.items = cash.items.filter(i => i.id !== itemId);
+        saveData(d); render();
+      });
+    }
+
+    function deleteCashWithdrawal(id) {
+      askDelete(() => {
+        const d = loadData();
+        d.cashWithdrawals = (d.cashWithdrawals || []).filter(c => c.id !== id);
+        d.expenses = d.expenses.filter(e => e.cashId !== id);
+        saveData(d); render();
+      });
+    }
+
+    function toggleCash(id) {
+      const el = document.getElementById('cash-' + id);
+      if (el) el.classList.toggle('cash-expanded');
     }
 
     // ===== PLANNED =====
@@ -1906,16 +2838,8 @@
       const amount = parseFloat(document.getElementById('plAmount').value);
       if (!desc || !amount || amount <= 0) { alert('Lengkapi deskripsi dan jumlah!'); return; }
       const d = loadData();
-      d.planned.push({
-        id: Date.now(),
-        category: document.getElementById('plCat').value,
-        description: desc,
-        amount: amount,
-        checked: false
-      });
-      saveData(d);
-      closeModal('modalPlanned');
-      render();
+      d.planned.push({ id: Date.now(), category: document.getElementById('plCat').value, description: desc, amount, checked: false });
+      saveData(d); closeModal('modalPlanned'); render();
     }
 
     function togglePlanned(id) {
@@ -1923,182 +2847,15 @@
       const item = d.planned.find(p => p.id === id);
       if (!item) return;
       if (!item.checked) {
-        // Move to actual expenses
         item.checked = true;
-        addExpense({
-          id: Date.now(),
-          date: today(),
-          category: item.category,
-          description: item.description,
-          amount: item.amount,
-          note: 'Dari rencana pengeluaran',
-          fromPlanned: true
-        });
-        // saveData happens in addExpense via loadData, so reload
-        const d2 = loadData();
-        const pi = d2.planned.find(p => p.id === id);
-        if (pi) pi.checked = true;
-        saveData(d2);
+        addExpense({ id: Date.now(), date: today(), category: item.category, description: item.description, amount: item.amount, note: 'Dari rencana pengeluaran', fromPlanned: true });
+        const d2 = loadData(); const pi = d2.planned.find(p => p.id === id); if (pi) pi.checked = true; saveData(d2);
       } else {
         item.checked = false;
-        // Remove the auto-created expense
         d.expenses = d.expenses.filter(e => !(e.fromPlanned && e.description === item.description && e.amount === item.amount));
         saveData(d);
       }
       render();
-    }
-
-    // ===== PIUTANG =====
-    function addPiutang() {
-      const name = document.getElementById('ptName').value.trim();
-      const amount = parseFloat(document.getElementById('ptAmount').value);
-      if (!name || !amount || amount <= 0) { alert('Lengkapi nama dan jumlah!'); return; }
-      const d = loadData();
-      const id = Date.now();
-      d.piutang.push({
-        id: id,
-        name: name,
-        date: document.getElementById('ptDate').value,
-        amount: amount,
-        due: document.getElementById('ptDue').value,
-        note: document.getElementById('ptNote').value,
-        status: 'Belum Lunas'
-      });
-      // Piutang mengurangi saldo (uang keluar ke peminjam)
-      d.expenses.push({
-        id: id + 1,
-        piutangId: id,
-        date: document.getElementById('ptDate').value,
-        category: 'Piutang',
-        description: 'Piutang ke: ' + name,
-        amount: amount,
-        note: document.getElementById('ptNote').value,
-        fromPiutang: true
-      });
-      saveData(d);
-      closeModal('modalPiutang');
-      render();
-    }
-
-    function togglePiutangStatus(id) {
-      const d = loadData();
-      const pt = d.piutang.find(p => p.id === id);
-      if (!pt) return;
-
-      if (pt.status === 'Belum Lunas') {
-        // Tandai LUNAS → hapus expense piutang agar saldo kembali ke semula
-        pt.status = 'Lunas';
-        d.expenses = d.expenses.filter(e => e.piutangId !== id);
-        // Bersihkan income piutangLunasId lama jika ada (legacy)
-        d.income = d.income.filter(i => i.piutangLunasId !== id);
-      } else {
-        // Batalkan lunas → kembalikan expense agar saldo berkurang lagi
-        pt.status = 'Belum Lunas';
-        d.expenses.push({
-          id: Date.now(),
-          piutangId: id,
-          date: pt.date,
-          category: 'Piutang',
-          description: 'Piutang ke: ' + pt.name,
-          amount: pt.amount,
-          note: pt.note || '',
-          fromPiutang: true
-        });
-      }
-      saveData(d);
-      render();
-    }
-
-    // ===== BUDGET =====
-    function renderBudgetForm() {
-      const d = loadData();
-      const html = EXPENSE_CATS.map(cat => `
-    <div class="form-grid" style="margin-bottom:8px">
-      <div class="form-group">
-        <label style="color:${CAT_COLORS[cat] || 'var(--text3)'}">${cat}</label>
-        <input type="number" id="budget_${cat}" placeholder="Tidak ada batas" min="0"
-          value="${d.budgets[cat] || ''}">
-      </div>
-    </div>
-  `).join('');
-      document.getElementById('budgetForm').innerHTML = html;
-    }
-
-    function saveBudgets() {
-      const d = loadData();
-      EXPENSE_CATS.forEach(cat => {
-        const val = parseFloat(document.getElementById('budget_' + cat).value);
-        if (val > 0) d.budgets[cat] = val;
-        else delete d.budgets[cat];
-      });
-      saveData(d);
-      closeModal('modalBudget');
-      render();
-    }
-
-    // ===== DELETE =====
-    function askDelete(callback) {
-      deleteCallback = callback;
-      openModal('modalDelete');
-    }
-
-    function confirmDelete() {
-      if (deleteCallback) deleteCallback();
-      deleteCallback = null;
-      closeModal('modalDelete');
-    }
-
-    function deleteIncome(id) {
-      const d = loadData();
-      const item = d.income.find(i => i.id === id);
-      // Jika ini entry pelunasan piutang (legacy), cascade ke piutang
-      if (item && item.piutangLunasId) {
-        askDelete(() => {
-          const d2 = loadData();
-          d2.income = d2.income.filter(i => i.id !== id);
-          // Kembalikan status piutang ke belum lunas & restore expense
-          const pt = d2.piutang.find(p => p.id === item.piutangLunasId);
-          if (pt) {
-            pt.status = 'Belum Lunas';
-            if (!d2.expenses.find(e => e.piutangId === pt.id)) {
-              d2.expenses.push({ id: Date.now(), piutangId: pt.id, date: pt.date, category: 'Piutang', description: 'Piutang ke: ' + pt.name, amount: pt.amount, note: pt.note || '', fromPiutang: true });
-            }
-          }
-          saveData(d2);
-          render();
-        });
-      } else {
-        askDelete(() => {
-          const d2 = loadData();
-          d2.income = d2.income.filter(i => i.id !== id);
-          saveData(d2);
-          render();
-        });
-      }
-    }
-
-    function deleteExpense(id) {
-      const d = loadData();
-      const item = d.expenses.find(e => e.id === id);
-      if (item && item.fromPiutang) {
-        // Jangan bisa dihapus manual dari tab pengeluaran
-        return;
-      }
-      askDelete(() => {
-        const d2 = loadData();
-        d2.expenses = d2.expenses.filter(e => e.id !== id);
-        saveData(d2);
-        render();
-      });
-    }
-
-    function deletePlanned(id) {
-      askDelete(() => {
-        const d = loadData();
-        d.planned = d.planned.filter(p => p.id !== id);
-        saveData(d);
-        render();
-      });
     }
 
     function editPlanned(id) {
@@ -2116,16 +2873,36 @@
       const id = parseInt(document.getElementById('editPlannedId').value);
       const desc = document.getElementById('editPlDesc').value.trim();
       const amount = parseFloat(document.getElementById('editPlAmount').value);
-      if (!desc || !amount || amount <= 0) { alert('Lengkapi deskripsi dan jumlah!'); return; }
+      if (!desc || !amount || amount <= 0) { alert('Lengkapi!'); return; }
+      const d = loadData(); const item = d.planned.find(p => p.id === id); if (!item) return;
+      item.description = desc; item.category = document.getElementById('editPlCat').value; item.amount = amount;
+      saveData(d); closeModal('modalEditPlanned'); render();
+    }
+
+    // ===== PIUTANG =====
+    function addPiutang() {
+      const name = document.getElementById('ptName').value.trim();
+      const amount = parseFloat(document.getElementById('ptAmount').value);
+      if (!name || !amount || amount <= 0) { alert('Lengkapi nama dan jumlah!'); return; }
       const d = loadData();
-      const item = d.planned.find(p => p.id === id);
-      if (!item) return;
-      item.description = desc;
-      item.category = document.getElementById('editPlCat').value;
-      item.amount = amount;
-      saveData(d);
-      closeModal('modalEditPlanned');
-      render();
+      const id = Date.now();
+      d.piutang.push({ id, name, date: document.getElementById('ptDate').value, amount, due: document.getElementById('ptDue').value, note: document.getElementById('ptNote').value, status: 'Belum Lunas' });
+      d.expenses.push({ id: id + 1, piutangId: id, date: document.getElementById('ptDate').value, category: 'Piutang', description: 'Piutang ke: ' + name, amount, note: document.getElementById('ptNote').value, fromPiutang: true });
+      saveData(d); closeModal('modalPiutang'); render();
+    }
+
+    function togglePiutangStatus(id) {
+      const d = loadData();
+      const pt = d.piutang.find(p => p.id === id); if (!pt) return;
+      if (pt.status === 'Belum Lunas') {
+        pt.status = 'Lunas';
+        d.expenses = d.expenses.filter(e => e.piutangId !== id);
+        d.income = d.income.filter(i => i.piutangLunasId !== id);
+      } else {
+        pt.status = 'Belum Lunas';
+        d.expenses.push({ id: Date.now(), piutangId: id, date: pt.date, category: 'Piutang', description: 'Piutang ke: ' + pt.name, amount: pt.amount, note: pt.note || '', fromPiutang: true });
+      }
+      saveData(d); render();
     }
 
     function deletePiutang(id) {
@@ -2133,312 +2910,511 @@
         const d = loadData();
         d.piutang = d.piutang.filter(p => p.id !== id);
         d.expenses = d.expenses.filter(e => e.piutangId !== id);
-        d.income = d.income.filter(i => i.piutangLunasId !== id); // bersihkan legacy
-        saveData(d);
-        render();
+        d.income = d.income.filter(i => i.piutangLunasId !== id);
+        saveData(d); render();
       });
+    }
+
+    // ===== ACCOUNTS =====
+    function saveAccount() {
+      const name = document.getElementById('accName').value.trim();
+      const bank = document.getElementById('accBank').value.trim();
+      if (!name || !bank) { alert('Isi nama akun dan bank!'); return; }
+      const accounts = loadAccounts();
+      const editId = document.getElementById('accEditId').value;
+      if (editId) {
+        const acc = accounts.find(a => a.id === parseInt(editId));
+        if (acc) { acc.name = name; acc.bank = bank; acc.number = document.getElementById('accNumber').value.trim(); acc.color = document.getElementById('accColor').value; }
+      } else {
+        accounts.push({ id: Date.now(), name, bank, number: document.getElementById('accNumber').value.trim(), color: document.getElementById('accColor').value });
+      }
+      saveAccounts(accounts); closeModal('modalAccount'); render();
+    }
+
+    function editAccount(id) {
+      const accounts = loadAccounts();
+      const acc = accounts.find(a => a.id === id); if (!acc) return;
+      document.getElementById('accEditId').value = id;
+      document.getElementById('accName').value = acc.name;
+      document.getElementById('accBank').value = acc.bank;
+      document.getElementById('accNumber').value = acc.number || '';
+      document.getElementById('accColor').value = acc.color;
+      document.getElementById('modalAccount').classList.add('open');
+    }
+
+    function deleteAccount(id) {
+      askDelete(() => {
+        const accounts = loadAccounts().filter(a => a.id !== id);
+        saveAccounts(accounts); render();
+      });
+    }
+
+    // ===== BUDGET =====
+    function renderBudgetForm() {
+      const d = loadData();
+      document.getElementById('budgetForm').innerHTML = EXPENSE_CATS.map(cat => `
+    <div class="form-grid" style="margin-bottom:8px">
+      <div class="form-group"><label style="color:${CAT_COLORS[cat] || 'var(--text3)'}">${cat}</label>
+      <input type="number" id="budget_${cat}" placeholder="Tidak ada batas" min="0" value="${d.budgets[cat] || ''}"></div>
+    </div>`).join('');
+    }
+
+    function saveBudgets() {
+      const d = loadData();
+      EXPENSE_CATS.forEach(cat => {
+        const val = parseFloat(document.getElementById('budget_' + cat).value);
+        if (val > 0) d.budgets[cat] = val; else delete d.budgets[cat];
+      });
+      saveData(d); closeModal('modalBudget'); render();
+    }
+
+    // ===== WISHLIST =====
+    let wlCurrentFilter = 'all';
+
+    function filterWishlist(filter, el) {
+      wlCurrentFilter = filter;
+      document.querySelectorAll('.wl-filter').forEach(b => b.classList.remove('active'));
+      if (el) el.classList.add('active');
+      renderWishlistGrid();
+    }
+
+    function saveWishlist() {
+      const name = document.getElementById('wlName').value.trim();
+      if (!name) { alert('Isi nama item!'); return; }
+      const wl = loadWishlist();
+      const editId = document.getElementById('wlEditId').value;
+      const existingItem = editId ? wl.find(w => w.id === parseInt(editId)) : null;
+      const item = {
+        id: editId ? parseInt(editId) : Date.now(),
+        name,
+        emoji: document.getElementById('wlEmoji').value || '🌟',
+        price: parseFloat(document.getElementById('wlPrice').value) || 0,
+        priority: document.getElementById('wlPriority').value,
+        status: document.getElementById('wlStatus').value,
+        note: document.getElementById('wlNote').value.trim(),
+        dateAdded: existingItem ? existingItem.dateAdded : new Date().toISOString().split('T')[0]
+      };
+      if (editId) { const idx = wl.findIndex(w => w.id === parseInt(editId)); if (idx > -1) wl[idx] = item; }
+      else wl.push(item);
+      saveWishlist2(wl); closeModal('modalWishlist'); renderWishlistTab();
+    }
+
+    function editWishlistItem(id) {
+      const wl = loadWishlist();
+      const item = wl.find(w => w.id === id); if (!item) return;
+      document.getElementById('wlEditId').value = id;
+      document.getElementById('modalWishlistTitle').textContent = '✏️ Edit Wishlist';
+      document.getElementById('wlName').value = item.name;
+      document.getElementById('wlEmoji').value = item.emoji;
+      document.getElementById('wlPrice').value = item.price || '';
+      document.getElementById('wlPriority').value = item.priority;
+      document.getElementById('wlStatus').value = item.status;
+      document.getElementById('wlNote').value = item.note || '';
+      document.getElementById('modalWishlist').classList.add('open');
+    }
+
+    function deleteWishlistItem(id) {
+      askDelete(() => { saveWishlist2(loadWishlist().filter(w => w.id !== id)); renderWishlistTab(); });
+    }
+
+    function cycleWishlistStatus(id) {
+      const wl = loadWishlist();
+      const item = wl.find(w => w.id === id); if (!item) return;
+      const cycle = { wishlist: 'saving', saving: 'achieved', achieved: 'wishlist' };
+      item.status = cycle[item.status] || 'wishlist';
+      saveWishlist2(wl); renderWishlistTab();
+    }
+
+    function renderWishlistTab() {
+      const wl = loadWishlist();
+      const totalVal = wl.filter(w => w.status !== 'achieved').reduce((s, w) => s + w.price, 0);
+      const stats = [
+        { label: 'Total Item', val: wl.length, color: 'var(--text)' },
+        { label: '✅ Tercapai', val: wl.filter(w => w.status === 'achieved').length, color: 'var(--green)' },
+        { label: '🏦 Ditabung', val: wl.filter(w => w.status === 'saving').length, color: 'var(--blue)' },
+        { label: '💭 Wishlist', val: wl.filter(w => w.status === 'wishlist').length, color: 'var(--purple)' },
+        { label: '💰 Total Nilai', val: fmtRp(totalVal), color: 'var(--gold)' },
+      ];
+      document.getElementById('wishlistStats').innerHTML = stats.map(s => `
+    <div class="wl-stat"><div class="wl-stat-label">${s.label}</div><div class="wl-stat-val" style="color:${s.color}">${s.val}</div></div>`).join('');
+      renderWishlistGrid();
+    }
+
+    function renderWishlistGrid() {
+      const wl = loadWishlist();
+      let filtered;
+      if (wlCurrentFilter === 'all') filtered = wl;
+      else if (wlCurrentFilter === 'segera') filtered = wl.filter(w => w.priority === 'segera');
+      else if (wlCurrentFilter === 'impian') filtered = wl.filter(w => w.priority === 'impian');
+      else filtered = wl.filter(w => w.status === wlCurrentFilter);
+
+      const grid = document.getElementById('wishlistGrid');
+      if (!filtered.length) {
+        const msgs = { all: 'Tambahkan impianmu!', wishlist: 'Belum ada wishlist', saving: 'Belum ada yang sedang ditabung', achieved: 'Belum ada yang tercapai', segera: 'Tidak ada item prioritas Segera', impian: 'Tidak ada item Impian' };
+        grid.innerHTML = `<div class="empty" style="grid-column:1/-1"><div class="empty-icon">✨</div><p>${msgs[wlCurrentFilter] || 'Tidak ada item'}</p></div>`;
+        return;
+      }
+
+      // Sort: segera first, then impian, then banget, then saving, then wishlist, then achieved last
+      const priorityOrder = { segera: 0, impian: 1, banget: 2, pengen: 3, biasa: 4 };
+      const statusOrder = { saving: 0, wishlist: 1, achieved: 2 };
+      filtered = [...filtered].sort((a, b) => {
+        if (a.status !== b.status) return (statusOrder[a.status] ?? 1) - (statusOrder[b.status] ?? 1);
+        return (priorityOrder[a.priority] ?? 4) - (priorityOrder[b.priority] ?? 4);
+      });
+
+      const pm = PRIORITY_META;
+      const ribbonMap = { biasa: 'rgba(255,255,255,.1)', pengen: 'linear-gradient(90deg,#1d4ed8,#4d9fff)', banget: 'linear-gradient(90deg,#6d28d9,#a78bfa)', impian: 'linear-gradient(90deg,#92400e,#e8c96d)', segera: 'linear-gradient(90deg,#9f1239,#ff5e7a)' };
+      const emojiBgMap = { biasa: 'rgba(255,255,255,.05)', pengen: 'rgba(77,159,255,.12)', banget: 'rgba(167,139,250,.15)', impian: 'rgba(232,201,109,.12)', segera: 'rgba(255,94,122,.12)' };
+      const statusConfig = {
+        wishlist: { label: '💭 Wishlist', cls: 'wl-status-wishlist', next: '→ Ditabung' },
+        saving: { label: '🏦 Ditabung', cls: 'wl-status-saving', next: '→ Tercapai' },
+        achieved: { label: '✅ Tercapai!', cls: 'wl-status-achieved', next: '↩ Reset' }
+      };
+
+      function daysAgo(dateStr) {
+        if (!dateStr) return null;
+        const diff = Math.floor((Date.now() - new Date(dateStr)) / 86400000);
+        if (diff === 0) return 'Hari ini';
+        if (diff === 1) return '1 hari lalu';
+        if (diff < 30) return diff + ' hari lalu';
+        if (diff < 365) return Math.floor(diff / 30) + ' bulan lalu';
+        return Math.floor(diff / 365) + ' tahun lalu';
+      }
+
+      grid.innerHTML = filtered.map(item => {
+        const sc = statusConfig[item.status] || statusConfig.wishlist;
+        const meta = pm[item.priority] || pm.biasa;
+        const ribbon = ribbonMap[item.priority] || ribbonMap.biasa;
+        const emojiBg = emojiBgMap[item.priority] || emojiBgMap.biasa;
+        const ago = daysAgo(item.dateAdded);
+
+        return `<div class="wl-card${item.status === 'achieved' ? ' achieved' : ''}" data-priority="${item.priority}" style="background:var(--card)">
+      <div class="wl-card-ribbon" style="background:${ribbon}"></div>
+      ${item.status === 'achieved' ? '<div class="wl-achieved-stamp">✅</div>' : ''}
+      <div class="wl-card-top">
+        <div class="wl-emoji-wrap" style="background:${emojiBg}">${item.emoji || '🌟'}</div>
+        <div class="wl-name">${item.name}</div>
+        ${item.price ? `<div class="wl-price" style="color:${item.priority === 'impian' ? 'var(--gold)' : item.priority === 'segera' ? 'var(--red)' : 'var(--green)'}">${fmtRp(item.price)}</div>` : ''}
+        <div style="display:flex;gap:6px;flex-wrap:wrap;align-items:center;margin-bottom:${item.note ? '8px' : '0'}">
+          <span class="badge ${meta.cls}" style="font-size:.7rem">${meta.label}</span>
+        </div>
+        ${item.note ? `<div class="wl-note">${item.note}</div>` : ''}
+        ${ago ? `<div class="wl-date">🕐 ${ago}</div>` : ''}
+      </div>
+      <div class="wl-card-bottom">
+        <button class="${sc.cls} wl-status-btn" onclick="cycleWishlistStatus(${item.id})" title="Klik untuk ubah status">${sc.label} <span style="opacity:.6;font-size:.68rem">${sc.next}</span></button>
+        <div style="display:flex;gap:4px">
+          <button class="btn btn-ghost btn-sm btn-icon" onclick="editWishlistItem(${item.id})" title="Edit">✏️</button>
+          <button class="btn btn-red btn-sm btn-icon" onclick="deleteWishlistItem(${item.id})" title="Hapus">🗑️</button>
+        </div>
+      </div>
+    </div>`;
+      }).join('');
+    }
+
+    // ===== DELETE =====
+    function askDelete(cb) { deleteCallback = cb; openModal('modalDelete'); }
+    function confirmDelete() { if (deleteCallback) deleteCallback(); deleteCallback = null; closeModal('modalDelete'); }
+
+    function deleteIncome(id) {
+      const d = loadData(); const item = d.income.find(i => i.id === id);
+      if (item && item.piutangLunasId) {
+        askDelete(() => {
+          const d2 = loadData(); d2.income = d2.income.filter(i => i.id !== id);
+          const pt = d2.piutang.find(p => p.id === item.piutangLunasId);
+          if (pt) { pt.status = 'Belum Lunas'; if (!d2.expenses.find(e => e.piutangId === pt.id)) d2.expenses.push({ id: Date.now(), piutangId: pt.id, date: pt.date, category: 'Piutang', description: 'Piutang ke: ' + pt.name, amount: pt.amount, note: pt.note || '', fromPiutang: true }); }
+          saveData(d2); render();
+        });
+      } else {
+        askDelete(() => { const d2 = loadData(); d2.income = d2.income.filter(i => i.id !== id); saveData(d2); render(); });
+      }
+    }
+
+    function deleteExpense(id) {
+      const d = loadData(); const item = d.expenses.find(e => e.id === id);
+      if (item && (item.fromPiutang || item.fromCash)) return; // can't delete piutang/cash from here
+      askDelete(() => { const d2 = loadData(); d2.expenses = d2.expenses.filter(e => e.id !== id); saveData(d2); render(); });
+    }
+
+    function deletePlanned(id) {
+      askDelete(() => { const d = loadData(); d.planned = d.planned.filter(p => p.id !== id); saveData(d); render(); });
     }
 
     // ===== RENDER =====
     function render() {
       const d = loadData();
-
-      // Bersihkan income legacy piutangLunasId agar tidak masuk hitungan
-      // (dari versi sebelumnya yang pakai model lama)
       const cleanIncome = d.income.filter(i => !i.piutangLunasId);
-
       const salary = d.salary || 0;
-
-      // Total pemasukan panel: hanya gaji + income non-piutang
       const totalAdditional = cleanIncome.reduce((s, i) => s + i.amount, 0);
-      const totalIncomePanel = salary + totalAdditional;
-
-      // Saldo terkini = (gaji + semua income non-piutang) - (semua expenses non-piutang) - (piutang belum lunas)
-      // Cara paling sederhana: gaji + cleanIncome - expenses (piutang belum lunas sudah masuk expenses via fromPiutang)
       const totalExpenses = d.expenses.reduce((s, e) => s + e.amount, 0);
-      const currentBalance = (salary + cleanIncome.reduce((s, i) => s + i.amount, 0)) - totalExpenses;
-
+      const currentBalance = (salary + totalAdditional) - totalExpenses;
       const totalPlanned = d.planned.filter(p => !p.checked).reduce((s, p) => s + p.amount, 0);
       const shadowBalance = currentBalance - totalPlanned;
 
-      // Balance panel
       document.getElementById('salaryDisplay').textContent = fmtRp(salary);
-      document.getElementById('balIncome').textContent = fmtRp(totalIncomePanel);
+      document.getElementById('balIncome').textContent = fmtRp(salary + totalAdditional);
       document.getElementById('balIncomeSub').textContent = fmtRp(salary) + ' + ' + fmtRp(totalAdditional);
       document.getElementById('balCurrent').textContent = fmtRp(currentBalance);
       document.getElementById('balCurrentSub').textContent = fmtRp(salary + totalAdditional) + ' − ' + fmtRp(totalExpenses);
       document.getElementById('balPlanned').textContent = fmtRp(totalPlanned);
       document.getElementById('balPlannedSub').textContent = d.planned.filter(p => !p.checked).length + ' item belum terceklis';
       document.getElementById('balShadow').textContent = (shadowBalance < 0 ? '−' : '') + fmtRp(shadowBalance);
+      document.getElementById('balShadow').style.color = shadowBalance < 0 ? 'var(--red)' : 'var(--yellow)';
 
-      if (shadowBalance < 0) {
-        document.getElementById('balShadow').style.color = 'var(--red)';
-      } else {
-        document.getElementById('balShadow').style.color = 'var(--yellow)';
-      }
-
+      renderSalarySplit();
       renderIncomeList(d, cleanIncome);
       renderExpenseList(d);
+      renderCashList(d);
       renderPlannedList(d);
       renderPiutangList(d);
+      renderAccountList();
       renderBudgetProgress(d);
-      renderSummary(d, totalIncomePanel, totalExpenses, salary);
+      renderWishlistTab();
+      renderSummary(d, salary + totalAdditional, totalExpenses, salary);
     }
 
     function renderIncomeList(d, cleanIncome) {
       const el = document.getElementById('incomeList');
-      const list = cleanIncome || d.income.filter(i => !i.piutangLunasId);
-      if (!list.length) {
-        el.innerHTML = '<div class="empty"><div class="empty-icon">💼</div><p>Belum ada penghasilan tambahan</p></div>';
-        return;
-      }
-      const rows = [...list].reverse().map(i => `
-    <tr>
+      if (!cleanIncome.length) { el.innerHTML = '<div class="empty"><div class="empty-icon">💼</div><p>Belum ada penghasilan tambahan</p></div>'; return; }
+      el.innerHTML = `<div class="table-wrap"><table><thead><tr><th>Tanggal</th><th>Kategori</th><th>Deskripsi</th><th>Jumlah</th><th>Catatan</th><th></th></tr></thead><tbody>` +
+        [...cleanIncome].reverse().map(i => `<tr>
       <td style="color:var(--text3)">${fmtDate(i.date)}</td>
-      <td><span class="badge" style="background:rgba(${hexToRgb(CAT_COLORS[i.category] || '#8fa3c8')},0.12);color:${CAT_COLORS[i.category] || '#8fa3c8'}">${i.category}</span></td>
+      <td><span class="badge" style="background:rgba(${hexToRgb(CAT_COLORS[i.category] || '#8fa3c8')},.12);color:${CAT_COLORS[i.category] || '#8fa3c8'}">${i.category}</span></td>
       <td style="font-weight:500">${i.description}</td>
       <td style="font-family:'JetBrains Mono',monospace;color:var(--green);font-weight:600">${fmtRp(i.amount)}</td>
       <td style="color:var(--text3);font-size:.78rem">${i.note || '-'}</td>
       <td><button class="btn btn-red btn-sm btn-icon" onclick="deleteIncome(${i.id})">🗑️</button></td>
-    </tr>
-  `).join('');
-      el.innerHTML = `<div class="table-wrap"><table>
-    <thead><tr><th>Tanggal</th><th>Kategori</th><th>Deskripsi</th><th>Jumlah</th><th>Catatan</th><th></th></tr></thead>
-    <tbody>${rows}</tbody>
-  </table></div>`;
+    </tr>`).join('') + `</tbody></table></div>`;
     }
 
     function renderExpenseList(d) {
       const el = document.getElementById('expenseList');
-      // Sembunyikan expense dari piutang yang sudah lunas (tidak perlu ditampilkan, efeknya sudah netral)
-      const visibleExpenses = d.expenses.filter(e => {
+      const accounts = loadAccounts();
+      const visible = d.expenses.filter(e => {
         if (!e.fromPiutang) return true;
         const pt = d.piutang.find(p => p.id === e.piutangId);
-        return pt && pt.status !== 'Lunas'; // tampilkan hanya piutang yang belum lunas
+        return pt && pt.status !== 'Lunas';
       });
-      if (!visibleExpenses.length) {
-        el.innerHTML = '<div class="empty"><div class="empty-icon">🧾</div><p>Belum ada pengeluaran</p></div>';
-        return;
-      }
-      const rows = [...visibleExpenses].reverse().map(e => `
-    <tr>
+      if (!visible.length) { el.innerHTML = '<div class="empty"><div class="empty-icon">🧾</div><p>Belum ada pengeluaran</p></div>'; return; }
+      const rows = [...visible].reverse().map(e => {
+        const acc = e.accountId ? accounts.find(a => a.id === e.accountId) : null;
+        const locked = e.fromPiutang || e.fromCash;
+        return `<tr>
       <td style="color:var(--text3)">${fmtDate(e.date)}</td>
-      <td><span class="badge" style="background:rgba(${hexToRgb(CAT_COLORS[e.category] || '#8fa3c8')},0.12);color:${CAT_COLORS[e.category] || '#8fa3c8'}">${e.category}</span></td>
+      <td><span class="badge" style="background:rgba(${hexToRgb(CAT_COLORS[e.category] || '#8fa3c8')},.12);color:${CAT_COLORS[e.category] || '#8fa3c8'}">${e.category}</span></td>
       <td style="font-weight:500">${e.description}
-        ${e.fromPlanned ? '<span class="badge badge-gray" style="font-size:.65rem">dari rencana</span>' : ''}
-        ${e.fromPiutang ? '<span class="badge badge-purple" style="font-size:.65rem">piutang</span>' : ''}
+        ${e.fromPlanned ? '<span class="badge badge-gray" style="font-size:.65rem;margin-left:4px">rencana</span>' : ''}
+        ${e.fromPiutang ? '<span class="badge badge-purple" style="font-size:.65rem;margin-left:4px">piutang</span>' : ''}
+        ${e.fromCash ? '<span class="badge badge-yellow" style="font-size:.65rem;margin-left:4px">tunai</span>' : ''}
       </td>
       <td style="font-family:'JetBrains Mono',monospace;color:var(--red);font-weight:600">−${fmtRp(e.amount)}</td>
-      <td style="color:var(--text3);font-size:.78rem">${e.note || '-'}</td>
-      <td>
-        ${e.fromPiutang
-          ? `<span style="font-size:.72rem;color:var(--text3)">Hapus via tab Piutang</span>`
-          : `<button class="btn btn-red btn-sm btn-icon" onclick="deleteExpense(${e.id})">🗑️</button>`
-        }
-      </td>
-    </tr>
-  `).join('');
-      el.innerHTML = `<div class="table-wrap"><table>
-    <thead><tr><th>Tanggal</th><th>Kategori</th><th>Deskripsi</th><th>Jumlah</th><th>Catatan</th><th></th></tr></thead>
-    <tbody>${rows}</tbody>
-  </table></div>`;
+      <td>${acc ? `<span style="display:inline-flex;align-items:center;gap:4px"><span style="width:8px;height:8px;border-radius:50%;background:${acc.color};flex-shrink:0"></span><span style="font-size:.78rem;color:var(--text3)">${acc.bank}</span></span>` : '-'}</td>
+      <td>${locked ? `<span style="font-size:.7rem;color:var(--text3)">${e.fromPiutang ? 'Via Piutang' : 'Via Tunai'}</span>` : `<button class="btn btn-red btn-sm btn-icon" onclick="deleteExpense(${e.id})">🗑️</button>`}</td>
+    </tr>`;
+      }).join('');
+      el.innerHTML = `<div class="table-wrap"><table><thead><tr><th>Tanggal</th><th>Kategori</th><th>Deskripsi</th><th>Jumlah</th><th>Akun</th><th></th></tr></thead><tbody>${rows}</tbody></table></div>`;
+    }
+
+    function renderCashList(d) {
+      const el = document.getElementById('cashList');
+      const accounts = loadAccounts();
+      const withdrawals = d.cashWithdrawals || [];
+      if (!withdrawals.length) { el.innerHTML = '<div class="empty"><div class="empty-icon">💰</div><p>Belum ada penarikan tunai</p></div>'; return; }
+      el.innerHTML = [...withdrawals].reverse().map(c => {
+        const acc = c.accountId ? accounts.find(a => a.id === c.accountId) : null;
+        const tracked = c.items.reduce((s, i) => s + i.amount, 0);
+        const untracked = c.amount - tracked;
+        const items = c.items.map(item => `
+      <div class="cash-sub-item">
+        <span class="badge" style="background:rgba(${hexToRgb(CAT_COLORS[item.category] || '#8fa3c8')},.12);color:${CAT_COLORS[item.category] || '#8fa3c8'}">${item.category}</span>
+        <span style="font-weight:500;color:var(--text)">${item.description}</span>
+        <span class="sub-amount">−${fmtRp(item.amount)}</span>
+        <button class="btn btn-red btn-sm btn-icon" onclick="deleteCashItem(${c.id},${item.id})" style="margin-left:4px">🗑️</button>
+      </div>`).join('');
+        return `<div class="cash-item" id="cash-${c.id}">
+      <div class="cash-header" onclick="toggleCash(${c.id})">
+        <span style="font-size:.8rem;color:var(--text3)">${fmtDate(c.date)}</span>
+        ${acc ? `<span style="display:inline-flex;align-items:center;gap:5px"><span style="width:9px;height:9px;border-radius:50%;background:${acc.color}"></span><span style="font-size:.82rem;color:var(--text2)">${acc.bank} · ${acc.name}</span></span>` : '<span style="font-size:.82rem;color:var(--text3)">Tunai</span>'}
+        <span style="flex:1;font-size:.88rem;font-weight:600;color:var(--text)">${c.description}</span>
+        <span style="font-family:'JetBrains Mono',monospace;color:var(--yellow);font-weight:700">${fmtRp(c.amount)}</span>
+        <span class="cash-expand-icon">▶</span>
+        <button class="btn btn-red btn-sm btn-icon" onclick="event.stopPropagation();deleteCashWithdrawal(${c.id})">🗑️</button>
+      </div>
+      <div class="cash-body">
+        <div class="cash-sub-items">${items || '<p style="font-size:.8rem;color:var(--text3);margin:8px 0">Belum ada detail penggunaan tunai.</p>'}</div>
+        <div class="cash-untracked" style="background:${untracked > 0 ? 'var(--yellow-bg)' : 'var(--green-bg)'};color:${untracked > 0 ? 'var(--yellow)' : 'var(--green)'}">
+          <span>💼 Sudah tercatat</span><span style="font-family:'JetBrains Mono',monospace;font-weight:600">${fmtRp(tracked)}</span>
+        </div>
+        ${untracked > 0 ? `<div class="cash-untracked" style="background:var(--red-bg);color:var(--red);margin-top:4px"><span>❓ Belum tercatat</span><span style="font-family:'JetBrains Mono',monospace;font-weight:600">${fmtRp(untracked)}</span></div>` : ''}
+        <button class="btn btn-primary btn-sm" style="margin-top:10px" onclick="openCashItemModal(${c.id})">+ Tambah Detail</button>
+      </div>
+    </div>`;
+      }).join('');
     }
 
     function renderPlannedList(d) {
       const el = document.getElementById('plannedList');
-      if (!d.planned.length) {
-        el.innerHTML = '<div class="empty"><div class="empty-icon">📋</div><p>Belum ada rencana pengeluaran</p></div>';
-        return;
-      }
-      const unchecked = d.planned.filter(p => !p.checked);
-      const checked = d.planned.filter(p => p.checked);
-      const sorted = [...unchecked, ...checked];
-
+      if (!d.planned.length) { el.innerHTML = '<div class="empty"><div class="empty-icon">📋</div><p>Belum ada rencana pengeluaran</p></div>'; return; }
+      const sorted = [...d.planned.filter(p => !p.checked), ...d.planned.filter(p => p.checked)];
       el.innerHTML = sorted.map(p => `
     <div class="planned-item ${p.checked ? 'checked' : ''}">
-      <div class="checkbox ${p.checked ? 'checked' : ''}" onclick="togglePlanned(${p.id})">
-        ${p.checked ? '<svg viewBox="0 0 12 12"><polyline points="2,6 5,9 10,3"/></svg>' : ''}
-      </div>
-      <div class="planned-info">
-        <div class="planned-name" style="${p.checked ? 'text-decoration:line-through' : ''}">${p.description}</div>
-        <div class="planned-cat">${p.category} ${p.checked ? '• ✅ Sudah dipindah ke pengeluaran' : ''}</div>
-      </div>
+      <div class="checkbox ${p.checked ? 'checked' : ''}" onclick="togglePlanned(${p.id})">${p.checked ? '<svg viewBox="0 0 12 12"><polyline points="2,6 5,9 10,3"/></svg>' : ''}</div>
+      <div class="planned-info"><div class="planned-name" style="${p.checked ? 'text-decoration:line-through' : ''}">${p.description}</div><div class="planned-cat">${p.category}${p.checked ? ' • ✅ Sudah dibayar' : ''}</div></div>
       <div class="planned-amount" style="${p.checked ? 'color:var(--text3)' : ''}">−${fmtRp(p.amount)}</div>
-      ${p.checked
-          ? `<span style="font-size:.72rem;color:var(--text3);padding:0 4px">🔒</span>`
-          : `<button class="btn btn-ghost btn-sm btn-icon" onclick="editPlanned(${p.id})" title="Edit">✏️</button>
-           <button class="btn btn-red btn-sm btn-icon" onclick="deletePlanned(${p.id})">🗑️</button>`
-        }
-    </div>
-  `).join('');
+      ${p.checked ? '<span style="font-size:1rem;padding:0 4px">🔒</span>' : `
+        <button class="btn btn-ghost btn-sm btn-icon" onclick="editPlanned(${p.id})" title="Edit">✏️</button>
+        <button class="btn btn-red btn-sm btn-icon" onclick="deletePlanned(${p.id})">🗑️</button>`}
+    </div>`).join('');
     }
 
     function renderPiutangList(d) {
       const el = document.getElementById('piutangList');
-      if (!d.piutang.length) {
-        el.innerHTML = '<div class="empty"><div class="empty-icon">🤝</div><p>Belum ada catatan piutang</p></div>';
-        return;
-      }
-      const totalPiutang = d.piutang.reduce((s, p) => s + p.amount, 0);
+      if (!d.piutang.length) { el.innerHTML = '<div class="empty"><div class="empty-icon">🤝</div><p>Belum ada catatan piutang</p></div>'; return; }
+      const totalPt = d.piutang.reduce((s, p) => s + p.amount, 0);
       const totalLunas = d.piutang.filter(p => p.status === 'Lunas').reduce((s, p) => s + p.amount, 0);
-
       const rows = [...d.piutang].reverse().map(p => {
-        const isOverdue = p.due && new Date(p.due) < new Date() && p.status !== 'Lunas';
-        return `
-    <tr>
+        const overdue = p.due && new Date(p.due) < new Date() && p.status !== 'Lunas';
+        return `<tr>
       <td style="font-weight:500">${p.name}</td>
       <td style="color:var(--text3)">${fmtDate(p.date)}</td>
       <td style="font-family:'JetBrains Mono',monospace;color:var(--purple);font-weight:600">${fmtRp(p.amount)}</td>
-      <td style="color:${isOverdue ? 'var(--red)' : 'var(--text3)'}">${fmtDate(p.due)} ${isOverdue ? '⚠️' : ''}</td>
-      <td>
-        <span class="badge ${p.status === 'Lunas' ? 'badge-green' : 'badge-red'} status-toggle" onclick="togglePiutangStatus(${p.id})">
-          ${p.status} ↔
-        </span>
-      </td>
+      <td style="color:${overdue ? 'var(--red)' : 'var(--text3)'}">${fmtDate(p.due)}${overdue ? ' ⚠️' : ''}</td>
+      <td><span class="badge ${p.status === 'Lunas' ? 'badge-green' : 'badge-red'} status-toggle" onclick="togglePiutangStatus(${p.id})">${p.status} ↔</span></td>
       <td style="color:var(--text3);font-size:.78rem">${p.note || '-'}</td>
       <td><button class="btn btn-red btn-sm btn-icon" onclick="deletePiutang(${p.id})">🗑️</button></td>
-    </tr>
-  `}).join('');
+    </tr>`;
+      }).join('');
+      el.innerHTML = `<div style="display:flex;gap:12px;flex-wrap:wrap;margin-bottom:16px">
+    ${[['Total', fmtRp(totalPt), 'var(--purple)'], ['Lunas', fmtRp(totalLunas), 'var(--green)'], ['Belum Lunas', fmtRp(totalPt - totalLunas), 'var(--red)']].map(([l, v, c]) => `
+    <div style="background:var(--bg2);border:1px solid var(--border);border-radius:8px;padding:10px 14px">
+      <div style="font-size:.68rem;color:var(--text3);margin-bottom:3px">${l}</div>
+      <div style="font-family:'JetBrains Mono',monospace;font-weight:600;color:${c}">${v}</div>
+    </div>`).join('')}</div>
+  <div class="table-wrap"><table><thead><tr><th>Nama</th><th>Tgl Pinjam</th><th>Jumlah</th><th>Jatuh Tempo</th><th>Status</th><th>Catatan</th><th></th></tr></thead><tbody>${rows}</tbody></table></div>`;
+    }
 
-      el.innerHTML = `
-    <div style="display:flex;gap:16px;flex-wrap:wrap;margin-bottom:16px">
-      <div style="background:var(--bg2);border:1px solid var(--border);border-radius:8px;padding:12px 16px">
-        <div style="font-size:.72rem;color:var(--text3);margin-bottom:4px">Total Piutang</div>
-        <div style="font-family:'JetBrains Mono',monospace;color:var(--purple);font-weight:600">${fmtRp(totalPiutang)}</div>
+    function renderAccountList() {
+      const el = document.getElementById('accountList');
+      const accounts = loadAccounts();
+      if (!accounts.length) { el.innerHTML = '<div class="empty"><div class="empty-icon">🏦</div><p>Tambahkan akun bank untuk mengatur alokasi gaji dan melacak saldo per rekening.</p></div>'; return; }
+      const d = loadData();
+
+      el.innerHTML = `<div class="account-grid">` + accounts.map(a => {
+        const alloc = d.salaryAllocations?.find(x => x.accountId === a.id);
+        const allocAmt = alloc ? alloc.amount : 0;
+        // Cash withdrawals from this account
+        const cashOut = (d.cashWithdrawals || []).filter(c => c.accountId === a.id).reduce((s, c) => s + c.amount, 0);
+        // Direct expenses from this account
+        const expOut = d.expenses.filter(e => e.accountId === a.id && !e.fromPiutang && !e.fromCash).reduce((s, e) => s + e.amount, 0);
+        const effective = allocAmt - cashOut - expOut;
+        const hasAlloc = allocAmt > 0;
+
+        return `<div style="background:var(--bg2);border:1px solid var(--border);border-left:4px solid ${a.color};border-radius:var(--r);padding:18px;transition:border-color .2s" onmouseenter="this.style.borderColor='${a.color}'" onmouseleave="this.style.borderColor='var(--border)'">
+      <div class="account-bank" style="color:${a.color}">${a.bank}</div>
+      <div class="account-name">${a.name}</div>
+      ${a.number ? `<div class="account-num">${a.number}</div>` : ''}
+      ${hasAlloc ? `
+        <div style="margin-top:12px;padding-top:10px;border-top:1px solid var(--border)">
+          <div class="acc-bal-row"><span style="color:var(--text3)">Alokasi Gaji</span><span style="font-family:'JetBrains Mono',monospace;color:${a.color};font-weight:600">${fmtRp(allocAmt)}</span></div>
+          ${cashOut > 0 ? `<div class="acc-bal-row"><span style="color:var(--text3)">Tarik Tunai</span><span style="font-family:'JetBrains Mono',monospace;color:var(--yellow)">−${fmtRp(cashOut)}</span></div>` : ''}
+          ${expOut > 0 ? `<div class="acc-bal-row"><span style="color:var(--text3)">Pengeluaran</span><span style="font-family:'JetBrains Mono',monospace;color:var(--red)">−${fmtRp(expOut)}</span></div>` : ''}
+          <div class="acc-bal-row" style="margin-top:4px;padding-top:6px;border-top:1px dashed rgba(255,255,255,.06)"><span style="color:var(--text);font-weight:600;font-size:.82rem">Saldo Efektif</span><span style="font-family:'JetBrains Mono',monospace;font-weight:700;color:${effective >= 0 ? 'var(--green)' : 'var(--red)'}">${effective < 0 ? '−' : ''}${fmtRp(effective)}</span></div>
+        </div>
+      ` : '<div style="font-size:.75rem;color:var(--text3);margin-top:10px">Belum ada alokasi gaji bulan ini</div>'}
+      <div class="account-actions" style="margin-top:12px">
+        <button class="btn btn-ghost btn-sm btn-icon" onclick="editAccount(${a.id})" title="Edit">✏️</button>
+        <button class="btn btn-red btn-sm btn-icon" onclick="deleteAccount(${a.id})" title="Hapus">🗑️</button>
       </div>
-      <div style="background:var(--bg2);border:1px solid var(--border);border-radius:8px;padding:12px 16px">
-        <div style="font-size:.72rem;color:var(--text3);margin-bottom:4px">Sudah Lunas</div>
-        <div style="font-family:'JetBrains Mono',monospace;color:var(--green);font-weight:600">${fmtRp(totalLunas)}</div>
-      </div>
-      <div style="background:var(--bg2);border:1px solid var(--border);border-radius:8px;padding:12px 16px">
-        <div style="font-size:.72rem;color:var(--text3);margin-bottom:4px">Belum Lunas</div>
-        <div style="font-family:'JetBrains Mono',monospace;color:var(--red);font-weight:600">${fmtRp(totalPiutang - totalLunas)}</div>
-      </div>
-    </div>
-    <div class="table-wrap"><table>
-      <thead><tr><th>Nama</th><th>Tgl Pinjam</th><th>Jumlah</th><th>Jatuh Tempo</th><th>Status</th><th>Catatan</th><th></th></tr></thead>
-      <tbody>${rows}</tbody>
-    </table></div>
-  `;
+    </div>`;
+      }).join('') + `</div>`;
     }
 
     function renderBudgetProgress(d) {
       const el = document.getElementById('budgetList');
-      const catExpenses = {};
-      d.expenses.forEach(e => {
-        catExpenses[e.category] = (catExpenses[e.category] || 0) + e.amount;
-      });
-
-      const hasBudget = EXPENSE_CATS.some(c => d.budgets[c]);
+      const catExp = {};
+      d.expenses.filter(e => !e.fromPiutang && !e.fromCash).forEach(e => { catExp[e.category] = (catExp[e.category] || 0) + e.amount; });
       const items = EXPENSE_CATS.map(cat => {
-        const spent = catExpenses[cat] || 0;
-        const budget = d.budgets[cat] || 0;
+        const spent = catExp[cat] || 0; const budget = d.budgets[cat] || 0;
         if (!budget && !spent) return null;
         const pct = budget ? Math.min((spent / budget) * 100, 100) : 0;
         const color = pct > 100 ? 'var(--red)' : pct > 75 ? 'var(--yellow)' : 'var(--green)';
-        const catColor = CAT_COLORS[cat] || '#8fa3c8';
-        return `
-      <div class="progress-wrap">
-        <div class="progress-label">
-          <span style="color:${catColor};font-weight:500">${cat}</span>
-          <span>${fmtRp(spent)} ${budget ? '/ ' + fmtRp(budget) : '(no limit)'}</span>
-        </div>
-        ${budget ? `<div class="progress-bar">
-          <div class="progress-fill" style="width:${pct}%;background:${color}"></div>
-        </div>
-        ${pct > 100 ? '<div style="font-size:.7rem;color:var(--red);margin-top:3px">⚠️ Melebihi budget!</div>' :
-              pct > 75 ? '<div style="font-size:.7rem;color:var(--yellow);margin-top:3px">⚡ Mendekati batas</div>' : ''}` : ''}
-      </div>
-    `;
+        return `<div class="progress-wrap">
+      <div class="progress-label"><span style="color:${CAT_COLORS[cat] || 'var(--text3)'};font-weight:500">${cat}</span><span>${fmtRp(spent)}${budget ? ' / ' + fmtRp(budget) : '  (no limit)'}</span></div>
+      ${budget ? `<div class="progress-bar"><div class="progress-fill" style="width:${pct}%;background:${color}"></div></div>
+      ${pct > 100 ? '<div style="font-size:.7rem;color:var(--red);margin-top:3px">⚠️ Melebihi budget!</div>' : pct > 75 ? '<div style="font-size:.7rem;color:var(--yellow);margin-top:3px">⚡ Mendekati batas</div>' : ''}` : ''}</div>`;
       }).filter(Boolean).join('');
-
-      el.innerHTML = items || '<div class="empty"><div class="empty-icon">📊</div><p>Klik "Atur Budget" untuk menetapkan batas pengeluaran, atau tambahkan pengeluaran terlebih dahulu.</p></div>';
+      el.innerHTML = items || '<div class="empty"><div class="empty-icon">📊</div><p>Klik "Atur Budget" atau tambah pengeluaran terlebih dahulu</p></div>';
     }
 
     function renderSummary(d, totalIncome, totalExpenses, salary) {
       const surplus = totalIncome - totalExpenses;
       const cleanIncome = d.income.filter(i => !i.piutangLunasId);
-      const totalPiutangBelumLunas = d.piutang.filter(p => p.status === 'Belum Lunas').reduce((s, p) => s + p.amount, 0);
+      const accounts = loadAccounts();
+      const totalPtBelumLunas = d.piutang.filter(p => p.status === 'Belum Lunas').reduce((s, p) => s + p.amount, 0);
       document.getElementById('summaryIncome').innerHTML = `
     <div class="total-row"><span class="total-label">Gaji Pokok</span><span class="total-val" style="color:var(--gold)">${fmtRp(salary)}</span></div>
     <div class="total-row"><span class="total-label">Penghasilan Tambahan</span><span class="total-val" style="color:var(--blue)">${fmtRp(cleanIncome.reduce((s, i) => s + i.amount, 0))}</span></div>
-    <div class="total-row"><span class="total-label" style="font-weight:600">Total Pemasukan</span><span class="total-val" style="color:var(--green)">${fmtRp(totalIncome)}</span></div>
-  `;
+    <div class="total-row"><span class="total-label" style="font-weight:600">Total Pemasukan</span><span class="total-val" style="color:var(--green)">${fmtRp(totalIncome)}</span></div>`;
       document.getElementById('summaryExpense').innerHTML = `
     <div class="total-row"><span class="total-label">Total Pengeluaran</span><span class="total-val" style="color:var(--red)">${fmtRp(totalExpenses)}</span></div>
     <div class="total-row"><span class="total-label">Rencana Keluar</span><span class="total-val" style="color:var(--yellow)">${fmtRp(d.planned.filter(p => !p.checked).reduce((s, p) => s + p.amount, 0))}</span></div>
-    <div class="total-row"><span class="total-label">Piutang Belum Lunas</span><span class="total-val" style="color:var(--purple)">${fmtRp(totalPiutangBelumLunas)}</span></div>
-    <div class="total-row"><span class="total-label" style="font-weight:600">Sisa / Surplus</span>
-      <span class="total-val" style="color:${surplus >= 0 ? 'var(--green)' : 'var(--red)'}">${surplus < 0 ? '−' : ''}${fmtRp(surplus)}</span></div>
-  `;
+    <div class="total-row"><span class="total-label">Piutang Belum Lunas</span><span class="total-val" style="color:var(--purple)">${fmtRp(totalPtBelumLunas)}</span></div>
+    <div class="total-row"><span class="total-label" style="font-weight:600">Sisa / Surplus</span><span class="total-val" style="color:${surplus >= 0 ? 'var(--green)' : 'var(--red)'}">${surplus < 0 ? '−' : ''}${fmtRp(surplus)}</span></div>`;
 
-      // Exclude piutang dari chart kategori pengeluaran
-      const catExpenses = {};
-      d.expenses.filter(e => !e.fromPiutang).forEach(e => { catExpenses[e.category] = (catExpenses[e.category] || 0) + e.amount; });
-      const totalNonPiutangExpenses = Object.values(catExpenses).reduce((s, v) => s + v, 0);
+      // Summary accounts
+      const accHtml = d.salaryAllocations?.length && accounts.length ?
+        `<div style="display:flex;flex-direction:column;gap:8px">` + accounts.map(a => {
+          const alloc = d.salaryAllocations.find(x => x.accountId === a.id);
+          if (!alloc) return '';
+          const pct = salary ? (alloc.amount / salary * 100).toFixed(0) : 0;
+          return `<div style="display:flex;align-items:center;gap:12px">
+        <div style="width:10px;height:10px;border-radius:50%;background:${a.color};flex-shrink:0"></div>
+        <div style="flex:1;font-size:.85rem;color:var(--text)">${a.bank} · ${a.name}</div>
+        <div style="font-family:'JetBrains Mono',monospace;font-weight:600;color:${a.color}">${fmtRp(alloc.amount)}</div>
+        <div style="font-size:.75rem;color:var(--text3);width:40px;text-align:right">${pct}%</div>
+      </div>`;
+        }).join('') + `</div>` : '<div class="empty" style="padding:20px"><p>Belum ada alokasi akun bank bulan ini</p></div>';
+      document.getElementById('summaryAccounts').innerHTML = accHtml;
 
-      const catHtml = Object.entries(catExpenses).sort((a, b) => b[1] - a[1]).map(([cat, amt]) => {
-        const pct = totalNonPiutangExpenses ? (amt / totalNonPiutangExpenses * 100).toFixed(1) : 0;
+      const catExp = {};
+      d.expenses.filter(e => !e.fromPiutang).forEach(e => { catExp[e.category] = (catExp[e.category] || 0) + e.amount; });
+      const totalCatExp = Object.values(catExp).reduce((s, v) => s + v, 0);
+      const catHtml = Object.entries(catExp).sort((a, b) => b[1] - a[1]).map(([cat, amt]) => {
+        const pct = totalCatExp ? (amt / totalCatExp * 100).toFixed(1) : 0;
         const color = CAT_COLORS[cat] || '#8fa3c8';
-        return `
-      <div style="margin-bottom:12px">
-        <div style="display:flex;justify-content:space-between;font-size:.8rem;margin-bottom:5px">
-          <span style="color:${color};font-weight:500">${cat}</span>
-          <span style="font-family:'JetBrains Mono',monospace;color:var(--text)">${fmtRp(amt)} <span style="color:var(--text3)">(${pct}%)</span></span>
-        </div>
-        <div class="progress-bar">
-          <div class="progress-fill" style="width:${pct}%;background:${color}"></div>
-        </div>
+        return `<div style="margin-bottom:12px">
+      <div style="display:flex;justify-content:space-between;font-size:.8rem;margin-bottom:5px">
+        <span style="color:${color};font-weight:500">${cat}</span>
+        <span style="font-family:'JetBrains Mono',monospace">${fmtRp(amt)} <span style="color:var(--text3)">(${pct}%)</span></span>
       </div>
-    `;
+      <div class="progress-bar"><div class="progress-fill" style="width:${pct}%;background:${color}"></div></div>
+    </div>`;
       }).join('');
-      document.getElementById('summaryCat').innerHTML = catHtml || '<div class="empty"><p>Belum ada data pengeluaran bulan ini</p></div>';
-    }
-
-    // ===== UTILS =====
-    function hexToRgb(hex) {
-      const r = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
-      return r ? `${parseInt(r[1], 16)},${parseInt(r[2], 16)},${parseInt(r[3], 16)}` : '143,163,200';
-    }
-
-    // ===== TOAST =====
-    function showToast(msg, type = 'success') {
-      const el = document.getElementById('toast');
-      el.textContent = msg;
-      el.className = 'toast ' + type;
-      el.classList.add('show');
-      setTimeout(() => el.classList.remove('show'), 3000);
+      document.getElementById('summaryCat').innerHTML = catHtml || '<div class="empty"><p>Belum ada data pengeluaran</p></div>';
     }
 
     // ===== EXPORT / IMPORT =====
     function generateExport() {
-      const allData = {};
+      const all = {};
       for (let i = 0; i < localStorage.length; i++) {
-        const key = localStorage.key(i);
-        if (key && key.startsWith('finance_')) {
-          allData[key] = JSON.parse(localStorage.getItem(key));
-        }
+        const k = localStorage.key(i);
+        if (k && (k.startsWith('finance_') || k === 'finance_accounts' || k === 'finance_wishlist'))
+          try { all[k] = JSON.parse(localStorage.getItem(k)); } catch (e) { }
       }
-      const json = JSON.stringify(allData, null, 2);
-      document.getElementById('exportArea').textContent = json;
+      document.getElementById('exportArea').textContent = JSON.stringify(all, null, 2);
       document.getElementById('btnCopy').style.display = 'inline-flex';
       showToast('✅ Data berhasil di-generate!');
     }
 
     function copyExport() {
       const text = document.getElementById('exportArea').textContent;
-      if (!text || text.includes('Klik tombol')) { showToast('Generate data dulu!', 'error'); return; }
-      navigator.clipboard.writeText(text).then(() => {
-        showToast('📋 Data berhasil disalin ke clipboard!');
-      }).catch(() => {
-        // Fallback
+      if (!text || text.includes('Klik')) { showToast('Generate data dulu!', 'error'); return; }
+      navigator.clipboard.writeText(text).then(() => showToast('📋 Disalin ke clipboard!')).catch(() => {
         const el = document.getElementById('exportArea');
-        const range = document.createRange();
-        range.selectNodeContents(el);
-        window.getSelection().removeAllRanges();
-        window.getSelection().addRange(range);
-        document.execCommand('copy');
-        showToast('📋 Data berhasil disalin!');
+        const r = document.createRange(); r.selectNodeContents(el);
+        window.getSelection().removeAllRanges(); window.getSelection().addRange(r);
+        document.execCommand('copy'); showToast('📋 Disalin!');
       });
     }
 
@@ -2447,51 +3423,89 @@
       if (!text) { showToast('Tempel data terlebih dahulu!', 'error'); return; }
       try {
         const parsed = JSON.parse(text);
-        const keys = Object.keys(parsed).filter(k => k.startsWith('finance_'));
-        if (!keys.length) { showToast('Format data tidak valid. Pastikan berupa data export dari aplikasi ini.', 'error'); return; }
-        if (!confirm(`Import akan menimpa ${keys.length} bulan data. Lanjutkan?`)) return;
+        const keys = Object.keys(parsed).filter(k => k.startsWith('finance_') || k === 'finance_accounts' || k === 'finance_wishlist');
+        if (!keys.length) { showToast('Format data tidak valid!', 'error'); return; }
+        if (!confirm(`Import ${keys.length} data? Data existing akan ditimpa.`)) return;
         keys.forEach(k => localStorage.setItem(k, JSON.stringify(parsed[k])));
         document.getElementById('importArea').value = '';
-        render();
-        showToast(`✅ Berhasil import ${keys.length} bulan data!`);
-      } catch (e) {
-        showToast('❌ Format JSON tidak valid. Cek kembali data yang ditempel.', 'error');
-      }
+        render(); showToast(`✅ Import ${keys.length} data berhasil!`);
+      } catch (e) { showToast('❌ JSON tidak valid!', 'error'); }
     }
 
     function deleteCurrentMonth() {
-      if (!confirm('Hapus semua data bulan ' + currentDate.toLocaleDateString('id-ID', { month: 'long', year: 'numeric' }) + '?')) return;
-      localStorage.removeItem(getKey());
-      render();
-      showToast('🗑️ Data bulan ini berhasil dihapus.');
+      if (!confirm('Hapus data bulan ini?')) return;
+      localStorage.removeItem(getKey()); render(); showToast('🗑️ Data bulan ini dihapus.');
     }
 
     function deleteAllData() {
-      if (!confirm('HAPUS SEMUA DATA seluruh bulan? Tindakan ini tidak bisa dibatalkan!')) return;
-      const keys = [];
-      for (let i = 0; i < localStorage.length; i++) {
-        const k = localStorage.key(i);
-        if (k && k.startsWith('finance_')) keys.push(k);
-      }
-      keys.forEach(k => localStorage.removeItem(k));
-      render();
-      showToast('💥 Semua data berhasil dihapus.');
+      if (!confirm('HAPUS SEMUA DATA? Tidak bisa dibatalkan!')) return;
+      const keys = []; for (let i = 0; i < localStorage.length; i++) { const k = localStorage.key(i); if (k) keys.push(k); }
+      keys.filter(k => k.startsWith('finance_')).forEach(k => localStorage.removeItem(k));
+      render(); showToast('💥 Semua data dihapus.');
     }
 
-    // ===== TUTORIAL =====
+    // ===== CUSTOM TUTORIAL =====
     const TUT_STEPS = [
-      { icon: '👋', title: 'Selamat Datang di Catatan Keuangan!', desc: 'Aplikasi ini membantu kamu mencatat <b>pemasukan, pengeluaran, rencana belanja, dan piutang</b> secara terorganisir. Tutorial ini hanya butuh 1 menit. Yuk mulai!' },
-      { icon: '📅', title: 'Navigasi Bulan', desc: 'Gunakan tombol <b>‹</b> dan <b>›</b> di pojok kanan atas untuk berpindah bulan. Setiap bulan menyimpan data yang terpisah. Mulailah dengan bulan yang sedang berjalan (sudah otomatis terpilih).' },
-      { icon: '💵', title: 'Tab Pemasukan — Catat Gaji', desc: 'Buka tab <b>💵 Pemasukan</b> → klik <b>✏️ Edit</b> untuk mengisi gaji pokok bulan ini. Untuk pendapatan lain (freelance, bonus, dll) klik <b>+ Tambah</b> di kartu Penghasilan Tambahan.' },
-      { icon: '💸', title: 'Tab Pengeluaran — Catat Biaya', desc: 'Buka tab <b>💸 Pengeluaran</b> → klik <b>+ Tambah</b>. Pilih kategori (Makanan, Transport, Tagihan, dll), isi deskripsi dan jumlah. Setiap pengeluaran langsung mengurangi <b>Saldo Terkini</b>.' },
-      { icon: '📋', title: 'Rencana Keluar — Rencanakan Dulu', desc: 'Di tab <b>📋 Rencana Keluar</b>, tambahkan pengeluaran yang <i>belum terjadi</i>. Totalnya ditampilkan merah di panel atas sebagai peringatan. Saat sudah dibayar, <b>centang ☐ item</b> — otomatis pindah ke Pengeluaran Aktual.' },
-      { icon: '🤝', title: 'Piutang — Uang yang Dipinjamkan', desc: 'Di tab <b>🤝 Piutang</b>, catat uang yang kamu pinjamkan ke orang lain. Saldo <b>langsung berkurang</b>. Saat uang kembali, klik badge status <b>Belum Lunas ↔</b> jadi Lunas — saldo otomatis pulih kembali.' },
-      { icon: '💾', title: 'Backup Data — Jangan Sampai Hilang!', desc: 'Data tersimpan di <b>localStorage browser</b> ini saja. Agar tidak hilang saat ganti browser/device, rutin backup via tab <b>💾 Data</b>: klik Generate → Salin → simpan teks JSON-nya. Import kapan saja untuk memulihkan.' },
+      {
+        icon: '👋',
+        title: 'Selamat Datang di Catatan Keuangan!',
+        desc: 'Aplikasi ini membantu kamu mencatat <b>pemasukan, pengeluaran, rencana belanja, dan piutang</b> secara terorganisir. Tutorial ini hanya butuh 1 menit. Yuk mulai!'
+      },
+      {
+        icon: '📅',
+        title: 'Navigasi Bulan',
+        desc: 'Gunakan tombol <b>‹</b> dan <b>›</b> di pojok kanan atas untuk berpindah bulan. Setiap bulan menyimpan data yang terpisah. Mulailah dengan bulan yang sedang berjalan (sudah otomatis terpilih).'
+      },
+      {
+        icon: '📊',
+        title: 'Panel Saldo — Pusat Informasi',
+        desc: '<b>Saldo Terkini</b> (hijau) adalah uang yang benar-benar ada. <b>Saldo Bayangan</b> (kuning) adalah saldo setelah dikurangi semua rencana pengeluaran. Pantau terus kedua angka ini!'
+      },
+      {
+        icon: '🏦',
+        title: 'Setup Akun Bank Dulu',
+        desc: 'Buka tab <b>🏦 Akun Bank</b> → tambahkan rekening-rekeningmu. Setelah ini, kamu bisa split gaji ke beberapa rekening dan melacak dari rekening mana setiap pengeluaran berasal.'
+      },
+      {
+        icon: '💵',
+        title: 'Catat Gaji & Alokasi Rekening',
+        desc: 'Tab <b>💵 Pemasukan</b> → klik <b>✏️ Edit</b> → isi nominal gaji → Simpan. Form alokasi akan muncul otomatis untuk membagi gaji ke setiap rekening (contoh: 70% BCA, 30% BRI).'
+      },
+      {
+        icon: '💰',
+        title: 'Tarik Tunai & Detail Pengeluaran',
+        desc: 'Tab <b>💰 Tunai</b> untuk mencatat penarikan ATM. Saldo langsung berkurang. Klik <b>▶</b> di setiap penarikan untuk menambahkan rincian: uang itu dipakai untuk apa saja.'
+      },
+      {
+        icon: '💸',
+        title: 'Pengeluaran Non-Tunai',
+        desc: 'Tab <b>💸 Pengeluaran</b> untuk transfer, kartu debit, atau pembayaran digital. Pilih kategori dan rekening sumber agar laporan keuanganmu akurat.'
+      },
+      {
+        icon: '📋',
+        title: 'Rencana Keluar — Rencanakan Dulu',
+        desc: 'Di tab <b>📋 Rencana Keluar</b>, tambahkan pengeluaran yang <i>belum terjadi</i>. Totalnya ditampilkan merah di panel atas sebagai peringatan. Saat sudah dibayar, <b>centang ☐ item</b> — otomatis pindah ke Pengeluaran Aktual.'
+      },
+      {
+        icon: '🤝',
+        title: 'Catat Piutang',
+        desc: 'Tab <b>🤝 Piutang</b> untuk uang yang kamu pinjamkan. Saldo langsung <b>berkurang</b>. Klik badge <b>Belum Lunas ↔</b> saat dikembalikan → saldo <b>pulih otomatis</b>. Hapus piutang juga menghapus entry pengeluarannya.'
+      },
+      {
+        icon: '✨',
+        title: 'Wishlist Impianmu',
+        desc: 'Tab <b>✨ Wishlist</b> untuk mencatat keinginan belanja. Set prioritas dan harga target. Klik badge status untuk update: <b>Wishlist → Ditabung → Tercapai ✅</b>. Wishlist tidak bergantung pada bulan.'
+      },
+      {
+        icon: '💾',
+        title: 'Backup Data — Jangan Sampai Hilang!',
+        desc: 'Data tersimpan di <b>localStorage browser</b> ini saja. Agar tidak hilang saat ganti browser/device, rutin backup via tab <b>💾 Data</b>: klik Generate → Salin → simpan teks JSON-nya. Import kapan saja untuk memulihkan.'
+      },
     ];
 
     let tutCurrent = 0;
 
-    function openTutorial() {
+    function startTutorial() {
       tutCurrent = 0;
       renderTutStep();
       document.getElementById('tutOverlay').classList.add('open');
@@ -2511,29 +3525,38 @@
 
     function renderTutStep() {
       const s = TUT_STEPS[tutCurrent];
-      document.getElementById('tutBadge').textContent = `Langkah ${tutCurrent + 1} dari ${TUT_STEPS.length}`;
+      const total = TUT_STEPS.length;
+
+      document.getElementById('tutBadge').textContent = `Langkah ${tutCurrent + 1} dari ${total}`;
       document.getElementById('tutIcon').textContent = s.icon;
       document.getElementById('tutTitle').textContent = s.title;
       document.getElementById('tutDesc').innerHTML = s.desc;
-      document.getElementById('tutPrev').style.display = tutCurrent === 0 ? 'none' : 'inline-flex';
-      document.getElementById('tutNext').textContent = tutCurrent === TUT_STEPS.length - 1 ? '✅ Selesai' : 'Lanjut ›';
 
       // Dots
-      document.getElementById('tutDots').innerHTML = TUT_STEPS.map((_, i) =>
-        `<div class="tut-dot ${i === tutCurrent ? 'active' : ''}"></div>`
-      ).join('');
+      document.getElementById('tutDots').innerHTML = TUT_STEPS.map((_, i) => {
+        let cls = 'tut-dot';
+        if (i === tutCurrent) cls += ' active';
+        else if (i < tutCurrent) cls += ' done';
+        return `<div class="${cls}"></div>`;
+      }).join('');
+
+      // Buttons
+      const isFirst = tutCurrent === 0;
+      const isLast = tutCurrent === total - 1;
+      document.getElementById('tutPrev').style.display = isFirst ? 'none' : 'inline-flex';
+      document.getElementById('tutNext').innerHTML = isLast ? '✅ Selesai' : 'Lanjut ›';
+      document.getElementById('tutNext').className = isLast
+        ? 'btn btn-green btn-sm'
+        : 'btn btn-primary btn-sm';
     }
 
     // ===== INIT =====
-    // Fix: pastikan bulan yang tampil sesuai bulan sekarang
     currentDate = new Date();
-    document.getElementById('monthLabel').textContent =
-      currentDate.toLocaleDateString('id-ID', { month: 'long', year: 'numeric' });
+    document.getElementById('monthLabel').textContent = currentDate.toLocaleDateString('id-ID', { month: 'long', year: 'numeric' });
     render();
 
-    // Tampilkan tutorial jika pertama kali
     if (!localStorage.getItem('keuangan_tutorial_done')) {
-      setTimeout(() => openTutorial(), 600);
+      setTimeout(startTutorial, 800);
     }
   </script>
 </body>
