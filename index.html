@@ -2577,7 +2577,7 @@
     // ===== STORAGE =====
     function getKey() { return `finance_${currentDate.getFullYear()}_${String(currentDate.getMonth() + 1).padStart(2, '0')}`; }
     function loadData() {
-      try { const r = localStorage.getItem(getKey()); return r ? JSON.parse(r) : defaultData(); } catch (e) { return defaultData(); }
+      try { const r = localStorage.getItem(getKey()); return r ? { ...defaultData(), ...JSON.parse(r) } : defaultData(); } catch (e) { return defaultData(); }
     }
     function saveData(d) { localStorage.setItem(getKey(), JSON.stringify(d)); }
     function defaultData() { return { salary: 0, salaryAllocations: [], income: [], expenses: [], cashWithdrawals: [], planned: [], piutang: [], budgets: {} }; }
