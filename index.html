@@ -220,6 +220,45 @@
   /* SUMMARY SECTION */
   .summary-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
   @media(max-width: 600px) { .summary-grid { grid-template-columns: 1fr; } }
+
+  /* TUTORIAL OVERLAY */
+  .tut-overlay { position: fixed; inset: 0; background: rgba(0,0,0,.75); backdrop-filter: blur(3px); z-index: 200; display: flex; align-items: center; justify-content: center; padding: 16px; opacity: 0; pointer-events: none; transition: opacity .3s; }
+  .tut-overlay.open { opacity: 1; pointer-events: all; }
+  .tut-box { background: var(--card); border: 1px solid var(--border2); border-radius: 16px; padding: 28px; width: 100%; max-width: 520px; transform: scale(.95); transition: transform .3s; }
+  .tut-overlay.open .tut-box { transform: scale(1); }
+  .tut-step-badge { display: inline-flex; align-items: center; gap: 6px; background: var(--blue-bg); color: var(--blue); border: 1px solid rgba(77,159,255,.2); border-radius: 20px; padding: 4px 12px; font-size: .72rem; font-weight: 600; letter-spacing: .8px; text-transform: uppercase; margin-bottom: 14px; }
+  .tut-icon { font-size: 2.5rem; margin-bottom: 12px; }
+  .tut-title { font-size: 1.2rem; font-weight: 700; color: var(--text); margin-bottom: 10px; }
+  .tut-desc { font-size: .87rem; color: var(--text2); line-height: 1.6; margin-bottom: 20px; }
+  .tut-desc b { color: var(--text); }
+  .tut-dots { display: flex; gap: 6px; margin-bottom: 20px; }
+  .tut-dot { width: 8px; height: 8px; border-radius: 4px; background: var(--border2); transition: all .3s; }
+  .tut-dot.active { background: var(--blue); width: 24px; }
+  .tut-actions { display: flex; gap: 8px; justify-content: space-between; align-items: center; }
+  .tut-nav { display: flex; gap: 8px; }
+  .tut-progress { font-size: .75rem; color: var(--text3); }
+
+  /* PANDUAN TAB */
+  .guide-section { margin-bottom: 24px; }
+  .guide-step { display: flex; gap: 16px; padding: 16px; border: 1px solid var(--border); border-radius: var(--radius2); margin-bottom: 10px; transition: border-color .2s; }
+  .guide-step:hover { border-color: var(--border2); }
+  .guide-num { width: 32px; height: 32px; border-radius: 50%; background: var(--blue-bg); border: 1px solid rgba(77,159,255,.25); color: var(--blue); font-weight: 700; font-size: .85rem; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+  .guide-content h4 { font-size: .9rem; font-weight: 600; color: var(--text); margin-bottom: 5px; }
+  .guide-content p { font-size: .82rem; color: var(--text2); line-height: 1.55; }
+  .guide-tag { display: inline-block; padding: 2px 8px; border-radius: 4px; font-size: .7rem; font-weight: 600; margin-right: 4px; }
+  .guide-section-title { font-size: .8rem; font-weight: 600; color: var(--text3); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 12px; display: flex; align-items: center; gap: 8px; }
+  .guide-section-title::after { content: ''; flex: 1; height: 1px; background: var(--border); }
+
+  /* EXPORT/IMPORT */
+  .export-area { background: var(--bg2); border: 1px solid var(--border); border-radius: var(--radius2); padding: 14px; font-family: 'JetBrains Mono', monospace; font-size: .75rem; color: var(--text2); word-break: break-all; line-height: 1.5; min-height: 80px; max-height: 180px; overflow-y: auto; user-select: all; cursor: text; }
+  .import-area { background: var(--bg2); border: 1px solid var(--border); border-radius: var(--radius2); padding: 14px; font-family: 'JetBrains Mono', monospace; font-size: .75rem; color: var(--text2); width: 100%; min-height: 100px; resize: vertical; outline: none; transition: border-color .2s; }
+  .import-area:focus { border-color: var(--blue); }
+
+  /* TOAST */
+  .toast { position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%) translateY(80px); background: var(--card2); border: 1px solid var(--border2); border-radius: 10px; padding: 10px 20px; font-size: .85rem; font-weight: 500; color: var(--text); z-index: 300; transition: transform .3s ease; box-shadow: 0 8px 32px rgba(0,0,0,.4); white-space: nowrap; }
+  .toast.show { transform: translateX(-50%) translateY(0); }
+  .toast.success { border-color: var(--green); color: var(--green); }
+  .toast.error { border-color: var(--red); color: var(--red); }
 </style>
 </head>
 <body>
@@ -230,10 +269,13 @@
       <div class="logo">💰</div>
       <h1>Catatan <span>Keuangan</span></h1>
     </div>
-    <div class="month-nav">
-      <button onclick="changeMonth(-1)">&#8249;</button>
-      <div class="month-label" id="monthLabel">Jan 2025</div>
-      <button onclick="changeMonth(1)">&#8250;</button>
+    <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap;">
+      <button class="btn btn-ghost btn-sm" onclick="openTutorial()" title="Lihat Tutorial">❓ Panduan</button>
+      <div class="month-nav">
+        <button onclick="changeMonth(-1)">&#8249;</button>
+        <div class="month-label" id="monthLabel">Jan 2025</div>
+        <button onclick="changeMonth(1)">&#8250;</button>
+      </div>
     </div>
   </div>
 
@@ -269,6 +311,8 @@
     <button class="tab" onclick="showTab('piutang')">🤝 Piutang</button>
     <button class="tab" onclick="showTab('budget')">📊 Budget</button>
     <button class="tab" onclick="showTab('ringkasan')">📈 Ringkasan</button>
+    <button class="tab" onclick="showTab('data')">💾 Data</button>
+    <button class="tab" onclick="showTab('panduan')">📖 Panduan</button>
   </div>
 
   <!-- TAB: PEMASUKAN -->
@@ -379,6 +423,113 @@
     <div class="card">
       <div class="card-title" style="margin-bottom:14px"><span class="dot dot-yellow"></span> Pengeluaran per Kategori</div>
       <div id="summaryCat"></div>
+    </div>
+  </div>
+
+  <!-- TAB: DATA -->
+  <div id="tab-data" class="section">
+    <!-- EXPORT -->
+    <div class="card">
+      <div class="card-header">
+        <div class="card-title"><span class="dot dot-green"></span> 📤 Export Data</div>
+      </div>
+      <p style="font-size:.82rem;color:var(--text2);margin-bottom:14px;">Salin semua data keuangan kamu (seluruh bulan) ke clipboard. Simpan di tempat aman sebagai backup.</p>
+      <div class="export-area" id="exportArea">Klik tombol di bawah untuk generate data...</div>
+      <div style="display:flex;gap:8px;margin-top:12px;flex-wrap:wrap;">
+        <button class="btn btn-primary" onclick="generateExport()">🔄 Generate Data</button>
+        <button class="btn btn-green" onclick="copyExport()" id="btnCopy" style="display:none">📋 Salin ke Clipboard</button>
+      </div>
+    </div>
+    <!-- IMPORT -->
+    <div class="card">
+      <div class="card-header">
+        <div class="card-title"><span class="dot dot-blue"></span> 📥 Import Data</div>
+      </div>
+      <p style="font-size:.82rem;color:var(--text2);margin-bottom:6px;">Tempel data backup di bawah lalu klik Import. <b style="color:var(--red)">⚠️ Data yang sudah ada akan ditimpa.</b></p>
+      <textarea class="import-area" id="importArea" placeholder='Paste data JSON di sini... (contoh: {"finance_2025_01": {...}, "finance_2025_02": {...}})'></textarea>
+      <div style="display:flex;gap:8px;margin-top:12px;flex-wrap:wrap;">
+        <button class="btn btn-primary" onclick="doImport()">📥 Import & Terapkan</button>
+        <button class="btn btn-ghost" onclick="document.getElementById('importArea').value=''">🗑️ Bersihkan</button>
+      </div>
+    </div>
+    <!-- DANGER ZONE -->
+    <div class="card" style="border-color:rgba(255,94,122,.2)">
+      <div class="card-header">
+        <div class="card-title"><span class="dot dot-red"></span> ⚠️ Hapus Data</div>
+      </div>
+      <p style="font-size:.82rem;color:var(--text2);margin-bottom:14px;">Hapus data bulan yang sedang aktif, atau hapus semua data seluruh bulan.</p>
+      <div style="display:flex;gap:8px;flex-wrap:wrap;">
+        <button class="btn btn-red btn-sm" onclick="deleteCurrentMonth()">🗑️ Hapus Bulan Ini</button>
+        <button class="btn btn-red btn-sm" onclick="deleteAllData()">💥 Hapus Semua Data</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- TAB: PANDUAN -->
+  <div id="tab-panduan" class="section">
+    <div class="card">
+      <div class="card-title" style="margin-bottom:6px;font-size:1.1rem">📖 Panduan Penggunaan</div>
+      <p style="font-size:.82rem;color:var(--text3);margin-bottom:20px;">Referensi lengkap cara menggunakan Catatan Keuangan.</p>
+      <button class="btn btn-primary btn-sm" onclick="openTutorial()" style="margin-bottom:20px">▶️ Mulai Tutorial Interaktif</button>
+
+      <div class="guide-section">
+        <div class="guide-section-title">💰 Pemasukan</div>
+        <div class="guide-step"><div class="guide-num">1</div><div class="guide-content"><h4>Set Gaji Bulanan</h4><p>Masuk ke tab <b>Pemasukan</b> → klik <b>✏️ Edit</b> di kartu Gaji Bulanan → masukkan nominal gaji pokok bulan ini → klik Simpan. Gaji ini menjadi basis pemasukan bulan tersebut.</p></div></div>
+        <div class="guide-step"><div class="guide-num">2</div><div class="guide-content"><h4>Tambah Penghasilan Tambahan</h4><p>Klik tombol <b>+ Tambah</b> di kartu Penghasilan Tambahan. Isi tanggal, kategori (Freelance / Bonus / Lainnya), deskripsi, dan jumlah. Data ini otomatis ditambahkan ke total pemasukan.</p></div></div>
+      </div>
+
+      <div class="guide-section">
+        <div class="guide-section-title">💸 Pengeluaran</div>
+        <div class="guide-step"><div class="guide-num">3</div><div class="guide-content"><h4>Catat Pengeluaran Aktual</h4><p>Tab <b>Pengeluaran</b> → klik <b>+ Tambah</b>. Isi tanggal, kategori, deskripsi, dan jumlah. Pengeluaran langsung mengurangi <b>Saldo Terkini</b>. Entry bertanda "piutang" hanya bisa dihapus melalui tab Piutang.</p></div></div>
+      </div>
+
+      <div class="guide-section">
+        <div class="guide-section-title">📋 Rencana Keluar</div>
+        <div class="guide-step"><div class="guide-num">4</div><div class="guide-content"><h4>Tambah Rencana Pengeluaran</h4><p>Tab <b>Rencana Keluar</b> → klik <b>+ Tambah</b>. Masukkan deskripsi, kategori, dan estimasi nominal. Item akan muncul di daftar rencana dan menambah <b>Total Rencana Keluar</b> (merah) serta mengurangi <b>Saldo Bayangan</b>.</p></div></div>
+        <div class="guide-step"><div class="guide-num">5</div><div class="guide-content"><h4>Ceklis = Pindah ke Pengeluaran</h4><p>Klik kotak centang ☐ di sebelah kiri item rencana. Saat diceklis ✅, item otomatis pindah ke <b>Pengeluaran Aktual</b> dengan tanggal hari ini. Item yang sudah diceklis <b>tidak bisa diedit atau dihapus</b> (ikon 🔒).</p></div></div>
+        <div class="guide-step"><div class="guide-num">6</div><div class="guide-content"><h4>Edit Rencana</h4><p>Selama belum diceklis, kamu bisa klik tombol <b>✏️</b> untuk mengubah deskripsi, kategori, atau nominal estimasi.</p></div></div>
+      </div>
+
+      <div class="guide-section">
+        <div class="guide-section-title">🤝 Piutang</div>
+        <div class="guide-step"><div class="guide-num">7</div><div class="guide-content"><h4>Catat Piutang (Uang yang Dipinjam Orang)</h4><p>Tab <b>Piutang</b> → klik <b>+ Tambah</b>. Isi nama peminjam, tanggal, jumlah, dan jatuh tempo. Saat dicatat, saldo <b>langsung berkurang</b> (uang keluar ke peminjam). Entry pengeluaran piutang otomatis muncul di tab Pengeluaran dengan badge ungu.</p></div></div>
+        <div class="guide-step"><div class="guide-num">8</div><div class="guide-content"><h4>Tandai Lunas</h4><p>Klik badge status <b>Belum Lunas ↔</b> untuk toggle menjadi <b>Lunas</b>. Saat lunas, entry pengeluaran piutang dihapus otomatis sehingga <b>saldo kembali ke semula</b>. Piutang <b>tidak menambah</b> panel Pemasukan — saldo hanya pulih.</p></div></div>
+        <div class="guide-step"><div class="guide-num">9</div><div class="guide-content"><h4>Jatuh Tempo</h4><p>Jika tanggal jatuh tempo sudah lewat dan belum lunas, item akan ditandai ⚠️ dengan teks merah sebagai pengingat.</p></div></div>
+      </div>
+
+      <div class="guide-section">
+        <div class="guide-section-title">📊 Budget & Panel Saldo</div>
+        <div class="guide-step"><div class="guide-num">10</div><div class="guide-content"><h4>Atur Budget per Kategori</h4><p>Tab <b>Budget</b> → klik <b>⚙️ Atur Budget</b>. Set batas pengeluaran per kategori. Progress bar akan berwarna <span class="guide-tag" style="background:var(--yellow-bg);color:var(--yellow)">kuning</span> saat >75% dan <span class="guide-tag" style="background:var(--red-bg);color:var(--red)">merah</span> saat melebihi batas.</p></div></div>
+        <div class="guide-step"><div class="guide-num">11</div><div class="guide-content"><h4>Memahami Panel Saldo</h4><p><span class="guide-tag" style="background:var(--green-bg);color:var(--green)">Saldo Terkini</span> = Pemasukan − Pengeluaran aktual. <span class="guide-tag" style="background:var(--red-bg);color:var(--red)">Total Rencana</span> = semua item rencana belum terceklis. <span class="guide-tag" style="background:var(--yellow-bg);color:var(--yellow)">Saldo Bayangan</span> = Saldo Terkini − Total Rencana (jadi merah jika negatif).</p></div></div>
+      </div>
+
+      <div class="guide-section">
+        <div class="guide-section-title">💾 Export & Import Data</div>
+        <div class="guide-step"><div class="guide-num">12</div><div class="guide-content"><h4>Backup Data (Export)</h4><p>Tab <b>Data</b> → klik <b>Generate Data</b> → klik <b>Salin ke Clipboard</b>. Simpan teks JSON tersebut di notes, email, atau Google Drive sebagai backup.</p></div></div>
+        <div class="guide-step"><div class="guide-num">13</div><div class="guide-content"><h4>Pulihkan Data (Import)</h4><p>Tab <b>Data</b> → tempel teks JSON backup di kotak Import → klik <b>Import & Terapkan</b>. Semua data akan dipulihkan ke localStorage browser ini. ⚠️ Data existing akan ditimpa.</p></div></div>
+        <div class="guide-step"><div class="guide-num">14</div><div class="guide-content"><h4>Navigasi Bulan</h4><p>Gunakan tombol <b>‹</b> dan <b>›</b> di pojok kanan atas untuk melihat data bulan lain. Setiap bulan memiliki data yang terpisah dan independen.</p></div></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- TOAST -->
+<div class="toast" id="toast"></div>
+
+<!-- TUTORIAL OVERLAY -->
+<div class="tut-overlay" id="tutOverlay">
+  <div class="tut-box">
+    <div class="tut-step-badge" id="tutBadge">Langkah 1 dari 7</div>
+    <div class="tut-icon" id="tutIcon">👋</div>
+    <div class="tut-title" id="tutTitle">Selamat Datang!</div>
+    <div class="tut-desc" id="tutDesc">Tutorial singkat cara menggunakan aplikasi ini.</div>
+    <div class="tut-dots" id="tutDots"></div>
+    <div class="tut-actions">
+      <button class="btn btn-ghost btn-sm" onclick="closeTutorial()">Lewati</button>
+      <div class="tut-nav">
+        <button class="btn btn-ghost btn-sm" id="tutPrev" onclick="tutStep(-1)">‹ Kembali</button>
+        <button class="btn btn-primary btn-sm" id="tutNext" onclick="tutStep(1)">Lanjut ›</button>
+      </div>
     </div>
   </div>
 </div>
@@ -1262,10 +1413,140 @@ function hexToRgb(hex) {
   return r ? `${parseInt(r[1],16)},${parseInt(r[2],16)},${parseInt(r[3],16)}` : '143,163,200';
 }
 
+// ===== TOAST =====
+function showToast(msg, type='success') {
+  const el = document.getElementById('toast');
+  el.textContent = msg;
+  el.className = 'toast ' + type;
+  el.classList.add('show');
+  setTimeout(() => el.classList.remove('show'), 3000);
+}
+
+// ===== EXPORT / IMPORT =====
+function generateExport() {
+  const allData = {};
+  for (let i = 0; i < localStorage.length; i++) {
+    const key = localStorage.key(i);
+    if (key && key.startsWith('finance_')) {
+      allData[key] = JSON.parse(localStorage.getItem(key));
+    }
+  }
+  const json = JSON.stringify(allData, null, 2);
+  document.getElementById('exportArea').textContent = json;
+  document.getElementById('btnCopy').style.display = 'inline-flex';
+  showToast('✅ Data berhasil di-generate!');
+}
+
+function copyExport() {
+  const text = document.getElementById('exportArea').textContent;
+  if (!text || text.includes('Klik tombol')) { showToast('Generate data dulu!', 'error'); return; }
+  navigator.clipboard.writeText(text).then(() => {
+    showToast('📋 Data berhasil disalin ke clipboard!');
+  }).catch(() => {
+    // Fallback
+    const el = document.getElementById('exportArea');
+    const range = document.createRange();
+    range.selectNodeContents(el);
+    window.getSelection().removeAllRanges();
+    window.getSelection().addRange(range);
+    document.execCommand('copy');
+    showToast('📋 Data berhasil disalin!');
+  });
+}
+
+function doImport() {
+  const text = document.getElementById('importArea').value.trim();
+  if (!text) { showToast('Tempel data terlebih dahulu!', 'error'); return; }
+  try {
+    const parsed = JSON.parse(text);
+    const keys = Object.keys(parsed).filter(k => k.startsWith('finance_'));
+    if (!keys.length) { showToast('Format data tidak valid. Pastikan berupa data export dari aplikasi ini.', 'error'); return; }
+    if (!confirm(`Import akan menimpa ${keys.length} bulan data. Lanjutkan?`)) return;
+    keys.forEach(k => localStorage.setItem(k, JSON.stringify(parsed[k])));
+    document.getElementById('importArea').value = '';
+    render();
+    showToast(`✅ Berhasil import ${keys.length} bulan data!`);
+  } catch(e) {
+    showToast('❌ Format JSON tidak valid. Cek kembali data yang ditempel.', 'error');
+  }
+}
+
+function deleteCurrentMonth() {
+  if (!confirm('Hapus semua data bulan ' + currentDate.toLocaleDateString('id-ID', {month:'long', year:'numeric'}) + '?')) return;
+  localStorage.removeItem(getKey());
+  render();
+  showToast('🗑️ Data bulan ini berhasil dihapus.');
+}
+
+function deleteAllData() {
+  if (!confirm('HAPUS SEMUA DATA seluruh bulan? Tindakan ini tidak bisa dibatalkan!')) return;
+  const keys = [];
+  for (let i = 0; i < localStorage.length; i++) {
+    const k = localStorage.key(i);
+    if (k && k.startsWith('finance_')) keys.push(k);
+  }
+  keys.forEach(k => localStorage.removeItem(k));
+  render();
+  showToast('💥 Semua data berhasil dihapus.');
+}
+
+// ===== TUTORIAL =====
+const TUT_STEPS = [
+  { icon:'👋', title:'Selamat Datang di Catatan Keuangan!', desc:'Aplikasi ini membantu kamu mencatat <b>pemasukan, pengeluaran, rencana belanja, dan piutang</b> secara terorganisir. Tutorial ini hanya butuh 1 menit. Yuk mulai!' },
+  { icon:'📅', title:'Navigasi Bulan', desc:'Gunakan tombol <b>‹</b> dan <b>›</b> di pojok kanan atas untuk berpindah bulan. Setiap bulan menyimpan data yang terpisah. Mulailah dengan bulan yang sedang berjalan (sudah otomatis terpilih).' },
+  { icon:'💵', title:'Tab Pemasukan — Catat Gaji', desc:'Buka tab <b>💵 Pemasukan</b> → klik <b>✏️ Edit</b> untuk mengisi gaji pokok bulan ini. Untuk pendapatan lain (freelance, bonus, dll) klik <b>+ Tambah</b> di kartu Penghasilan Tambahan.' },
+  { icon:'💸', title:'Tab Pengeluaran — Catat Biaya', desc:'Buka tab <b>💸 Pengeluaran</b> → klik <b>+ Tambah</b>. Pilih kategori (Makanan, Transport, Tagihan, dll), isi deskripsi dan jumlah. Setiap pengeluaran langsung mengurangi <b>Saldo Terkini</b>.' },
+  { icon:'📋', title:'Rencana Keluar — Rencanakan Dulu', desc:'Di tab <b>📋 Rencana Keluar</b>, tambahkan pengeluaran yang <i>belum terjadi</i>. Totalnya ditampilkan merah di panel atas sebagai peringatan. Saat sudah dibayar, <b>centang ☐ item</b> — otomatis pindah ke Pengeluaran Aktual.' },
+  { icon:'🤝', title:'Piutang — Uang yang Dipinjamkan', desc:'Di tab <b>🤝 Piutang</b>, catat uang yang kamu pinjamkan ke orang lain. Saldo <b>langsung berkurang</b>. Saat uang kembali, klik badge status <b>Belum Lunas ↔</b> jadi Lunas — saldo otomatis pulih kembali.' },
+  { icon:'💾', title:'Backup Data — Jangan Sampai Hilang!', desc:'Data tersimpan di <b>localStorage browser</b> ini saja. Agar tidak hilang saat ganti browser/device, rutin backup via tab <b>💾 Data</b>: klik Generate → Salin → simpan teks JSON-nya. Import kapan saja untuk memulihkan.' },
+];
+
+let tutCurrent = 0;
+
+function openTutorial() {
+  tutCurrent = 0;
+  renderTutStep();
+  document.getElementById('tutOverlay').classList.add('open');
+}
+
+function closeTutorial() {
+  document.getElementById('tutOverlay').classList.remove('open');
+  localStorage.setItem('keuangan_tutorial_done', '1');
+}
+
+function tutStep(dir) {
+  tutCurrent += dir;
+  if (tutCurrent < 0) tutCurrent = 0;
+  if (tutCurrent >= TUT_STEPS.length) { closeTutorial(); return; }
+  renderTutStep();
+}
+
+function renderTutStep() {
+  const s = TUT_STEPS[tutCurrent];
+  document.getElementById('tutBadge').textContent = `Langkah ${tutCurrent + 1} dari ${TUT_STEPS.length}`;
+  document.getElementById('tutIcon').textContent = s.icon;
+  document.getElementById('tutTitle').textContent = s.title;
+  document.getElementById('tutDesc').innerHTML = s.desc;
+  document.getElementById('tutPrev').style.display = tutCurrent === 0 ? 'none' : 'inline-flex';
+  document.getElementById('tutNext').textContent = tutCurrent === TUT_STEPS.length - 1 ? '✅ Selesai' : 'Lanjut ›';
+
+  // Dots
+  document.getElementById('tutDots').innerHTML = TUT_STEPS.map((_, i) =>
+    `<div class="tut-dot ${i === tutCurrent ? 'active' : ''}"></div>`
+  ).join('');
+}
+
 // ===== INIT =====
+// Fix: pastikan bulan yang tampil sesuai bulan sekarang
+currentDate = new Date();
 document.getElementById('monthLabel').textContent =
   currentDate.toLocaleDateString('id-ID', {month:'long', year:'numeric'});
 render();
+
+// Tampilkan tutorial jika pertama kali
+if (!localStorage.getItem('keuangan_tutorial_done')) {
+  setTimeout(() => openTutorial(), 600);
+}
 </script>
 </body>
 </html>
