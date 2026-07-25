@@ -1,0 +1,18 @@
+# Graphify
+graphify-out
+
+# Node Modules
+node_modules
+
+# Build
+dist
+
+# Instruksi agent AI — lokal saja, jangan di-commit
+/CLAUDE.md
+/AGENTS.md
+/.claude/
+/.cursor/
+/.windsurf/
+/.clinerules/
+/.opencode/
+/.github/copilot-instructions.md

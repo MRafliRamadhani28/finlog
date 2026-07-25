@@ -1,0 +1,10 @@
+/*
+ * Satu sistem styling: CSS berbasis class + CSS variable, warisan app lama.
+ * Tailwind dibuang — mencampur dua sistem styling di atas 2000 baris CSS yang
+ * sudah jalan hanya menambah cabang keputusan tanpa hasil.
+ *
+ * Urutan penting: system.css dimuat terakhir supaya token & koreksi desainnya
+ * menang atas nilai-nilai lepas di legacy.css.
+ */
+@import './legacy.css';
+@import './styles/system.css';
