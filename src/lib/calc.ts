@@ -1,11 +1,4 @@
-import type {
-  Account,
-  AccountBalance,
-  Expense,
-  Income,
-  MonthDataFull,
-  Piutang,
-} from '../types';
+import type { Account, AccountBalance, Expense, Income, MonthDataFull, Piutang } from '../types';
 import { EXPENSE_CATS } from '../types';
 
 /**
@@ -93,7 +86,9 @@ export function visibleExpenses(d: MonthDataFull): Expense[] {
 }
 
 /** Breakdown ringkasan per kategori — mengecualikan expense `fromPiutang`. */
-export function categoryBreakdown(d: MonthDataFull): { cat: string; amount: number; pct: number }[] {
+export function categoryBreakdown(
+  d: MonthDataFull,
+): { cat: string; amount: number; pct: number }[] {
   const catExp = new Map<string, number>();
   for (const e of d.expenses) {
     if (e.fromPiutang) continue;
@@ -144,4 +139,29 @@ export function isOverdue(p: Piutang): boolean {
 
 export function totalAllocated(d: MonthDataFull): number {
   return d.salaryAllocations.reduce((s, a) => s + a.amount, 0);
+}
+
+/**
+ * Filter baris transaksi: kata kunci bebas + kategori.
+ *
+ * Kata kunci dicocokkan ke deskripsi, catatan, dan kategori — sengaja bukan
+ * nominal. Angka pendek seperti "50" jadi substring hampir semua nominal, dan
+ * hasilnya lebih berisik daripada berguna.
+ */
+export function filterEntries<T extends { category: string; description: string; note?: string }>(
+  rows: T[],
+  query: string,
+  category: string,
+): T[] {
+  const q = query.trim().toLowerCase();
+  if (!q && !category) return rows;
+  return rows.filter((r) => {
+    if (category && r.category !== category) return false;
+    if (!q) return true;
+    return (
+      r.description.toLowerCase().includes(q) ||
+      (r.note ?? '').toLowerCase().includes(q) ||
+      r.category.toLowerCase().includes(q)
+    );
+  });
 }

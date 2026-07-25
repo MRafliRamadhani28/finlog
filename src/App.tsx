@@ -24,8 +24,16 @@ const MOBILE_BREAKPOINT = 820;
 
 // goey-toast menyeret framer-motion + sonner. Dimuat paralel di luar jalur
 // render pertama; toast baru dipakai setelah user beraksi. Lihat lib/toast.ts.
+//
+// Kegagalan muat ditelan jadi komponen kosong. `lazy()` yang ditolak melempar
+// melewati Suspense sampai ErrorBoundary — offline dengan chunk ini belum
+// tersimpan, seluruh app jadi layar error hanya karena toast gagal dimuat.
+type Toaster = typeof import('goey-toast').GooeyToaster;
+
 const GooeyToaster = lazy(() =>
-  import('goey-toast').then((m) => ({ default: m.GooeyToaster })),
+  import('goey-toast')
+    .then((m) => ({ default: m.GooeyToaster }))
+    .catch(() => ({ default: ((): ReactNode => null) as unknown as Toaster })),
 );
 
 export function App(): ReactNode {

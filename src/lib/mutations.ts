@@ -18,11 +18,7 @@ export interface CashInput {
   description: string;
 }
 
-export function addCashWithdrawal(
-  d: MonthDataFull,
-  input: CashInput,
-  accounts: Account[],
-): void {
+export function addCashWithdrawal(d: MonthDataFull, input: CashInput, accounts: Account[]): void {
   const id = nextId(d.cashWithdrawals);
   d.cashWithdrawals.push({
     id,
@@ -120,6 +116,45 @@ export function togglePiutangStatus(d: MonthDataFull, id: number): void {
     pt.status = 'Belum Lunas';
     d.expenses.push(piutangExpense(d, pt));
   }
+}
+
+/**
+ * Tandai lunas TANPA menghapus expense turunannya.
+ *
+ * Dipakai saat pelunasan dicatat sebagai pemasukan di bulan lain: uangnya
+ * memang benar-benar keluar di bulan ini, jadi arus keluarnya harus tetap
+ * tercatat di sini. Yang memulihkan saldo adalah entry pemasukan di bulan
+ * pelunasan, lewat `addPiutangSettlement`.
+ */
+export function markPiutangLunasKeepExpense(d: MonthDataFull, id: number): void {
+  const pt = d.piutang.find((p) => p.id === id);
+  if (!pt || pt.status === 'Lunas') return;
+  if (pt.accountId === undefined) {
+    pt.accountId = d.expenses.find((e) => e.piutangId === id)?.accountId ?? null;
+  }
+  pt.status = 'Lunas';
+}
+
+/**
+ * Catat uang piutang yang kembali sebagai pemasukan bulan ini.
+ *
+ * Sengaja TANPA `piutangLunasId`: entry yang punya field legacy itu dikecualikan
+ * dari total oleh `cleanIncome`, jadi saldonya justru tidak akan bertambah.
+ * Yang ini memang harus bertambah.
+ */
+export function addPiutangSettlement(
+  d: MonthDataFull,
+  input: { name: string; amount: number; fromMonthLabel: string },
+  date: string,
+): void {
+  d.income.push({
+    id: nextId(d.income),
+    date,
+    category: 'Lainnya',
+    description: `Pelunasan piutang: ${input.name}`,
+    amount: input.amount,
+    note: `Dicatat di ${input.fromMonthLabel}`,
+  });
 }
 
 export function deletePiutang(d: MonthDataFull, id: number): void {

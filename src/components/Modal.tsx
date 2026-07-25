@@ -165,14 +165,114 @@ export function CategorySelect({
   );
 }
 
-export function EmptyState({ icon, children }: { icon: IconName; children: ReactNode }): ReactNode {
+export function EmptyState({
+  icon,
+  children,
+  hint,
+  action,
+}: {
+  icon: IconName;
+  children: ReactNode;
+  /** Satu kalimat: gunanya fitur ini, supaya kosong tidak terasa buntu. */
+  hint?: ReactNode;
+  /** Tombol langkah pertama, biasanya membuka modal tambah yang sama. */
+  action?: ReactNode;
+}): ReactNode {
   return (
     <div className="empty">
       <div className="empty-icon">
         <Icon name={icon} size={34} />
       </div>
       <p>{children}</p>
+      {hint && <p className="empty-hint">{hint}</p>}
+      {action && <div className="empty-action">{action}</div>}
     </div>
+  );
+}
+
+interface FilterBarProps {
+  query: string;
+  onQuery: (v: string) => void;
+  /** `''` berarti semua kategori. */
+  category: string;
+  onCategory: (v: string) => void;
+  categories: readonly string[];
+  placeholder?: string;
+  /** Jumlah baris lolos filter dan totalnya, hanya tampil saat filter aktif. */
+  shown: number;
+  total: number;
+}
+
+/**
+ * Baris pencarian + filter kategori untuk tabel transaksi.
+ *
+ * State-nya milik pemanggil, bukan di sini: tiap tab menyaring koleksinya
+ * sendiri lewat `filterEntries`, komponen ini cuma kontrolnya.
+ */
+export function FilterBar({
+  query,
+  onQuery,
+  category,
+  onCategory,
+  categories,
+  placeholder = 'Cari deskripsi atau catatan…',
+  shown,
+  total,
+}: FilterBarProps): ReactNode {
+  const active = Boolean(query.trim() || category);
+  return (
+    <div className="filter-bar">
+      <div className="filter-search">
+        <Icon name="search" size={15} className="filter-search-icon" />
+        <input
+          type="search"
+          value={query}
+          placeholder={placeholder}
+          aria-label="Cari transaksi"
+          onChange={(e) => onQuery(e.target.value)}
+        />
+        {query && (
+          <button className="filter-clear" aria-label="Hapus pencarian" onClick={() => onQuery('')}>
+            <Icon name="close" size={13} />
+          </button>
+        )}
+      </div>
+      <select
+        className="filter-select"
+        value={category}
+        aria-label="Filter kategori"
+        onChange={(e) => onCategory(e.target.value)}
+      >
+        <option value="">Semua kategori</option>
+        {categories.map((c) => (
+          <option key={c} value={c}>
+            {c}
+          </option>
+        ))}
+      </select>
+      {active && (
+        <div className="filter-count" role="status">
+          <span className="num">{shown}</span> dari <span className="num">{total}</span>
+        </div>
+      )}
+    </div>
+  );
+}
+
+/** Hasil filter kosong — beda dari "belum ada data", jadi jalan keluarnya reset. */
+export function NoMatch({ onReset }: { onReset: () => void }): ReactNode {
+  return (
+    <EmptyState
+      icon="search-empty"
+      hint="Coba kata kunci lain, atau kembalikan kategori ke Semua."
+      action={
+        <button className="btn btn-ghost" onClick={onReset}>
+          <Icon name="close" size={15} /> Hapus Filter
+        </button>
+      }
+    >
+      Tidak ada transaksi yang cocok
+    </EmptyState>
   );
 }
 

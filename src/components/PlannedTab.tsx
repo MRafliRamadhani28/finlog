@@ -9,17 +9,10 @@ import { defaultDateFor, fmtRp } from '../lib/format';
 import { nextId } from '../lib/id';
 import { checkPlanned, uncheckPlanned } from '../lib/mutations';
 import { EXPENSE_CATS, type Planned } from '../types';
-import {
-  CardHeader,
-  CategorySelect,
-  EmptyState,
-  Field,
-  FormRow,
-  IconButton,
-  Modal,
-} from './Modal';
+import { CardHeader, CategorySelect, EmptyState, Field, FormRow, IconButton, Modal } from './Modal';
 import { Icon } from './Icon';
 import { Money } from './Money';
+import { MoneyInput } from './MoneyInput';
 
 export function PlannedTab(): ReactNode {
   const { data, updateMonth, accounts, currentDate } = useApp();
@@ -75,11 +68,19 @@ export function PlannedTab(): ReactNode {
             </button>
           }
         />
-        <div className="card-note">
-          Centang item untuk memindahkan ke pengeluaran aktual.
-        </div>
+        <div className="card-note">Centang item untuk memindahkan ke pengeluaran aktual.</div>
         {sorted.length === 0 ? (
-          <EmptyState icon="planned">Belum ada rencana pengeluaran</EmptyState>
+          <EmptyState
+            icon="planned"
+            hint="Daftarkan yang akan dibeli sebelum uangnya keluar — Saldo Bayangan menghitungnya sebagai uang yang sudah punya tujuan."
+            action={
+              <button className="btn btn-primary" onClick={() => setAddOpen(true)}>
+                <Icon name="add" size={15} /> Tambah Rencana
+              </button>
+            }
+          >
+            Belum ada rencana pengeluaran
+          </EmptyState>
         ) : (
           sorted.map((p) => (
             <div key={p.id} className={'planned-item' + (p.checked ? ' checked' : '')}>
@@ -147,7 +148,7 @@ function PlannedModal({ editing, onClose }: { editing?: Planned; onClose: () => 
   const { updateMonth } = useApp();
   const [description, setDescription] = useState(editing?.description ?? '');
   const [category, setCategory] = useState<string>(editing?.category ?? EXPENSE_CATS[0]);
-  const [amount, setAmount] = useState(editing ? String(editing.amount) : '');
+  const [amount, setAmount] = useState(editing ? String(Math.round(editing.amount)) : '');
 
   const submit = (): void => {
     const desc = description.trim();
@@ -209,13 +210,7 @@ function PlannedModal({ editing, onClose }: { editing?: Planned; onClose: () => 
           <CategorySelect value={category} onChange={setCategory} options={EXPENSE_CATS} />
         </Field>
         <Field label="Estimasi (Rp)">
-          <input
-            type="number"
-            placeholder="100000"
-            min="0"
-            value={amount}
-            onChange={(e) => setAmount(e.target.value)}
-          />
+          <MoneyInput placeholder="100.000" value={amount} onChange={setAmount} />
         </Field>
       </FormRow>
     </Modal>

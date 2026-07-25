@@ -1,7 +1,9 @@
-import type { ReactNode } from 'react';
+import { useMemo, type ReactNode } from 'react';
 import { useApp } from '../hooks/useApp';
 import { categoryBreakdown, monthTotals } from '../lib/calc';
+import { monthlyTrend, monthsBetween } from '../lib/crossMonth';
 import { catColor, fmtRp } from '../lib/format';
+import { monthKey } from '../lib/storage';
 import { CardHeader } from './Modal';
 import { Money } from './Money';
 
@@ -57,13 +59,18 @@ export function SummaryTab(): ReactNode {
                   </span>
                 </div>
                 <div className="progress-bar">
-                  <div className="progress-fill" style={{ width: `${c.pct}%`, background: color }} />
+                  <div
+                    className="progress-fill"
+                    style={{ width: `${c.pct}%`, background: color }}
+                  />
                 </div>
               </div>
             );
           })
         )}
       </div>
+
+      <TrendCard />
 
       <div className="card">
         <CardHeader dot="blue" title="Alokasi Gaji per Akun" />
@@ -94,6 +101,76 @@ export function SummaryTab(): ReactNode {
         )}
       </div>
     </>
+  );
+}
+
+/**
+ * Tren pemasukan vs pengeluaran lintas bulan.
+ *
+ * Batang dibuat dari div berlebar persen, bukan SVG. Skalanya satu: semua
+ * batang diukur terhadap nilai terbesar di seluruh rentang, supaya tinggi
+ * batang antar bulan benar-benar bisa dibandingkan. Bar chart HTML juga ikut
+ * responsif dan terbaca screen reader tanpa kerja tambahan — sesuatu yang harus
+ * dibangun sendiri kalau pakai SVG.
+ */
+function TrendCard(): ReactNode {
+  const { currentDate, data, changeMonth } = useApp();
+  const activeKey = monthKey(currentDate);
+
+  // `data` jadi dependency supaya rekap ikut segar setelah data bulan diubah.
+  const points = useMemo(() => monthlyTrend(), [data]);
+
+  if (points.length < 2) return null;
+
+  const peak = Math.max(...points.map((p) => Math.max(p.income, p.expenses)));
+  const avgNet = points.reduce((s, p) => s + p.net, 0) / points.length;
+
+  return (
+    <div className="card">
+      <CardHeader
+        dot="purple"
+        title="Tren Bulanan"
+        action={
+          <span className="cell-note">
+            Rata-rata sisa <Money value={avgNet} tone={avgNet >= 0 ? 'green' : 'red'} signed />
+          </span>
+        }
+      />
+      <div className="card-note">
+        Panjang batang dibandingkan terhadap bulan tertinggi ({fmtRp(peak)}).
+      </div>
+      <div className="trend">
+        {points.map((p) => (
+          <button
+            key={p.monthKey}
+            className={'trend-row' + (p.monthKey === activeKey ? ' trend-row-active' : '')}
+            onClick={() => changeMonth(monthsBetween(currentDate, p.monthDate))}
+            title={`Buka ${p.shortLabel}`}
+          >
+            <span className="trend-label">{p.shortLabel}</span>
+            <span className="trend-bars">
+              <span className="trend-bar-track">
+                <span
+                  className="trend-bar trend-bar-in"
+                  style={{ width: `${peak ? (p.income / peak) * 100 : 0}%` }}
+                />
+              </span>
+              <span className="trend-bar-track">
+                <span
+                  className="trend-bar trend-bar-out"
+                  style={{ width: `${peak ? (p.expenses / peak) * 100 : 0}%` }}
+                />
+              </span>
+            </span>
+            <span className="trend-figures">
+              <Money value={p.income} tone="green" />
+              <Money value={p.expenses} tone="red" negative />
+              <Money value={p.net} tone={p.net >= 0 ? 'green' : 'red'} signed weight="strong" />
+            </span>
+          </button>
+        ))}
+      </div>
+    </div>
   );
 }
 

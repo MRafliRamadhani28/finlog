@@ -532,6 +532,297 @@ table th {
   opacity: 0.7;
 }
 
+/* Kalimat pertama tegas, penjelasan redup di bawahnya, aksi paling bawah. */
+.empty p {
+  color: var(--text2);
+}
+
+.empty-hint {
+  max-width: 46ch;
+  margin: var(--sp-1) auto 0;
+  line-height: 1.6;
+}
+
+.empty p + .empty-hint {
+  color: var(--text3);
+}
+
+.empty-action {
+  margin-top: var(--sp-3);
+}
+
+/* =======================================================================
+   FILTER TRANSAKSI
+   Kontrol pencarian di atas tabel. Sengaja setipis mungkin: garis bawah
+   pemisah saja, tanpa kartu bersarang — tabel di bawahnya yang jadi fokus.
+   ======================================================================= */
+.filter-bar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--sp-2);
+  padding-bottom: var(--sp-3);
+  margin-bottom: var(--sp-3);
+  border-bottom: 1px solid var(--border);
+}
+
+.filter-search {
+  position: relative;
+  display: flex;
+  align-items: center;
+  flex: 1 1 220px;
+}
+
+.filter-search-icon {
+  position: absolute;
+  left: var(--sp-2);
+  color: var(--text3);
+  pointer-events: none;
+}
+
+.filter-search input,
+.filter-select {
+  background: var(--bg2);
+  border: 1px solid var(--border);
+  border-radius: var(--r2);
+  color: var(--text);
+  font-family: 'Sora', sans-serif;
+  font-size: var(--fs-3);
+  padding: 8px 12px;
+  outline: none;
+  transition: border-color var(--dur);
+}
+
+.filter-search input {
+  width: 100%;
+  padding-left: 30px;
+  padding-right: 28px;
+}
+
+/* Tombol silang bawaan Safari/Chrome ditiadakan — ada tombol sendiri yang
+   punya nama untuk screen reader. */
+.filter-search input::-webkit-search-cancel-button {
+  appearance: none;
+}
+
+.filter-search input:focus,
+.filter-select:focus {
+  border-color: var(--blue);
+}
+
+.filter-select {
+  flex: 0 1 auto;
+}
+
+.filter-select option {
+  background: var(--bg2);
+}
+
+.filter-clear {
+  position: absolute;
+  right: var(--sp-1);
+  display: inline-flex;
+  padding: var(--sp-1);
+  border: 0;
+  border-radius: var(--r-xs);
+  background: none;
+  color: var(--text3);
+  cursor: pointer;
+}
+
+.filter-clear:hover {
+  color: var(--text);
+}
+
+.filter-count {
+  color: var(--text3);
+  font-size: var(--fs-2);
+  margin-left: auto;
+  white-space: nowrap;
+}
+
+/* =======================================================================
+   PIUTANG BULAN LAIN
+   Bentuknya baris, bukan tabel: jumlahnya sedikit dan yang penting cuma
+   nama, nominal, dan satu aksi.
+   ======================================================================= */
+.foreign-piutang {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--sp-2) var(--sp-3);
+  padding: var(--sp-3) 0;
+  border-bottom: 1px solid var(--border);
+}
+
+.foreign-piutang:last-child {
+  border-bottom: 0;
+  padding-bottom: 0;
+}
+
+.foreign-piutang-main {
+  display: flex;
+  align-items: baseline;
+  gap: var(--sp-3);
+  flex: 1 1 200px;
+}
+
+.foreign-piutang-meta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--sp-1) var(--sp-3);
+  font-size: var(--fs-2);
+}
+
+/* Badge yang bisa diklik — pakai gaya badge, perilaku tombol. */
+.link-badge {
+  border: 0;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+}
+
+.link-badge:hover {
+  color: var(--text);
+}
+
+/* Pilihan bertumpuk di modal: satu blok teks yang bisa diklik, bukan tombol
+   sebaris — tiap opsi butuh kalimat penjelas konsekuensinya. */
+.settle-option {
+  display: block;
+  width: 100%;
+  text-align: left;
+  background: var(--bg2);
+  border: 1px solid var(--border);
+  border-radius: var(--r2);
+  padding: var(--sp-3);
+  margin-top: var(--sp-2);
+  cursor: pointer;
+  transition:
+    border-color var(--dur),
+    background var(--dur);
+}
+
+.settle-option:hover {
+  border-color: var(--blue);
+  background: var(--card2);
+}
+
+.settle-option-title {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-2);
+  color: var(--text);
+  font-size: var(--fs-4);
+  font-weight: 600;
+}
+
+.settle-option-desc {
+  display: block;
+  margin-top: var(--sp-1);
+  color: var(--text3);
+  font-size: var(--fs-2);
+  line-height: 1.55;
+}
+
+/* =======================================================================
+   TREN BULANAN
+   Bar chart dari div, bukan SVG: skalanya satu (persen terhadap bulan
+   tertinggi), ikut responsif, dan angkanya tetap teks yang bisa dibaca.
+   ======================================================================= */
+.trend {
+  display: flex;
+  flex-direction: column;
+}
+
+.trend-row {
+  display: grid;
+  grid-template-columns: 68px 1fr auto;
+  align-items: center;
+  gap: var(--sp-3);
+  width: 100%;
+  padding: var(--sp-2) var(--sp-2);
+  border: 1px solid transparent;
+  border-radius: var(--r2);
+  background: none;
+  text-align: left;
+  cursor: pointer;
+  transition: background var(--dur);
+}
+
+.trend-row:hover {
+  background: var(--bg2);
+}
+
+.trend-row-active {
+  border-color: var(--border2);
+  background: var(--bg2);
+}
+
+.trend-label {
+  color: var(--text2);
+  font-size: var(--fs-2);
+  white-space: nowrap;
+}
+
+.trend-bars {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  min-width: 0;
+}
+
+.trend-bar-track {
+  display: block;
+  height: 8px;
+  border-radius: 2px;
+  background: rgba(var(--text3-rgb), 0.14);
+}
+
+.trend-bar {
+  display: block;
+  height: 100%;
+  border-radius: 2px;
+  /* Nilai nol tetap menyisakan sedikit lebar supaya barisnya tidak terlihat
+     rusak — bedakan "kecil" dari "tidak ada". */
+  min-width: 2px;
+}
+
+.trend-bar-in {
+  background: var(--green);
+}
+
+.trend-bar-out {
+  background: var(--red);
+}
+
+.trend-figures {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, auto));
+  gap: var(--sp-1) var(--sp-3);
+  justify-items: end;
+  font-size: var(--fs-2);
+  white-space: nowrap;
+}
+
+@media (max-width: 640px) {
+  .trend-row {
+    grid-template-columns: 60px 1fr;
+  }
+
+  .trend-figures {
+    grid-column: 1 / -1;
+    grid-template-columns: repeat(3, 1fr);
+    justify-items: start;
+  }
+
+  .trend-figures > :last-child {
+    justify-self: end;
+  }
+}
+
 .tut-icon {
   color: var(--blue);
   margin-bottom: var(--sp-3);

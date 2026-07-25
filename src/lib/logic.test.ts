@@ -1,7 +1,16 @@
 import { describe, expect, it } from 'vitest';
 import type { MonthDataFull } from '../types';
 import { coerceMonthData, defaultMonthData } from './storage';
-import { budgetProgress, categoryBreakdown, getAccountBalance, monthTotals, visibleExpenses } from './calc';
+import { groupThousands, moneyEdit } from './format';
+import { monthsBetween, parseMonthKey } from './crossMonth';
+import {
+  budgetProgress,
+  categoryBreakdown,
+  filterEntries,
+  getAccountBalance,
+  monthTotals,
+  visibleExpenses,
+} from './calc';
 import {
   addCashWithdrawal,
   addPiutang,
@@ -9,6 +18,8 @@ import {
   deleteCashWithdrawal,
   deleteIncome,
   deletePiutang,
+  markPiutangLunasKeepExpense,
+  addPiutangSettlement,
   setAllocation,
   togglePiutangStatus,
   uncheckPlanned,
@@ -242,5 +253,132 @@ describe('alokasi gaji', () => {
     expect(d.salaryAllocations).toHaveLength(1);
     setAllocation(d, BCA.id, 0);
     expect(d.salaryAllocations).toHaveLength(0);
+  });
+});
+
+describe('input nominal berformat', () => {
+  // Bantu baca: `|` menandai posisi caret pada teks di dalam input.
+  const edit = (prev: string, marked: string, inputType?: string) =>
+    moneyEdit(prev, marked.replace('|', ''), marked.indexOf('|'), inputType);
+
+  it('mengetik angka menyisipkan pemisah tanpa memindah caret', () => {
+    expect(edit('50000', '500000|', 'insertText')).toEqual({ raw: '500000', caretDigits: 6 });
+    expect(groupThousands('500000')).toBe('500.000');
+  });
+
+  it('pemisah yang ikut terketik dibuang', () => {
+    expect(edit('', '1.500.000|', 'insertFromPaste').raw).toBe('1500000');
+    expect(edit('', 'Rp 25rb|', 'insertFromPaste').raw).toBe('25');
+  });
+
+  it('Backspace di kanan pemisah membuang digit, bukan cuma titiknya', () => {
+    // "500.000" caret setelah titik, Backspace menghapus titik saja —
+    // digitnya tak berubah, jadi harus dibuang satu digit lagi.
+    expect(edit('500000', '500|000', 'deleteContentBackward')).toEqual({
+      raw: '50000',
+      caretDigits: 2,
+    });
+  });
+
+  it('Delete di kiri pemisah membuang digit sesudahnya', () => {
+    expect(edit('500000', '500|000', 'deleteContentForward')).toEqual({
+      raw: '50000',
+      caretDigits: 3,
+    });
+  });
+
+  it('Backspace pada digit biasa tidak membuang dua digit', () => {
+    expect(edit('500000', '50000|', 'deleteContentBackward')).toEqual({
+      raw: '50000',
+      caretDigits: 5,
+    });
+  });
+
+  it('kosong tetap kosong supaya placeholder tampil', () => {
+    expect(groupThousands('')).toBe('');
+    expect(edit('5', '|', 'deleteContentBackward').raw).toBe('');
+  });
+});
+
+describe('cari & filter transaksi', () => {
+  const rows = [
+    { id: 1, category: 'Makanan', description: 'Nasi Padang', note: 'kantor' },
+    { id: 2, category: 'Transport', description: 'Bensin', note: '' },
+    { id: 3, category: 'Makanan', description: 'Kopi', note: 'meeting Padang' },
+  ];
+
+  it('tanpa kata kunci dan kategori, semua baris lolos', () => {
+    expect(filterEntries(rows, '', '')).toHaveLength(3);
+    expect(filterEntries(rows, '   ', '')).toHaveLength(3);
+  });
+
+  it('kata kunci cocok ke deskripsi, catatan, dan kategori', () => {
+    expect(filterEntries(rows, 'padang', '').map((r) => r.id)).toEqual([1, 3]);
+    expect(filterEntries(rows, 'KANTOR', '').map((r) => r.id)).toEqual([1]);
+    expect(filterEntries(rows, 'transport', '').map((r) => r.id)).toEqual([2]);
+  });
+
+  it('kategori dan kata kunci berlaku bersamaan, bukan salah satu', () => {
+    expect(filterEntries(rows, 'padang', 'Makanan').map((r) => r.id)).toEqual([1, 3]);
+    expect(filterEntries(rows, 'padang', 'Transport')).toHaveLength(0);
+  });
+
+  it('baris tanpa catatan tidak bikin error', () => {
+    expect(filterEntries([{ category: 'Bonus', description: 'THR' }], 'thr', '')).toHaveLength(1);
+  });
+});
+
+describe('piutang lintas bulan', () => {
+  it('key bulan diurai, key non-bulan ditolak', () => {
+    expect(parseMonthKey('finance_2026_07')?.getFullYear()).toBe(2026);
+    expect(parseMonthKey('finance_2026_07')?.getMonth()).toBe(6);
+    expect(parseMonthKey('finance_accounts')).toBeNull();
+    expect(parseMonthKey('finance_wishlist')).toBeNull();
+    expect(parseMonthKey('finance_2026_13')).toBeNull();
+    expect(parseMonthKey('finance_2026_7')).toBeNull();
+  });
+
+  it('jarak bulan dipakai changeMonth, termasuk lintas tahun', () => {
+    const jul2026 = new Date(2026, 6, 1);
+    expect(monthsBetween(jul2026, new Date(2026, 3, 1))).toBe(-3);
+    expect(monthsBetween(jul2026, new Date(2025, 11, 1))).toBe(-7);
+    expect(monthsBetween(jul2026, jul2026)).toBe(0);
+  });
+});
+
+describe('pelunasan piutang beda bulan', () => {
+  it('tandai lunas tanpa hapus expense: arus keluar bulan asal tetap tercatat', () => {
+    const d = seed();
+    addPiutang(d, { name: 'Siti', date: '', amount: 750_000, due: '', note: '', accountId: BCA.id });
+    const pt = d.piutang[0]!;
+
+    markPiutangLunasKeepExpense(d, pt.id);
+    expect(d.piutang[0]!.status).toBe('Lunas');
+    expect(d.expenses).toHaveLength(1);
+    expect(monthTotals(d).currentBalance).toBe(4_250_000);
+    // Piutang lunas tidak lagi dihitung sebagai belum lunas.
+    expect(monthTotals(d).totalPiutangBelumLunas).toBe(0);
+  });
+
+  it('pelunasan yang dicatat bulan lain menambah saldo bulan itu', () => {
+    const d = seed();
+    addPiutangSettlement(d, { name: 'Siti', amount: 750_000, fromMonthLabel: 'Juni 2026' }, '2026-07-03');
+    // Harus IKUT terhitung — beda dari entry legacy berpiutangLunasId.
+    expect(monthTotals(d).totalAdditional).toBe(750_000);
+    expect(monthTotals(d).currentBalance).toBe(5_750_000);
+  });
+
+  it('expense bulan asal + pemasukan bulan pelunasan tidak saling dobel', () => {
+    const juni = seed();
+    addPiutang(juni, { name: 'Siti', date: '', amount: 750_000, due: '', note: '', accountId: BCA.id });
+    markPiutangLunasKeepExpense(juni, juni.piutang[0]!.id);
+
+    const juli = seed();
+    addPiutangSettlement(juli, { name: 'Siti', amount: 750_000, fromMonthLabel: 'Juni 2026' }, '');
+
+    // Dua bulan digabung: 750rb keluar di Juni, 750rb masuk di Juli — impas.
+    const gabungan =
+      monthTotals(juni).currentBalance - 5_000_000 + (monthTotals(juli).currentBalance - 5_000_000);
+    expect(gabungan).toBe(0);
   });
 });

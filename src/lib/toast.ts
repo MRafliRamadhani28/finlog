@@ -21,7 +21,13 @@ export interface ToastOptions {
 }
 
 function show(kind: 'success' | 'error', message: string, options?: ToastOptions): void {
-  void load().then((m) => m.gooeyToast[kind](message, options as GooeyToastOptions));
+  void load().then(
+    (m) => m.gooeyToast[kind](message, options as GooeyToastOptions),
+    // Chunk-nya tidak bisa dimuat (offline, belum ter-cache). Aksinya sendiri
+    // sudah berhasil — kehilangan notifikasinya jauh lebih baik daripada
+    // unhandled rejection.
+    () => {},
+  );
 }
 
 export const toast = {

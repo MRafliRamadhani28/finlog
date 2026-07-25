@@ -20,6 +20,7 @@ import {
 } from './Modal';
 import { Icon } from './Icon';
 import { Money } from './Money';
+import { MoneyInput } from './MoneyInput';
 
 export function CashTab(): ReactNode {
   const { data, accounts } = useApp();
@@ -68,7 +69,17 @@ export function CashTab(): ReactNode {
           transaksi.
         </div>
         {data.cashWithdrawals.length === 0 ? (
-          <EmptyState icon="cash">Belum ada penarikan tunai</EmptyState>
+          <EmptyState
+            icon="cash"
+            hint="Uang di dompet dilacak terpisah dari saldo rekening, jadi sisa tunai tetap terlihat."
+            action={
+              <button className="btn btn-primary" onClick={() => setCashModal(true)}>
+                <Icon name="add" size={15} /> Tarik Tunai
+              </button>
+            }
+          >
+            Belum ada penarikan tunai
+          </EmptyState>
         ) : (
           [...data.cashWithdrawals].reverse().map((c) => {
             const acc = c.accountId ? accounts.find((a) => a.id === c.accountId) : null;
@@ -140,7 +151,9 @@ export function CashTab(): ReactNode {
                       ))
                     )}
                   </div>
-                  <div className={'cash-untracked ' + (untracked > 0 ? 'tone-yellow' : 'tone-green')}>
+                  <div
+                    className={'cash-untracked ' + (untracked > 0 ? 'tone-yellow' : 'tone-green')}
+                  >
                     <span>Sudah tercatat</span>
                     <Money value={tracked} weight="strong" />
                   </div>
@@ -228,13 +241,7 @@ function CashModal({ onClose }: { onClose: () => void }): ReactNode {
       </FormRow>
       <FormRow>
         <Field label="Jumlah Tarik (Rp)">
-          <input
-            type="number"
-            placeholder="500000"
-            min="0"
-            value={amount}
-            onChange={(e) => setAmount(e.target.value)}
-          />
+          <MoneyInput placeholder="500.000" value={amount} onChange={setAmount} />
         </Field>
         <Field label="Deskripsi">
           <input
@@ -311,13 +318,7 @@ function CashItemModal({ cashId, onClose }: { cashId: number; onClose: () => voi
           <CategorySelect value={category} onChange={setCategory} options={EXPENSE_CATS} />
         </Field>
         <Field label="Jumlah (Rp)">
-          <input
-            type="number"
-            placeholder="50000"
-            min="0"
-            value={amount}
-            onChange={(e) => setAmount(e.target.value)}
-          />
+          <MoneyInput placeholder="50.000" value={amount} onChange={setAmount} />
         </Field>
       </FormRow>
     </Modal>

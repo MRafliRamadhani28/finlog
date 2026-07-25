@@ -3,7 +3,7 @@ import { toast } from '../lib/toast';
 import { useApp } from '../hooks/useApp';
 import { useConfirmDelete } from '../hooks/useConfirm';
 import { useUndoableDelete } from '../hooks/useUndoableDelete';
-import { cleanIncome, totalAllocated } from '../lib/calc';
+import { cleanIncome, filterEntries, totalAllocated } from '../lib/calc';
 import { catBadgeStyle, defaultDateFor, fmtDate, fmtRp } from '../lib/format';
 import { deleteIncome, setAllocation } from '../lib/mutations';
 import { nextId } from '../lib/id';
@@ -13,29 +13,40 @@ import {
   CategorySelect,
   EmptyState,
   Field,
+  FilterBar,
   FormRow,
   IconButton,
   Modal,
+  NoMatch,
 } from './Modal';
 import { Icon } from './Icon';
 import { Money } from './Money';
+import { MoneyInput } from './MoneyInput';
 
 export function IncomeTab(): ReactNode {
   const { data, updateMonth, accounts } = useApp();
   const [editingSalary, setEditingSalary] = useState(false);
   const [salaryInput, setSalaryInput] = useState('');
   const [modalOpen, setModalOpen] = useState(false);
+  const [query, setQuery] = useState('');
+  const [catFilter, setCatFilter] = useState('');
   const confirmDelete = useConfirmDelete();
   const undoable = useUndoableDelete();
 
   const income = cleanIncome(data.income);
+  const rows = filterEntries(income, query, catFilter);
+
+  const resetFilter = (): void => {
+    setQuery('');
+    setCatFilter('');
+  };
 
   const openSalaryEdit = (): void => {
     if (editingSalary) {
       setEditingSalary(false);
       return;
     }
-    setSalaryInput(data.salary ? String(data.salary) : '');
+    setSalaryInput(data.salary ? String(Math.round(data.salary)) : '');
     setEditingSalary(true);
   };
 
@@ -77,14 +88,12 @@ export function IncomeTab(): ReactNode {
             <div className="salary-edit">
               <div className="form-group grow">
                 <label htmlFor="salary-input">Nominal Gaji</label>
-                <input
+                <MoneyInput
                   id="salary-input"
-                  type="number"
-                  placeholder="5000000"
-                  min="0"
+                  placeholder="5.000.000"
                   autoFocus
                   value={salaryInput}
-                  onChange={(e) => setSalaryInput(e.target.value)}
+                  onChange={setSalaryInput}
                   onKeyDown={(e) => e.key === 'Enter' && saveSalary()}
                 />
               </div>
@@ -108,47 +117,72 @@ export function IncomeTab(): ReactNode {
           }
         />
         {income.length === 0 ? (
-          <EmptyState icon="income">Belum ada penghasilan tambahan</EmptyState>
+          <EmptyState
+            icon="income"
+            hint="Bonus, freelance, atau pemasukan lain di luar gaji pokok. Semuanya ikut menambah Saldo Terkini."
+            action={
+              <button className="btn btn-primary" onClick={() => setModalOpen(true)}>
+                <Icon name="add" size={15} /> Tambah Penghasilan
+              </button>
+            }
+          >
+            Belum ada penghasilan tambahan
+          </EmptyState>
         ) : (
-          <div className="table-wrap">
-            <table>
-              <thead>
-                <tr>
-                  <th>Tanggal</th>
-                  <th>Kategori</th>
-                  <th>Deskripsi</th>
-                  <th>Jumlah</th>
-                  <th>Catatan</th>
-                  <th />
-                </tr>
-              </thead>
-              <tbody>
-                {[...income].reverse().map((i) => (
-                  <tr key={i.id}>
-                    <td className="cell-muted">{fmtDate(i.date)}</td>
-                    <td>
-                      <span className="badge" style={catBadgeStyle(i.category)}>
-                        {i.category}
-                      </span>
-                    </td>
-                    <td className="cell-name">{i.description}</td>
-                    <td>
-                      <Money value={i.amount} tone="green" weight="strong" />
-                    </td>
-                    <td className="cell-note">{i.note || '-'}</td>
-                    <td>
-                      <IconButton
-                        icon="delete"
-                        tone="red"
-                        label="Hapus pemasukan"
-                        onClick={() => void handleDelete(i.id)}
-                      />
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
+          <>
+            <FilterBar
+              query={query}
+              onQuery={setQuery}
+              category={catFilter}
+              onCategory={setCatFilter}
+              categories={INCOME_CATS}
+              shown={rows.length}
+              total={income.length}
+            />
+            {rows.length === 0 ? (
+              <NoMatch onReset={resetFilter} />
+            ) : (
+              <div className="table-wrap">
+                <table>
+                  <thead>
+                    <tr>
+                      <th>Tanggal</th>
+                      <th>Kategori</th>
+                      <th>Deskripsi</th>
+                      <th>Jumlah</th>
+                      <th>Catatan</th>
+                      <th />
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {[...rows].reverse().map((i) => (
+                      <tr key={i.id}>
+                        <td className="cell-muted">{fmtDate(i.date)}</td>
+                        <td>
+                          <span className="badge" style={catBadgeStyle(i.category)}>
+                            {i.category}
+                          </span>
+                        </td>
+                        <td className="cell-name">{i.description}</td>
+                        <td>
+                          <Money value={i.amount} tone="green" weight="strong" />
+                        </td>
+                        <td className="cell-note">{i.note || '-'}</td>
+                        <td>
+                          <IconButton
+                            icon="delete"
+                            tone="red"
+                            label="Hapus pemasukan"
+                            onClick={() => void handleDelete(i.id)}
+                          />
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            )}
+          </>
         )}
       </div>
 
@@ -169,7 +203,7 @@ function SalarySplit(): ReactNode {
 
   const startEdit = (accountId: number, amount: number): void => {
     setEditingId(accountId);
-    setDraft(amount > 0 ? String(amount) : '');
+    setDraft(amount > 0 ? String(Math.round(amount)) : '');
   };
 
   const save = (accountId: number): void => {
@@ -212,16 +246,14 @@ function SalarySplit(): ReactNode {
                 {amt > 0 ? fmtRp(amt) : 'Belum diatur'}
               </div>
               <div className="split-edit-wrap">
-                <input
-                  type="number"
+                <MoneyInput
                   className="split-input"
                   placeholder="0"
-                  min="0"
                   aria-label={`Alokasi untuk ${a.bank} ${a.name}`}
                   autoFocus={editing}
-                  value={editing ? draft : amt || ''}
+                  value={editing ? draft : amt ? String(Math.round(amt)) : ''}
                   onClick={(e) => e.stopPropagation()}
-                  onChange={(e) => setDraft(e.target.value)}
+                  onChange={setDraft}
                   onKeyDown={(e) => e.key === 'Enter' && save(a.id)}
                 />
                 <button
@@ -273,7 +305,14 @@ function IncomeModal({ onClose }: { onClose: () => void }): ReactNode {
       return;
     }
     updateMonth((d) => {
-      d.income.push({ id: nextId(d.income), date, category, description: desc, amount: amt, note });
+      d.income.push({
+        id: nextId(d.income),
+        date,
+        category,
+        description: desc,
+        amount: amt,
+        note,
+      });
     });
     toast.success('Pemasukan ditambahkan');
     onClose();
@@ -316,13 +355,7 @@ function IncomeModal({ onClose }: { onClose: () => void }): ReactNode {
       </FormRow>
       <FormRow>
         <Field label="Jumlah (Rp)">
-          <input
-            type="number"
-            placeholder="500000"
-            min="0"
-            value={amount}
-            onChange={(e) => setAmount(e.target.value)}
-          />
+          <MoneyInput placeholder="500.000" value={amount} onChange={setAmount} />
         </Field>
         <Field label="Catatan">
           <input

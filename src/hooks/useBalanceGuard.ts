@@ -40,7 +40,8 @@ export function useBalanceGuard(): (
           : `Jumlah (${fmtRp(cost)}) melebihi saldo akun (${fmtRp(bal.effective)}). Tetap lanjutkan?`;
 
       return confirm({
-        title: '⚠️ Saldo Tidak Cukup',
+        // Tanpa emoji: Modal sudah menggambar ikon peringatan sendiri.
+        title: 'Saldo Tidak Cukup',
         message,
         confirmLabel: 'Lanjutkan',
       });

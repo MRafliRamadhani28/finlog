@@ -6,6 +6,48 @@ export function fmtRp(n: number): string {
   return 'Rp ' + Math.abs(n).toLocaleString('id-ID');
 }
 
+export function onlyDigits(s: string): string {
+  return s.replace(/\D/g, '');
+}
+
+/** `"500000"` jadi `"500.000"`. Kosong tetap kosong supaya placeholder tampil. */
+export function groupThousands(raw: string): string {
+  return raw ? Number(raw).toLocaleString('id-ID') : '';
+}
+
+/**
+ * Hasil satu ketikan di input nominal berformat: digit polos baru + berapa
+ * digit yang ada di kiri caret (dipakai memulihkan posisi caret setelah titik
+ * pemisah digambar ulang).
+ *
+ * `prev` adalah digit polos sebelum ketikan, `text`/`caret` adalah isi mentah
+ * dan posisi caret milik elemen input sesudah browser memproses ketikan.
+ *
+ * Menghapus tepat di sebelah titik pemisah hanya membuang titiknya — digitnya
+ * utuh, jadi tombol Backspace/Delete terasa macet. Kalau jumlah digit tidak
+ * berubah setelah aksi hapus, digit di sebelah caret ikut dibuang.
+ */
+export function moneyEdit(
+  prev: string,
+  text: string,
+  caret: number,
+  inputType: string | undefined,
+): { raw: string; caretDigits: number } {
+  const raw = onlyDigits(text);
+  let caretDigits = onlyDigits(text.slice(0, caret)).length;
+
+  if (raw !== onlyDigits(prev)) return { raw, caretDigits };
+
+  if (inputType === 'deleteContentBackward' && caretDigits > 0) {
+    caretDigits -= 1;
+    return { raw: raw.slice(0, caretDigits) + raw.slice(caretDigits + 1), caretDigits };
+  }
+  if (inputType === 'deleteContentForward') {
+    return { raw: raw.slice(0, caretDigits) + raw.slice(caretDigits + 1), caretDigits };
+  }
+  return { raw, caretDigits };
+}
+
 export function fmtDate(d: string | undefined | null): string {
   if (!d) return '-';
   return new Date(d).toLocaleDateString('id-ID', {

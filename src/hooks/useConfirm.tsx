@@ -30,15 +30,12 @@ export function ConfirmProvider({ children }: { children: ReactNode }): ReactNod
     [],
   );
 
-  const close = useCallback(
-    (ok: boolean) => {
-      setPending((p) => {
-        p?.resolve(ok);
-        return null;
-      });
-    },
-    [],
-  );
+  const close = useCallback((ok: boolean) => {
+    setPending((p) => {
+      p?.resolve(ok);
+      return null;
+    });
+  }, []);
 
   return (
     <ConfirmContext.Provider value={confirm}>

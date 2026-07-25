@@ -67,8 +67,5 @@ export function usePersistentState<T>(
 
   // Identitas objek harus stabil: dia jadi dependency `useMemo` context di
   // useApp. Objek literal baru tiap render bikin memo itu tidak pernah bekerja.
-  return useMemo(
-    () => ({ value, update, replace, reload }),
-    [value, update, replace, reload],
-  );
+  return useMemo(() => ({ value, update, replace, reload }), [value, update, replace, reload]);
 }

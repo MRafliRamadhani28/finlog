@@ -6,6 +6,7 @@ import { catColor, fmtRp } from '../lib/format';
 import { EXPENSE_CATS } from '../types';
 import { CardHeader, EmptyState, Field, Modal } from './Modal';
 import { Icon } from './Icon';
+import { MoneyInput } from './MoneyInput';
 
 export function BudgetTab(): ReactNode {
   const { data } = useApp();
@@ -34,8 +35,16 @@ export function BudgetTab(): ReactNode {
           </div>
         )}
         {rows.length === 0 ? (
-          <EmptyState icon="budget">
-            Atur batas budget per kategori, atau tambah pengeluaran terlebih dahulu.
+          <EmptyState
+            icon="budget"
+            hint="Setelah batas diatur, tiap kategori punya progres pemakaian dan peringatan saat batasnya terlampaui."
+            action={
+              <button className="btn btn-primary" onClick={() => setModalOpen(true)}>
+                <Icon name="settings" size={15} /> Atur Budget
+              </button>
+            }
+          >
+            Belum ada batas budget
           </EmptyState>
         ) : (
           rows.map((r) => {
@@ -85,7 +94,12 @@ export function BudgetTab(): ReactNode {
 function BudgetModal({ onClose }: { onClose: () => void }): ReactNode {
   const { data, updateMonth } = useApp();
   const [values, setValues] = useState<Record<string, string>>(() =>
-    Object.fromEntries(EXPENSE_CATS.map((c) => [c, data.budgets[c] ? String(data.budgets[c]) : ''])),
+    Object.fromEntries(
+      EXPENSE_CATS.map((c) => {
+        const v = data.budgets[c];
+        return [c, v ? String(Math.round(v)) : ''];
+      }),
+    ),
   );
 
   const submit = (): void => {
@@ -121,12 +135,10 @@ function BudgetModal({ onClose }: { onClose: () => void }): ReactNode {
       {EXPENSE_CATS.map((cat) => (
         <div key={cat} className="form-grid budget-row">
           <Field label={cat} labelColor={catColor(cat)}>
-            <input
-              type="number"
+            <MoneyInput
               placeholder="Tidak ada batas"
-              min="0"
               value={values[cat] ?? ''}
-              onChange={(e) => setValues((prev) => ({ ...prev, [cat]: e.target.value }))}
+              onChange={(raw) => setValues((prev) => ({ ...prev, [cat]: raw }))}
             />
           </Field>
         </div>

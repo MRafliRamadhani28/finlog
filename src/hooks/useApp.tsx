@@ -1,11 +1,4 @@
-import {
-  createContext,
-  useCallback,
-  useContext,
-  useMemo,
-  useState,
-  type ReactNode,
-} from 'react';
+import { createContext, useCallback, useContext, useMemo, useState, type ReactNode } from 'react';
 import type { Account, MonthDataFull, WishlistItem } from '../types';
 import {
   KEYS,
@@ -32,6 +25,8 @@ interface AppValue {
   changeMonth: (dir: number) => void;
   data: MonthDataFull;
   updateMonth: (mutate: (d: MonthDataFull) => void) => void;
+  /** Mutasi bulan lain lewat key-nya. Lihat implementasinya untuk alasannya. */
+  updateMonthAt: (key: string, mutate: (d: MonthDataFull) => void) => void;
   accounts: Account[];
   updateAccounts: (mutate: (a: Account[]) => void) => void;
   wishlist: WishlistItem[];
@@ -69,6 +64,29 @@ export function AppProvider({ children }: { children: ReactNode }): ReactNode {
     });
   }, []);
 
+  /**
+   * Ubah data bulan yang sedang TIDAK dibuka.
+   *
+   * Dipakai piutang lintas bulan: statusnya harus berubah di bulan tempat ia
+   * dicatat, karena di situlah expense turunannya tinggal. Menulisnya ke bulan
+   * aktif akan memindahkan arus kas ke bulan yang salah.
+   *
+   * Kalau key-nya ternyata bulan aktif, jalurnya dibelokkan ke `month.update`
+   * supaya state React tidak jadi basi terhadap isi localStorage.
+   */
+  const updateMonthAt = useCallback(
+    (k: string, mutate: (d: MonthDataFull) => void) => {
+      if (k === key) {
+        month.update(mutate);
+        return;
+      }
+      const d = loadMonth(k);
+      mutate(d);
+      saveMonth(k, d);
+    },
+    [key, month],
+  );
+
   const reloadAll = useCallback(() => {
     month.reload();
     accounts.reload();
@@ -81,6 +99,7 @@ export function AppProvider({ children }: { children: ReactNode }): ReactNode {
       changeMonth,
       data: month.value,
       updateMonth: month.update,
+      updateMonthAt,
       accounts: accounts.value,
       updateAccounts: accounts.update,
       wishlist: wishlist.value,
@@ -92,7 +111,17 @@ export function AppProvider({ children }: { children: ReactNode }): ReactNode {
       balHidden,
       toggleBalHidden,
     }),
-    [currentDate, changeMonth, month, accounts, wishlist, reloadAll, balHidden, toggleBalHidden],
+    [
+      currentDate,
+      changeMonth,
+      month,
+      updateMonthAt,
+      accounts,
+      wishlist,
+      reloadAll,
+      balHidden,
+      toggleBalHidden,
+    ],
   );
 
   return <AppContext.Provider value={value}>{children}</AppContext.Provider>;

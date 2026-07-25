@@ -25,6 +25,8 @@ import {
   Plus,
   RefreshCw,
   Receipt,
+  Search,
+  SearchX,
   SlidersHorizontal,
   Sparkles,
   Star,
@@ -67,6 +69,8 @@ export const Icons = {
   help: CircleHelp,
   play: Play,
   settings: SlidersHorizontal,
+  search: Search,
+  'search-empty': SearchX,
   show: Eye,
   hide: EyeOff,
 

@@ -23,6 +23,7 @@ import {
 import { EmptyState, Field, FormRow, IconButton, Modal } from './Modal';
 import { Icon, type IconName } from './Icon';
 import { Money } from './Money';
+import { MoneyInput } from './MoneyInput';
 
 type Filter = 'all' | WishlistStatus | 'segera' | 'impian';
 
@@ -275,7 +276,7 @@ function WishlistModal({
   const { updateWishlist } = useApp();
   const [name, setName] = useState(editing?.name ?? '');
   const [emoji, setEmoji] = useState(editing?.emoji ?? '');
-  const [price, setPrice] = useState(editing?.price ? String(editing.price) : '');
+  const [price, setPrice] = useState(editing?.price ? String(Math.round(editing.price)) : '');
   const [priority, setPriority] = useState<WishlistPriority>(editing?.priority ?? 'biasa');
   const [status, setStatus] = useState<WishlistStatus>(editing?.status ?? 'wishlist');
   const [note, setNote] = useState(editing?.note ?? '');
@@ -344,13 +345,7 @@ function WishlistModal({
       </FormRow>
       <FormRow>
         <Field label="Harga Target (Rp)">
-          <input
-            type="number"
-            placeholder="Opsional"
-            min="0"
-            value={price}
-            onChange={(e) => setPrice(e.target.value)}
-          />
+          <MoneyInput placeholder="Opsional" value={price} onChange={setPrice} />
         </Field>
         <Field label="Prioritas">
           <select

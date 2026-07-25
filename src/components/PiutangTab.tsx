@@ -1,23 +1,24 @@
-import { useState, type ReactNode } from 'react';
+import { useMemo, useState, type ReactNode } from 'react';
 import { toast } from '../lib/toast';
 import { useApp } from '../hooks/useApp';
 import { useConfirmDelete } from '../hooks/useConfirm';
 import { useUndoableDelete } from '../hooks/useUndoableDelete';
 import { useBalanceGuard } from '../hooks/useBalanceGuard';
 import { isOverdue } from '../lib/calc';
-import { defaultDateFor, fmtDate } from '../lib/format';
-import { addPiutang, deletePiutang, togglePiutangStatus } from '../lib/mutations';
+import { monthsBetween, openPiutangElsewhere, type ForeignPiutang } from '../lib/crossMonth';
+import { defaultDateFor, fmtDate, fmtMonthLabel, fmtRp } from '../lib/format';
+import { monthKey } from '../lib/storage';
 import {
-  AccountSelect,
-  CardHeader,
-  EmptyState,
-  Field,
-  FormRow,
-  IconButton,
-  Modal,
-} from './Modal';
+  addPiutang,
+  addPiutangSettlement,
+  deletePiutang,
+  markPiutangLunasKeepExpense,
+  togglePiutangStatus,
+} from '../lib/mutations';
+import { AccountSelect, CardHeader, EmptyState, Field, FormRow, IconButton, Modal } from './Modal';
 import { Icon } from './Icon';
 import { Money } from './Money';
+import { MoneyInput } from './MoneyInput';
 
 export function PiutangTab(): ReactNode {
   const { data, updateMonth } = useApp();
@@ -66,7 +67,17 @@ export function PiutangTab(): ReactNode {
           <b className="text-green">pulih</b> saat ditandai Lunas.
         </div>
         {data.piutang.length === 0 ? (
-          <EmptyState icon="piutang">Belum ada catatan piutang</EmptyState>
+          <EmptyState
+            icon="piutang"
+            hint="Catat uang yang dipinjam orang lain lengkap dengan jatuh temponya, supaya tidak lupa ditagih."
+            action={
+              <button className="btn btn-primary" onClick={() => setModalOpen(true)}>
+                <Icon name="add" size={15} /> Tambah Piutang
+              </button>
+            }
+          >
+            Belum ada catatan piutang
+          </EmptyState>
         ) : (
           <>
             <div className="stat-tiles">
@@ -140,8 +151,177 @@ export function PiutangTab(): ReactNode {
         )}
       </div>
 
+      <ForeignPiutangCard />
+
       {modalOpen && <PiutangModal onClose={() => setModalOpen(false)} />}
     </>
+  );
+}
+
+/**
+ * Piutang belum lunas dari bulan lain.
+ *
+ * Sengaja tidak ikut menghitung ulang saldo bulan ini: uangnya sudah keluar di
+ * bulan tempat piutang itu dicatat. Menambahkannya begitu saja akan
+ * menghitungnya dua kali — user yang memilih ke mana uang kembalinya masuk,
+ * lewat `SettleChoiceModal`.
+ */
+function ForeignPiutangCard(): ReactNode {
+  const { currentDate, data, updateMonth, updateMonthAt, reloadAll, changeMonth } = useApp();
+  const [settling, setSettling] = useState<ForeignPiutang | null>(null);
+  const key = monthKey(currentDate);
+
+  // `data` ikut jadi dependency: `reloadAll()` mengganti identitasnya, dan itu
+  // sinyal bahwa piutang di bulan lain baru saja diubah dari sini.
+  const foreign = useMemo(() => openPiutangElsewhere(key), [key, data]);
+
+  if (foreign.length === 0) return null;
+
+  const total = foreign.reduce((s, f) => s + f.piutang.amount, 0);
+
+  /** Uang kembali dicatat sebagai pemasukan bulan ini; bulan asal tetap keluar. */
+  const settleHere = (f: ForeignPiutang): void => {
+    updateMonthAt(f.monthKey, (d) => markPiutangLunasKeepExpense(d, f.piutang.id));
+    updateMonth((d) =>
+      addPiutangSettlement(
+        d,
+        { name: f.piutang.name, amount: f.piutang.amount, fromMonthLabel: f.monthLabel },
+        defaultDateFor(currentDate),
+      ),
+    );
+    reloadAll();
+    setSettling(null);
+    toast.success(`Pelunasan ${f.piutang.name} masuk sebagai pemasukan bulan ini`);
+  };
+
+  /** Perilaku asal: expense di bulan asalnya dihapus, saldo bulan itu pulih. */
+  const settleAtOrigin = (f: ForeignPiutang): void => {
+    updateMonthAt(f.monthKey, (d) => togglePiutangStatus(d, f.piutang.id));
+    reloadAll();
+    setSettling(null);
+    toast.success(`Saldo ${f.monthLabel} dipulihkan`);
+  };
+
+  return (
+    <>
+      <div className="card">
+        <CardHeader
+          dot="red"
+          title="Belum Lunas dari Bulan Lain"
+          action={<Money value={total} tone="red" weight="strong" />}
+        />
+        <div className="card-note">
+          Uangnya keluar di bulan asalnya, jadi tidak dihitung ulang di saldo bulan ini. Saat
+          ditandai lunas, kamu memilih ke bulan mana uang kembalinya dicatat.
+        </div>
+        {foreign.map((f) => {
+          const overdue = isOverdue(f.piutang);
+          return (
+            <div key={f.monthKey + ':' + f.piutang.id} className="foreign-piutang">
+              <div className="foreign-piutang-main">
+                <span className="cell-name">{f.piutang.name}</span>
+                <Money value={f.piutang.amount} tone="purple" weight="strong" />
+              </div>
+              <div className="foreign-piutang-meta">
+                <button
+                  className="badge badge-gray link-badge"
+                  onClick={() => changeMonth(monthsBetween(currentDate, f.monthDate))}
+                  title={`Buka ${f.monthLabel}`}
+                >
+                  <Icon name="prev" size={11} /> {f.monthLabel}
+                </button>
+                {f.piutang.due && (
+                  <span className={overdue ? 'text-red' : 'cell-muted'}>
+                    Jatuh tempo {fmtDate(f.piutang.due)}
+                    {overdue && (
+                      <>
+                        {' '}
+                        <Icon name="warn" size={12} />
+                      </>
+                    )}
+                  </span>
+                )}
+                {f.piutang.note && <span className="cell-note">{f.piutang.note}</span>}
+              </div>
+              <button className="btn btn-green btn-sm" onClick={() => setSettling(f)}>
+                <Icon name="check" size={15} /> Tandai Lunas
+              </button>
+            </div>
+          );
+        })}
+      </div>
+
+      {settling && (
+        <SettleChoiceModal
+          item={settling}
+          onClose={() => setSettling(null)}
+          onSettleHere={() => settleHere(settling)}
+          onSettleAtOrigin={() => settleAtOrigin(settling)}
+        />
+      )}
+    </>
+  );
+}
+
+/**
+ * Pilihan ke bulan mana uang piutang yang kembali dicatat.
+ *
+ * Pertanyaan ini hanya muncul untuk piutang bulan lain. Kalau piutang dilunasi
+ * di bulan yang sama dengan pencatatannya, tidak ada yang ambigu: expense-nya
+ * dihapus dan saldo bulan itu langsung pulih.
+ *
+ * Tidak memakai `useConfirm()` karena dialog itu boolean — menutup lewat Escape
+ * akan terbaca sebagai memilih salah satu opsi, dan ini keputusan soal uang.
+ */
+function SettleChoiceModal({
+  item,
+  onClose,
+  onSettleHere,
+  onSettleAtOrigin,
+}: {
+  item: ForeignPiutang;
+  onClose: () => void;
+  onSettleHere: () => void;
+  onSettleAtOrigin: () => void;
+}): ReactNode {
+  const { currentDate } = useApp();
+  const thisMonth = fmtMonthLabel(currentDate);
+
+  return (
+    <Modal
+      open
+      icon="piutang"
+      title={`${item.piutang.name} melunasi ${fmtRp(item.piutang.amount)}`}
+      onClose={onClose}
+      maxWidth={480}
+      actions={
+        <button className="btn btn-ghost" onClick={onClose}>
+          Batal
+        </button>
+      }
+    >
+      <p className="modal-text">
+        Piutang ini dicatat di <b>{item.monthLabel}</b>. Uang kembalinya mau masuk ke bulan mana?
+      </p>
+      <button className="settle-option" onClick={onSettleHere}>
+        <span className="settle-option-title">
+          <Icon name="income" size={15} /> Masuk {thisMonth}
+        </span>
+        <span className="settle-option-desc">
+          Dicatat sebagai pemasukan bulan ini. {item.monthLabel} tetap mencatat uangnya keluar —
+          riwayat kedua bulan sesuai kejadian sebenarnya.
+        </span>
+      </button>
+      <button className="settle-option" onClick={onSettleAtOrigin}>
+        <span className="settle-option-title">
+          <Icon name="refresh" size={15} /> Pulihkan di {item.monthLabel}
+        </span>
+        <span className="settle-option-desc">
+          Pengeluaran piutang di bulan itu dihapus, seolah uangnya tidak pernah keluar. Saldo bulan
+          ini tidak berubah.
+        </span>
+      </button>
+    </Modal>
   );
 }
 
@@ -202,13 +382,7 @@ function PiutangModal({ onClose }: { onClose: () => void }): ReactNode {
       </FormRow>
       <FormRow>
         <Field label="Jumlah (Rp)">
-          <input
-            type="number"
-            placeholder="500000"
-            min="0"
-            value={amount}
-            onChange={(e) => setAmount(e.target.value)}
-          />
+          <MoneyInput placeholder="500.000" value={amount} onChange={setAmount} />
         </Field>
         <Field label="Jatuh Tempo">
           <input type="date" value={due} onChange={(e) => setDue(e.target.value)} />

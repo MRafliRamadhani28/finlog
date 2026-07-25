@@ -1,0 +1,11 @@
+dist
+package-lock.json
+
+# Warisan app lama — rujukan perilaku, biarkan apa adanya supaya diff-nya
+# tetap bisa dibandingkan dengan aslinya.
+legacy.html
+src/legacy.css
+
+# Fixture-nya sengaja satu baris per entry supaya kasus uji terbaca sebagai
+# tabel. Prettier memecahnya jadi 8 baris per objek dan file jadi tak terbaca.
+src/lib/logic.test.ts

@@ -32,7 +32,9 @@ export function useUndoableDelete(): {
     (label: string, mutate: (d: MonthDataFull) => void) => {
       const snapshot = data;
       updateMonth(mutate);
-      toast.success(label, { action: { label: 'Urungkan', onClick: () => replaceMonth(snapshot) } });
+      toast.success(label, {
+        action: { label: 'Urungkan', onClick: () => replaceMonth(snapshot) },
+      });
     },
     [data, updateMonth, replaceMonth],
   );

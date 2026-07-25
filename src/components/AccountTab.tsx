@@ -45,8 +45,22 @@ export function AccountTab(): ReactNode {
           }
         />
         {accounts.length === 0 ? (
-          <EmptyState icon="account">
-            Tambahkan akun bank untuk mengatur alokasi gaji dan melacak saldo per rekening.
+          <EmptyState
+            icon="account"
+            hint="Dengan akun bank, gaji bisa dialokasikan per rekening dan saldo tiap rekening terlacak sendiri-sendiri."
+            action={
+              <button
+                className="btn btn-primary"
+                onClick={() => {
+                  setEditing(null);
+                  setModalOpen(true);
+                }}
+              >
+                <Icon name="add" size={15} /> Tambah Akun
+              </button>
+            }
+          >
+            Belum ada akun bank
           </EmptyState>
         ) : (
           <div className="account-grid">
