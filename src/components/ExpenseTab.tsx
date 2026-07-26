@@ -1,4 +1,4 @@
-import { useState, type ReactNode } from 'react';
+import { useEffect, useRef, useState, type ReactNode } from 'react';
 import { toast } from '../lib/toast';
 import { useApp } from '../hooks/useApp';
 import { useConfirmDelete } from '../hooks/useConfirm';
@@ -24,7 +24,7 @@ import { Icon } from './Icon';
 import { Money } from './Money';
 import { MoneyInput } from './MoneyInput';
 
-export function ExpenseTab(): ReactNode {
+export function ExpenseTab({ openAddSignal }: { openAddSignal?: number } = {}): ReactNode {
   const { data, accounts } = useApp();
   const [editing, setEditing] = useState<Expense | null>(null);
   const [modalOpen, setModalOpen] = useState(false);
@@ -32,6 +32,18 @@ export function ExpenseTab(): ReactNode {
   const [catFilter, setCatFilter] = useState('');
   const confirmDelete = useConfirmDelete();
   const undoable = useUndoableDelete();
+
+  // Dibuka dari action sheet ( + ) — sinyal berubah setelah mount pertama.
+  const firstRun = useRef(true);
+  useEffect(() => {
+    if (firstRun.current) {
+      firstRun.current = false;
+      return;
+    }
+    if (openAddSignal === undefined) return;
+    setEditing(null);
+    setModalOpen(true);
+  }, [openAddSignal]);
 
   const visible = visibleExpenses(data);
   const rows = filterEntries(visible, query, catFilter);
@@ -55,7 +67,7 @@ export function ExpenseTab(): ReactNode {
       <div className="card">
         <CardHeader
           dot="red"
-          title="Pengeluaran Aktual"
+          title="Pengeluaran"
           action={
             <button
               className="btn btn-primary btn-sm"
@@ -71,7 +83,7 @@ export function ExpenseTab(): ReactNode {
         {visible.length === 0 ? (
           <EmptyState
             icon="expense"
-            hint="Tiap pengeluaran langsung mengurangi saldo akun dan mengisi rincian kategori serta progres budget."
+            hint="Catat satu untuk mulai melacak ke mana uangmu pergi."
             action={
               <button
                 className="btn btn-primary"
@@ -100,6 +112,57 @@ export function ExpenseTab(): ReactNode {
             {rows.length === 0 ? (
               <NoMatch onReset={resetFilter} />
             ) : (
+              <>
+              <div className="entry-cards">
+                {[...rows].reverse().map((e) => {
+                  const acc = e.accountId ? accounts.find((a) => a.id === e.accountId) : null;
+                  const locked = Boolean(e.fromPiutang || e.fromCash);
+                  return (
+                    <div className="entry-card" key={e.id}>
+                      {/* Petak polos: warnanya sendiri yang menyebut kategori. */}
+                      <span className="entry-tile" style={catBadgeStyle(e.category)} />
+                      <div className="entry-card-body">
+                        <div className="entry-card-desc">{e.description}</div>
+                        <div className="entry-card-meta">
+                          <span>
+                            {e.category} · {fmtDate(e.date)}
+                          </span>
+                          {acc && (
+                            <>
+                              <span className="acc-dot" style={{ background: acc.color }} />
+                              <span>{acc.bank}</span>
+                            </>
+                          )}
+                          {e.fromPlanned && <span className="badge badge-gray tag">rencana</span>}
+                          {e.fromPiutang && <span className="badge badge-purple tag">piutang</span>}
+                          {e.fromCash && <span className="badge badge-yellow tag">tunai</span>}
+                        </div>
+                      </div>
+                      <div className="entry-card-amount">
+                        <Money value={e.amount} negative tone="red" weight="strong" />
+                      </div>
+                      {!locked && (
+                        <div className="entry-card-actions">
+                          <IconButton
+                            icon="edit"
+                            label="Edit pengeluaran"
+                            onClick={() => {
+                              setEditing(e);
+                              setModalOpen(true);
+                            }}
+                          />
+                          <IconButton
+                            icon="delete"
+                            tone="red"
+                            label={`Hapus pengeluaran ${e.description}`}
+                            onClick={() => void handleDelete(e)}
+                          />
+                        </div>
+                      )}
+                    </div>
+                  );
+                })}
+              </div>
               <div className="table-wrap">
                 <table>
                   <thead>
@@ -175,6 +238,7 @@ export function ExpenseTab(): ReactNode {
                   </tbody>
                 </table>
               </div>
+              </>
             )}
           </>
         )}
@@ -213,7 +277,7 @@ function ExpenseModal({
     const desc = description.trim();
     const amt = parseFloat(amount);
     if (!desc || !amt || amt <= 0) {
-      toast.error('Lengkapi deskripsi dan jumlah!');
+      toast.error('Lengkapi deskripsi dan jumlah');
       return;
     }
     const accId = accountId ? parseInt(accountId, 10) : null;
@@ -249,7 +313,7 @@ function ExpenseModal({
         });
       }
     });
-    toast.success(editing ? 'Pengeluaran diperbarui' : 'Pengeluaran ditambahkan');
+    toast.success(editing ? 'Pengeluaran diperbarui' : 'Pengeluaran tersimpan');
     onClose();
   };
 

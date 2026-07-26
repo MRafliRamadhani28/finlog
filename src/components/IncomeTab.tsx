@@ -1,4 +1,4 @@
-import { useState, type ReactNode } from 'react';
+import { useEffect, useRef, useState, type ReactNode } from 'react';
 import { toast } from '../lib/toast';
 import { useApp } from '../hooks/useApp';
 import { useConfirmDelete } from '../hooks/useConfirm';
@@ -23,7 +23,7 @@ import { Icon } from './Icon';
 import { Money } from './Money';
 import { MoneyInput } from './MoneyInput';
 
-export function IncomeTab(): ReactNode {
+export function IncomeTab({ openAddSignal }: { openAddSignal?: number } = {}): ReactNode {
   const { data, updateMonth, accounts } = useApp();
   const [editingSalary, setEditingSalary] = useState(false);
   const [salaryInput, setSalaryInput] = useState('');
@@ -32,6 +32,16 @@ export function IncomeTab(): ReactNode {
   const [catFilter, setCatFilter] = useState('');
   const confirmDelete = useConfirmDelete();
   const undoable = useUndoableDelete();
+
+  const firstRun = useRef(true);
+  useEffect(() => {
+    if (firstRun.current) {
+      firstRun.current = false;
+      return;
+    }
+    if (openAddSignal === undefined) return;
+    setModalOpen(true);
+  }, [openAddSignal]);
 
   const income = cleanIncome(data.income);
   const rows = filterEntries(income, query, catFilter);
@@ -119,7 +129,7 @@ export function IncomeTab(): ReactNode {
         {income.length === 0 ? (
           <EmptyState
             icon="income"
-            hint="Bonus, freelance, atau pemasukan lain di luar gaji pokok. Semuanya ikut menambah Saldo Terkini."
+            hint="Catat gaji, bonus, atau uang masuk lain supaya saldo ikut terhitung."
             action={
               <button className="btn btn-primary" onClick={() => setModalOpen(true)}>
                 <Icon name="add" size={15} /> Tambah Penghasilan
@@ -142,7 +152,37 @@ export function IncomeTab(): ReactNode {
             {rows.length === 0 ? (
               <NoMatch onReset={resetFilter} />
             ) : (
-              <div className="table-wrap">
+              <>
+                <div className="entry-cards">
+                  {[...rows].reverse().map((i) => (
+                    <div className="entry-card" key={i.id}>
+                      <span className="entry-tile" style={catBadgeStyle(i.category)}>
+                        <Icon name="income" size={18} />
+                      </span>
+                      <div className="entry-card-body">
+                        <div className="entry-card-desc">{i.description}</div>
+                        <div className="entry-card-meta">
+                          <span>
+                            {i.category} · {fmtDate(i.date)}
+                          </span>
+                          {i.note && <span>· {i.note}</span>}
+                        </div>
+                      </div>
+                      <div className="entry-card-amount">
+                        <Money value={i.amount} tone="green" weight="strong" />
+                      </div>
+                      <div className="entry-card-actions">
+                        <IconButton
+                          icon="delete"
+                          tone="red"
+                          label={`Hapus pemasukan ${i.description}`}
+                          onClick={() => void handleDelete(i.id)}
+                        />
+                      </div>
+                    </div>
+                  ))}
+                </div>
+                <div className="table-wrap">
                 <table>
                   <thead>
                     <tr>
@@ -181,6 +221,7 @@ export function IncomeTab(): ReactNode {
                   </tbody>
                 </table>
               </div>
+              </>
             )}
           </>
         )}
@@ -301,7 +342,7 @@ function IncomeModal({ onClose }: { onClose: () => void }): ReactNode {
     const desc = description.trim();
     const amt = parseFloat(amount);
     if (!desc || !amt || amt <= 0) {
-      toast.error('Lengkapi deskripsi dan jumlah!');
+      toast.error('Lengkapi deskripsi dan jumlah');
       return;
     }
     updateMonth((d) => {
@@ -314,7 +355,7 @@ function IncomeModal({ onClose }: { onClose: () => void }): ReactNode {
         note,
       });
     });
-    toast.success('Pemasukan ditambahkan');
+    toast.success('Pemasukan tersimpan');
     onClose();
   };
 
@@ -322,7 +363,7 @@ function IncomeModal({ onClose }: { onClose: () => void }): ReactNode {
     <Modal
       open
       icon="income"
-      title="Tambah Penghasilan Tambahan"
+      title="Penghasilan Tambahan"
       onClose={onClose}
       actions={
         <>
@@ -330,7 +371,7 @@ function IncomeModal({ onClose }: { onClose: () => void }): ReactNode {
             Batal
           </button>
           <button className="btn btn-primary" onClick={submit}>
-            Simpan
+            Simpan Pemasukan
           </button>
         </>
       }

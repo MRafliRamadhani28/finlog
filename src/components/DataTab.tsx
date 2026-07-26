@@ -22,7 +22,7 @@ export function DataTab(): ReactNode {
 
   const generate = (): void => {
     setExportText(JSON.stringify(exportAll(), null, 2));
-    toast.success('Data berhasil di-generate');
+    toast.success('Data siap disalin');
   };
 
   /** Backup yang sebenarnya: file, bukan copy-paste 50 kB JSON di layar HP. */
@@ -51,7 +51,7 @@ export function DataTab(): ReactNode {
 
   const copy = (): void => {
     if (!exportText) {
-      toast.error('Generate data dulu!');
+      toast.error('Tampilkan data dulu');
       return;
     }
     navigator.clipboard.writeText(exportText).then(
@@ -63,7 +63,7 @@ export function DataTab(): ReactNode {
   const doImport = async (): Promise<void> => {
     const text = importText.trim();
     if (!text) {
-      toast.error('Tempel data terlebih dahulu!');
+      toast.error('Tempel data dulu');
       return;
     }
     let parsed: Record<string, unknown>;
@@ -72,12 +72,12 @@ export function DataTab(): ReactNode {
       if (raw === null || typeof raw !== 'object') throw new Error('bukan objek');
       parsed = raw as Record<string, unknown>;
     } catch {
-      toast.error('JSON tidak valid!');
+      toast.error('JSON tidak valid');
       return;
     }
     const keys = importableKeys(parsed);
     if (keys.length === 0) {
-      toast.error('Format data tidak valid!');
+      toast.error('Format data tidak valid');
       return;
     }
     const ok = await confirm({
@@ -89,7 +89,7 @@ export function DataTab(): ReactNode {
     importAll(parsed, keys);
     setImportText('');
     reloadAll();
-    toast.success(`Import ${keys.length} data berhasil`);
+    toast.success(`${keys.length} data diimpor`);
   };
 
   const delMonth = async (): Promise<void> => {
@@ -120,15 +120,14 @@ export function DataTab(): ReactNode {
       <div className="card">
         <CardHeader dot="green" icon="download" title="Export Data" />
         <p className="card-note">
-          Semua data keuangan (seluruh bulan + akun bank + wishlist). Unduh file untuk backup, atau
-          generate untuk menyalin manual.
+          Seluruh bulan, akun bank, dan wishlist dalam satu berkas.
         </p>
         <div className="row row-wrap mb-3">
           <button className="btn btn-green" onClick={download}>
-            <Icon name="download" size={15} /> Unduh File Backup
+            <Icon name="download" size={15} /> Unduh Backup
           </button>
           <button className="btn btn-ghost" onClick={generate}>
-            <Icon name="refresh" size={15} /> Generate &amp; Tampilkan
+            <Icon name="refresh" size={15} /> Tampilkan Data
           </button>
           {exportText && (
             <button className="btn btn-ghost" onClick={copy}>
@@ -142,11 +141,11 @@ export function DataTab(): ReactNode {
       <div className="card">
         <CardHeader dot="blue" icon="upload" title="Import Data" />
         <p className="card-note">
-          Pilih file backup, atau tempel isinya di bawah.{' '}
-          <b className="text-red">Data existing akan ditimpa.</b>
+          Pilih berkas backup atau tempel isinya.{' '}
+          <b className="text-red">Data yang ada akan ditimpa.</b>
         </p>
         <button className="btn btn-ghost btn-sm mb-2" onClick={pickFile}>
-          <Icon name="file" size={15} /> Pilih File Backup
+          <Icon name="file" size={15} /> Pilih File
         </button>
         <textarea
           className="import-area"
@@ -157,7 +156,7 @@ export function DataTab(): ReactNode {
         />
         <div className="row mt-3">
           <button className="btn btn-primary" onClick={() => void doImport()}>
-            <Icon name="upload" size={15} /> Import &amp; Terapkan
+            <Icon name="upload" size={15} /> Import Data
           </button>
           <button className="btn btn-ghost" onClick={() => setImportText('')}>
             Bersihkan

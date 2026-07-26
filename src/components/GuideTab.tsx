@@ -141,14 +141,17 @@ export function GuideTab({ onStartTutorial }: { onStartTutorial: () => void }): 
     <div className="card">
       <CardHeader
         icon="guide"
-        title="Panduan Penggunaan"
+        title="Panduan"
         action={
           <button className="btn btn-primary btn-sm" onClick={onStartTutorial}>
             <Icon name="play" size={15} /> Tutorial Interaktif
           </button>
         }
       />
-      <p className="card-note">Referensi lengkap fitur aplikasi ini.</p>
+      <p className="card-note">
+        Referensi lengkap fitur aplikasi ini. Di layar sempit, tombol <b>( + )</b> di bar bawah
+        membuka catat cepat; tab selain Ringkasan/Pengeluaran/Piutang ada di dalam <b>Lainnya</b>.
+      </p>
       {SECTIONS.map((section) => (
         <div key={section.title}>
           <div className="guide-section-title">{section.title}</div>

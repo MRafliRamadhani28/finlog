@@ -206,7 +206,7 @@
     }
 
     body {
-      font-family: 'Sora', sans-serif;
+      font-family: 'Plus Jakarta Sans', sans-serif;
       background: var(--bg);
       color: var(--text);
       min-height: 100vh
@@ -615,7 +615,7 @@
       border: none;
       background: none;
       color: var(--text2);
-      font-family: 'Sora', sans-serif;
+      font-family: 'Plus Jakarta Sans', sans-serif;
       font-size: .82rem;
       font-weight: 500;
       cursor: pointer;
@@ -659,7 +659,7 @@
       border: 1px solid var(--border);
       border-radius: 8px;
       color: var(--text2);
-      font-family: 'Sora', sans-serif;
+      font-family: 'Plus Jakarta Sans', sans-serif;
       font-size: .8rem;
       font-weight: 500;
       cursor: pointer;
@@ -860,7 +860,7 @@
       border: 1px solid var(--border);
       border-radius: var(--r2);
       color: var(--text);
-      font-family: 'Sora', sans-serif;
+      font-family: 'Plus Jakarta Sans', sans-serif;
       font-size: .85rem;
       padding: 9px 12px;
       transition: border-color .2s;
@@ -890,7 +890,7 @@
       padding: 9px 18px;
       border-radius: var(--r2);
       border: none;
-      font-family: 'Sora', sans-serif;
+      font-family: 'Plus Jakarta Sans', sans-serif;
       font-size: .85rem;
       font-weight: 500;
       cursor: pointer;
@@ -1355,7 +1355,7 @@
       color: var(--text3);
       font-weight: 400;
       font-style: italic;
-      font-family: 'Sora', sans-serif;
+      font-family: 'Plus Jakarta Sans', sans-serif;
       font-size: .75rem
     }
 
@@ -1621,7 +1621,7 @@
       border: 1px solid var(--border);
       background: none;
       color: var(--text2);
-      font-family: 'Sora', sans-serif;
+      font-family: 'Plus Jakarta Sans', sans-serif;
       font-size: .8rem;
       font-weight: 500;
       cursor: pointer;
@@ -1759,7 +1759,7 @@
       padding: 5px 12px;
       border-radius: 20px;
       border: none;
-      font-family: 'Sora', sans-serif;
+      font-family: 'Plus Jakarta Sans', sans-serif;
       font-size: .75rem;
       font-weight: 600;
       cursor: pointer;

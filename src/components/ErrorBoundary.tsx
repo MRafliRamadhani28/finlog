@@ -55,10 +55,10 @@ export class ErrorBoundary extends Component<Props, State> {
           <pre className="error-detail">{error.message}</pre>
           <div className="row row-wrap">
             <button className="btn btn-green" onClick={this.downloadRaw}>
-              Unduh backup darurat
+              Unduh Backup
             </button>
             <button className="btn btn-primary" onClick={() => window.location.reload()}>
-              Muat ulang
+              Muat Ulang
             </button>
           </div>
         </div>

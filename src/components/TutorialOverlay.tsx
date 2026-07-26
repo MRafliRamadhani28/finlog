@@ -29,6 +29,17 @@ export const TUT_STEPS: TutStep[] = [
     ),
   },
   {
+    icon: 'more',
+    title: 'Navigasi Bawah',
+    desc: (
+      <>
+        Di layar sempit, empat tab tercepat — <b>Ringkasan, Pengeluaran, Piutang, Lainnya</b> — ada
+        di bar bawah. Tombol <b>( + )</b> di tengah langsung menawarkan "Mau catat apa?" tanpa perlu
+        pindah tab dulu. Tab lain ada di dalam <b>Lainnya</b>.
+      </>
+    ),
+  },
+  {
     icon: 'summary',
     title: 'Panel Saldo — Pusat Informasi',
     desc: (

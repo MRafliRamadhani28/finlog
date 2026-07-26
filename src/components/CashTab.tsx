@@ -1,4 +1,4 @@
-import { useState, type ReactNode } from 'react';
+import { useEffect, useRef, useState, type ReactNode } from 'react';
 import { toast } from '../lib/toast';
 import { useApp } from '../hooks/useApp';
 import { useConfirmDelete } from '../hooks/useConfirm';
@@ -22,13 +22,23 @@ import { Icon } from './Icon';
 import { Money } from './Money';
 import { MoneyInput } from './MoneyInput';
 
-export function CashTab(): ReactNode {
+export function CashTab({ openAddSignal }: { openAddSignal?: number } = {}): ReactNode {
   const { data, accounts } = useApp();
   const [cashModal, setCashModal] = useState(false);
   const [itemModalFor, setItemModalFor] = useState<number | null>(null);
   const [expanded, setExpanded] = useState<Set<number>>(() => new Set());
   const confirmDelete = useConfirmDelete();
   const undoable = useUndoableDelete();
+
+  const firstRun = useRef(true);
+  useEffect(() => {
+    if (firstRun.current) {
+      firstRun.current = false;
+      return;
+    }
+    if (openAddSignal === undefined) return;
+    setCashModal(true);
+  }, [openAddSignal]);
 
   const toggleExpand = (id: number): void => {
     setExpanded((prev) => {
@@ -64,14 +74,11 @@ export function CashTab(): ReactNode {
             </button>
           }
         />
-        <div className="card-note">
-          Catat penarikan uang dari rekening, lalu detail pengeluaran tunainya di bawah setiap
-          transaksi.
-        </div>
+        <div className="card-note">Buka satu penarikan untuk merinci pemakaian tunainya.</div>
         {data.cashWithdrawals.length === 0 ? (
           <EmptyState
             icon="cash"
-            hint="Uang di dompet dilacak terpisah dari saldo rekening, jadi sisa tunai tetap terlihat."
+            hint="Catat penarikan supaya uang di dompet ikut terlacak."
             action={
               <button className="btn btn-primary" onClick={() => setCashModal(true)}>
                 <Icon name="add" size={15} /> Tarik Tunai
@@ -196,7 +203,7 @@ function CashModal({ onClose }: { onClose: () => void }): ReactNode {
     const amt = parseFloat(amount);
     const desc = description.trim() || 'Penarikan Tunai';
     if (!amt || amt <= 0) {
-      toast.error('Isi jumlah penarikan!');
+      toast.error('Isi jumlah penarikan');
       return;
     }
     const accId = accountId ? parseInt(accountId, 10) : null;
@@ -205,7 +212,7 @@ function CashModal({ onClose }: { onClose: () => void }): ReactNode {
     updateMonth((d) =>
       addCashWithdrawal(d, { date, accountId: accId, amount: amt, description: desc }, accounts),
     );
-    toast.success('Penarikan tunai dicatat');
+    toast.success('Penarikan tunai tersimpan');
     onClose();
   };
 
@@ -213,7 +220,7 @@ function CashModal({ onClose }: { onClose: () => void }): ReactNode {
     <Modal
       open
       icon="cash"
-      title="Catat Penarikan Tunai"
+      title="Penarikan Tunai"
       onClose={onClose}
       actions={
         <>
@@ -221,7 +228,7 @@ function CashModal({ onClose }: { onClose: () => void }): ReactNode {
             Batal
           </button>
           <button className="btn btn-primary" onClick={() => void submit()}>
-            Catat
+            Catat Penarikan
           </button>
         </>
       }
@@ -266,7 +273,7 @@ function CashItemModal({ cashId, onClose }: { cashId: number; onClose: () => voi
     const desc = description.trim();
     const amt = parseFloat(amount);
     if (!desc || !amt || amt <= 0) {
-      toast.error('Lengkapi deskripsi dan jumlah!');
+      toast.error('Lengkapi deskripsi dan jumlah');
       return;
     }
     let found = true;
@@ -279,10 +286,10 @@ function CashItemModal({ cashId, onClose }: { cashId: number; onClose: () => voi
       cash.items.push({ id: nextId(cash.items), description: desc, category, amount: amt });
     });
     if (!found) {
-      toast.error('Data tidak ditemukan!');
+      toast.error('Data tidak ditemukan');
       return;
     }
-    toast.success('Detail ditambahkan');
+    toast.success('Detail tersimpan');
     onClose();
   };
 
@@ -290,7 +297,7 @@ function CashItemModal({ cashId, onClose }: { cashId: number; onClose: () => voi
     <Modal
       open
       icon="expense"
-      title="Tambah Detail Penggunaan Tunai"
+      title="Detail Tunai"
       onClose={onClose}
       actions={
         <>
@@ -298,7 +305,7 @@ function CashItemModal({ cashId, onClose }: { cashId: number; onClose: () => voi
             Batal
           </button>
           <button className="btn btn-primary" onClick={submit}>
-            Tambah
+            Simpan Detail
           </button>
         </>
       }

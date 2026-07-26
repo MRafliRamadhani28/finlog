@@ -74,6 +74,21 @@ export function monthTotals(d: MonthDataFull): MonthTotals {
 }
 
 /**
+ * Uang tunai yang sudah keluar dari rekening tapi belum dipertanggungjawabkan
+ * lewat item — praktisnya sisa di dompet.
+ *
+ * Per penarikan di-floor ke 0: item yang melebihi nominal tarikan adalah salah
+ * catat, bukan tunai negatif. Tanpa floor, satu penarikan yang kelebihan catat
+ * akan memakan sisa tunai penarikan lain.
+ */
+export function cashOnHand(d: MonthDataFull): number {
+  return d.cashWithdrawals.reduce((s, c) => {
+    const tracked = c.items.reduce((n, i) => n + i.amount, 0);
+    return s + Math.max(0, c.amount - tracked);
+  }, 0);
+}
+
+/**
  * Expense yang tampil di tab Pengeluaran. Expense turunan piutang disembunyikan
  * saat piutangnya sudah Lunas (saldo sudah pulih).
  */

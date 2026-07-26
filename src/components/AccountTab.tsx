@@ -47,7 +47,7 @@ export function AccountTab(): ReactNode {
         {accounts.length === 0 ? (
           <EmptyState
             icon="account"
-            hint="Dengan akun bank, gaji bisa dialokasikan per rekening dan saldo tiap rekening terlacak sendiri-sendiri."
+            hint="Tambahkan rekening supaya saldonya terlacak sendiri-sendiri."
             action={
               <button
                 className="btn btn-primary"
@@ -164,7 +164,7 @@ function AccountModal({
     const nm = name.trim();
     const bk = bank.trim();
     if (!nm || !bk) {
-      toast.error('Isi nama akun dan bank!');
+      toast.error('Isi nama akun dan bank');
       return;
     }
     updateAccounts((list) => {
@@ -180,7 +180,7 @@ function AccountModal({
         list.push({ id: nextId(list), name: nm, bank: bk, number: number.trim(), color });
       }
     });
-    toast.success(editing ? 'Akun diperbarui' : 'Akun ditambahkan');
+    toast.success(editing ? 'Akun diperbarui' : 'Akun tersimpan');
     onClose();
   };
 
@@ -188,7 +188,7 @@ function AccountModal({
     <Modal
       open
       icon="account"
-      title={editing ? 'Edit Akun Bank' : 'Tambah Akun Bank'}
+      title={editing ? 'Edit Akun' : 'Akun Baru'}
       onClose={onClose}
       actions={
         <>
@@ -196,7 +196,7 @@ function AccountModal({
             Batal
           </button>
           <button className="btn btn-primary" onClick={submit}>
-            Simpan
+            Simpan Akun
           </button>
         </>
       }

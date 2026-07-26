@@ -11,9 +11,9 @@
 import { deflateSync } from 'node:zlib';
 import { writeFileSync, mkdirSync } from 'node:fs';
 
-const BG = [20, 28, 46]; // --card
-const BAR = [34, 217, 138]; // --green
-const BAR_DIM = [77, 159, 255]; // --blue
+const BG = [25, 28, 43]; // --card
+const BAR = [79, 211, 154]; // --green
+const BAR_DIM = [143, 149, 255]; // --blue
 
 const crcTable = Array.from({ length: 256 }, (_, n) => {
   let c = n;

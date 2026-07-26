@@ -1,4 +1,4 @@
-import { useMemo, useState, type ReactNode } from 'react';
+import { useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
 import { toast } from '../lib/toast';
 import { useApp } from '../hooks/useApp';
 import { useConfirmDelete } from '../hooks/useConfirm';
@@ -20,11 +20,21 @@ import { Icon } from './Icon';
 import { Money } from './Money';
 import { MoneyInput } from './MoneyInput';
 
-export function PiutangTab(): ReactNode {
+export function PiutangTab({ openAddSignal }: { openAddSignal?: number } = {}): ReactNode {
   const { data, updateMonth } = useApp();
   const [modalOpen, setModalOpen] = useState(false);
   const confirmDelete = useConfirmDelete();
   const undoable = useUndoableDelete();
+
+  const firstRun = useRef(true);
+  useEffect(() => {
+    if (firstRun.current) {
+      firstRun.current = false;
+      return;
+    }
+    if (openAddSignal === undefined) return;
+    setModalOpen(true);
+  }, [openAddSignal]);
 
   const totalPt = data.piutang.reduce((s, p) => s + p.amount, 0);
   const totalLunas = data.piutang
@@ -55,7 +65,7 @@ export function PiutangTab(): ReactNode {
       <div className="card">
         <CardHeader
           dot="purple"
-          title="Piutang (Uang Dipinjamkan)"
+          title="Piutang"
           action={
             <button className="btn btn-primary btn-sm" onClick={() => setModalOpen(true)}>
               <Icon name="add" size={15} /> Tambah
@@ -69,14 +79,14 @@ export function PiutangTab(): ReactNode {
         {data.piutang.length === 0 ? (
           <EmptyState
             icon="piutang"
-            hint="Catat uang yang dipinjam orang lain lengkap dengan jatuh temponya, supaya tidak lupa ditagih."
+            hint="Catat kalau ada yang meminjam uangmu supaya tidak lupa ditagih."
             action={
               <button className="btn btn-primary" onClick={() => setModalOpen(true)}>
-                <Icon name="add" size={15} /> Tambah Piutang
+                <Icon name="add" size={15} /> Catat Piutang
               </button>
             }
           >
-            Belum ada catatan piutang
+            Belum ada piutang
           </EmptyState>
         ) : (
           <>
@@ -87,6 +97,47 @@ export function PiutangTab(): ReactNode {
                   <Money value={s.value} tone={s.tone} weight="strong" />
                 </div>
               ))}
+            </div>
+            <div className="entry-cards">
+              {[...data.piutang].reverse().map((p) => {
+                const overdue = isOverdue(p);
+                return (
+                  <div className="entry-card entry-card-stack" key={p.id}>
+                    <div className="entry-card-main">
+                      <span className="entry-tile tone-purple">
+                        <Icon name="piutang" size={18} />
+                      </span>
+                      <div className="entry-card-body">
+                        <div className="entry-card-desc">{p.name}</div>
+                        <div className={'entry-card-meta' + (overdue ? ' text-red' : '')}>
+                          <span>Jatuh tempo {fmtDate(p.due)}</span>
+                          {overdue && <Icon name="warn" size={12} />}
+                          {p.note && <span>· {p.note}</span>}
+                        </div>
+                      </div>
+                      <div className="entry-card-amount">
+                        <Money value={p.amount} tone="purple" weight="strong" />
+                      </div>
+                      <div className="entry-card-actions">
+                        <IconButton
+                          icon="delete"
+                          tone="red"
+                          label={`Hapus piutang ${p.name}`}
+                          onClick={() => void remove(p.id)}
+                        />
+                      </div>
+                    </div>
+                    <button
+                      className={'entry-card-status' + (p.status === 'Lunas' ? ' is-lunas' : '')}
+                      onClick={() => toggle(p.id)}
+                      aria-label={`Ubah status ${p.name}`}
+                    >
+                      {p.status === 'Lunas' ? 'Batalkan Lunas' : 'Tandai Lunas'}
+                      <Icon name="swap" size={12} />
+                    </button>
+                  </div>
+                );
+              })}
             </div>
             <div className="table-wrap">
               <table>
@@ -339,14 +390,14 @@ function PiutangModal({ onClose }: { onClose: () => void }): ReactNode {
     const nm = name.trim();
     const amt = parseFloat(amount);
     if (!nm || !amt || amt <= 0) {
-      toast.error('Lengkapi nama dan jumlah!');
+      toast.error('Lengkapi nama dan jumlah');
       return;
     }
     const accId = accountId ? parseInt(accountId, 10) : null;
     if (!(await guard(accId, amt))) return;
 
     updateMonth((d) => addPiutang(d, { name: nm, date, amount: amt, due, note, accountId: accId }));
-    toast.success('Piutang dicatat');
+    toast.success('Piutang tersimpan');
     onClose();
   };
 
@@ -354,7 +405,7 @@ function PiutangModal({ onClose }: { onClose: () => void }): ReactNode {
     <Modal
       open
       icon="piutang"
-      title="Tambah Piutang"
+      title="Piutang Baru"
       onClose={onClose}
       actions={
         <>
@@ -362,7 +413,7 @@ function PiutangModal({ onClose }: { onClose: () => void }): ReactNode {
             Batal
           </button>
           <button className="btn btn-primary" onClick={() => void submit()}>
-            Simpan
+            Simpan Piutang
           </button>
         </>
       }

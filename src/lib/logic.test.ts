@@ -5,6 +5,7 @@ import { groupThousands, moneyEdit } from './format';
 import { monthsBetween, parseMonthKey } from './crossMonth';
 import {
   budgetProgress,
+  cashOnHand,
   categoryBreakdown,
   filterEntries,
   getAccountBalance,
@@ -79,6 +80,26 @@ describe('tunai', () => {
     deleteCashWithdrawal(d, cash.id);
     expect(d.cashWithdrawals).toHaveLength(0);
     expect(d.expenses).toHaveLength(0);
+  });
+
+  it('cashOnHand = sisa tarikan yang belum dirinci, lintas penarikan', () => {
+    const d = seed();
+    addCashWithdrawal(d, { date: '2026-07-01', accountId: BCA.id, amount: 500_000, description: 'a' }, [BCA]);
+    addCashWithdrawal(d, { date: '2026-07-02', accountId: BCA.id, amount: 200_000, description: 'b' }, [BCA]);
+    expect(cashOnHand(d)).toBe(700_000);
+
+    d.cashWithdrawals[0]!.items.push({ id: 1, description: 'kopi', category: 'Makanan', amount: 125_000 });
+    expect(cashOnHand(d)).toBe(575_000);
+  });
+
+  it('item melebihi nominal tarikan tidak jadi tunai negatif', () => {
+    const d = seed();
+    addCashWithdrawal(d, { date: '2026-07-01', accountId: BCA.id, amount: 100_000, description: 'a' }, [BCA]);
+    addCashWithdrawal(d, { date: '2026-07-02', accountId: BCA.id, amount: 300_000, description: 'b' }, [BCA]);
+    // Salah catat: rincian lebih besar dari yang ditarik.
+    d.cashWithdrawals[0]!.items.push({ id: 1, description: 'x', category: 'Makanan', amount: 250_000 });
+    // Di-floor per penarikan, jadi tarikan kedua tidak ikut termakan.
+    expect(cashOnHand(d)).toBe(300_000);
   });
 });
 

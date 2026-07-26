@@ -37,10 +37,10 @@ const FILTERS: { key: Filter; label: string; icon: IconName }[] = [
 ];
 
 const EMPTY_MSG: Record<Filter, string> = {
-  all: 'Tambahkan impianmu — set prioritas dan harga target, lalu pantau progresnya.',
+  all: 'Belum ada barang incaran. Tambahkan satu dan lihat berapa lama menabungnya.',
   wishlist: 'Belum ada item berstatus Wishlist.',
   saving: 'Belum ada yang sedang ditabung.',
-  achieved: 'Belum ada yang tercapai. Terus menabung!',
+  achieved: 'Belum ada yang tercapai.',
   segera: 'Tidak ada item berprioritas Segera.',
   impian: 'Tidak ada item berprioritas Impian.',
 };
@@ -128,10 +128,8 @@ export function WishlistTab(): ReactNode {
         <div className="wl-hero">
           <div className="row-between">
             <div>
-              <div className="wl-hero-title">Daftar Keinginan</div>
-              <div className="wl-hero-sub">
-                Catat impianmu, pantau perkembangannya, rayakan saat tercapai.
-              </div>
+              <div className="wl-hero-title">Wishlist</div>
+              <div className="wl-hero-sub">Barang incaran dan progres menabungnya.</div>
             </div>
             <button
               className="btn btn-primary btn-sm"
@@ -284,7 +282,7 @@ function WishlistModal({
   const submit = (): void => {
     const nm = name.trim();
     if (!nm) {
-      toast.error('Isi nama item!');
+      toast.error('Isi nama item');
       return;
     }
     const fields = {
@@ -303,7 +301,7 @@ function WishlistModal({
         list.push({ id: nextId(list), ...fields, dateAdded: today() });
       }
     });
-    toast.success(editing ? 'Wishlist diperbarui' : 'Wishlist ditambahkan');
+    toast.success(editing ? 'Wishlist diperbarui' : 'Wishlist tersimpan');
     onClose();
   };
 
@@ -311,7 +309,7 @@ function WishlistModal({
     <Modal
       open
       icon="wishlist"
-      title={editing ? 'Edit Wishlist' : 'Tambah Wishlist'}
+      title={editing ? 'Edit Wishlist' : 'Wishlist Baru'}
       onClose={onClose}
       actions={
         <>
@@ -319,7 +317,7 @@ function WishlistModal({
             Batal
           </button>
           <button className="btn btn-primary" onClick={submit}>
-            Simpan
+            Simpan Wishlist
           </button>
         </>
       }

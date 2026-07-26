@@ -287,17 +287,23 @@ function confirmDialog(): Promise<void> {
   return click(actions[actions.length - 1], 'tombol konfirmasi');
 }
 
-const openSettleChoice = (): Promise<void> => clickText('Tandai Lunas');
+/**
+ * Piutang bulan aktif juga punya tombol "Tandai Lunas", jadi selektornya harus
+ * dilingkupi ke kartu piutang bulan lain — di situ saja pilihan bulan muncul.
+ */
+const openSettleChoice = (): Promise<void> =>
+  clickSelector('.foreign-piutang button.btn-green');
 
 describe('render app', () => {
   it('panel saldo menampilkan angka yang benar', async () => {
     mount();
     // 5.000.000 + 1.000.000 − (50.000 + 500.000 + 300.000) = 5.150.000
-    const amounts = Array.from(container.querySelectorAll('.bal-amount')).map((el) =>
+    expect(balance()).toBe('Rp 5.150.000');
+    // Masuk / Keluar / Tunai. Tunai = tarikan 500.000 − item 25.000.
+    const stats = Array.from(container.querySelectorAll('.bal-stat-val')).map((el) =>
       el.textContent?.trim(),
     );
-    expect(amounts[0]).toBe('Rp 5.150.000');
-    expect(amounts[1]).toBe('Rp 300.000');
+    expect(stats).toEqual(['Rp 6.000.000', 'Rp 850.000', 'Rp 475.000']);
   });
 
   it('semua tab bisa dibuka tanpa crash dan menampilkan isi', async () => {
@@ -509,7 +515,7 @@ describe('alur lewat UI', () => {
   it('export lalu import mengembalikan data ke keadaan semula', async () => {
     mount();
     await clickNav('Data');
-    await clickText('Generate');
+    await clickText('Tampilkan Data');
     const backup = container.querySelector('.export-area')!.textContent!;
     expect(backup).toContain('finance_');
 
@@ -523,7 +529,7 @@ describe('alur lewat UI', () => {
 
     await clickNav('Data');
     setValue(container.querySelector('.import-area')!, backup);
-    await clickText('Import &');
+    await clickText('Import Data');
     await confirmDialog();
 
     expect(balance()).toBe('Rp 5.150.000');

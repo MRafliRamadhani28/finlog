@@ -4,10 +4,12 @@ import { categoryBreakdown, monthTotals } from '../lib/calc';
 import { monthlyTrend, monthsBetween } from '../lib/crossMonth';
 import { catColor, fmtRp } from '../lib/format';
 import { monthKey } from '../lib/storage';
-import { CardHeader } from './Modal';
+import type { TabName } from '../types';
+import { CardHeader, EmptyState } from './Modal';
+import { Icon } from './Icon';
 import { Money } from './Money';
 
-export function SummaryTab(): ReactNode {
+export function SummaryTab({ onRecord }: { onRecord: (tab: TabName) => void }): ReactNode {
   const { data, accounts } = useApp();
   const t = monthTotals(data);
   const cats = categoryBreakdown(data);
@@ -19,18 +21,20 @@ export function SummaryTab(): ReactNode {
     <>
       <div className="summary-grid">
         <div className="card">
-          <CardHeader dot="green" title="Ringkasan Pemasukan" />
+          <CardHeader dot="green" title="Pemasukan" />
           <Row label="Gaji Pokok" value={t.salary} tone="gold" />
           <Row label="Penghasilan Tambahan" value={t.totalAdditional} tone="blue" />
-          <Row label="Total Pemasukan" value={t.totalIncome} tone="green" bold />
+          <Row label="Total" value={t.totalIncome} tone="green" bold />
         </div>
         <div className="card">
-          <CardHeader dot="red" title="Ringkasan Pengeluaran" />
-          <Row label="Total Pengeluaran" value={t.totalExpenses} tone="red" />
+          <CardHeader dot="red" title="Pengeluaran" />
+          <Row label="Sudah Keluar" value={t.totalExpenses} tone="red" />
           <Row label="Rencana Keluar" value={t.totalPlanned} tone="yellow" />
           <Row label="Piutang Belum Lunas" value={t.totalPiutangBelumLunas} tone="purple" />
+          {/* Angkanya identik dengan hero panel saldo (pemasukan − pengeluaran).
+              Namanya disamakan supaya user tidak mengira ini angka lain. */}
           <Row
-            label="Sisa / Surplus"
+            label="Saldo Terkini"
             value={t.surplus}
             tone={t.surplus >= 0 ? 'green' : 'red'}
             signed
@@ -42,9 +46,17 @@ export function SummaryTab(): ReactNode {
       <div className="card">
         <CardHeader dot="yellow" title="Pengeluaran per Kategori" />
         {cats.length === 0 ? (
-          <div className="empty">
-            <p>Belum ada data pengeluaran bulan ini.</p>
-          </div>
+          <EmptyState
+            icon="expense"
+            hint="Rincian per kategori muncul begitu ada pengeluaran tercatat."
+            action={
+              <button className="btn btn-primary" onClick={() => onRecord('pengeluaran')}>
+                <Icon name="add" size={15} /> Catat Pengeluaran
+              </button>
+            }
+          >
+            Belum ada pengeluaran bulan ini
+          </EmptyState>
         ) : (
           cats.map((c) => {
             const color = catColor(c.cat);
@@ -75,9 +87,17 @@ export function SummaryTab(): ReactNode {
       <div className="card">
         <CardHeader dot="blue" title="Alokasi Gaji per Akun" />
         {allocated.length === 0 ? (
-          <div className="empty">
-            <p>Belum ada alokasi akun bank bulan ini.</p>
-          </div>
+          <EmptyState
+            icon="account"
+            hint="Bagi gaji ke rekening supaya saldo tiap akun terlacak sendiri-sendiri."
+            action={
+              <button className="btn btn-primary" onClick={() => onRecord('pemasukan')}>
+                <Icon name="account" size={15} /> Atur Alokasi
+              </button>
+            }
+          >
+            Belum ada alokasi gaji
+          </EmptyState>
         ) : (
           <div className="stack">
             {accounts.map((a) => {
@@ -136,9 +156,7 @@ function TrendCard(): ReactNode {
           </span>
         }
       />
-      <div className="card-note">
-        Panjang batang dibandingkan terhadap bulan tertinggi ({fmtRp(peak)}).
-      </div>
+      <div className="card-note">Semua batang diukur ke bulan tertinggi, {fmtRp(peak)}.</div>
       <div className="trend">
         {points.map((p) => (
           <button

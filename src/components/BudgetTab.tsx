@@ -19,7 +19,7 @@ export function BudgetTab(): ReactNode {
       <div className="card">
         <CardHeader
           dot="blue"
-          title="Budget per Kategori"
+          title="Budget"
           action={
             <button className="btn btn-primary btn-sm" onClick={() => setModalOpen(true)}>
               <Icon name="settings" size={15} /> Atur Budget
@@ -37,7 +37,7 @@ export function BudgetTab(): ReactNode {
         {rows.length === 0 ? (
           <EmptyState
             icon="budget"
-            hint="Setelah batas diatur, tiap kategori punya progres pemakaian dan peringatan saat batasnya terlampaui."
+            hint="Tetapkan batas per kategori supaya pemakaiannya terpantau."
             action={
               <button className="btn btn-primary" onClick={() => setModalOpen(true)}>
                 <Icon name="settings" size={15} /> Atur Budget
@@ -110,7 +110,7 @@ function BudgetModal({ onClose }: { onClose: () => void }): ReactNode {
         else delete d.budgets[cat];
       }
     });
-    toast.success('Budget disimpan');
+    toast.success('Budget tersimpan');
     onClose();
   };
 
@@ -118,7 +118,7 @@ function BudgetModal({ onClose }: { onClose: () => void }): ReactNode {
     <Modal
       open
       icon="budget"
-      title="Atur Budget per Kategori"
+      title="Budget per Kategori"
       onClose={onClose}
       actions={
         <>
@@ -126,7 +126,7 @@ function BudgetModal({ onClose }: { onClose: () => void }): ReactNode {
             Batal
           </button>
           <button className="btn btn-primary" onClick={submit}>
-            Simpan
+            Simpan Budget
           </button>
         </>
       }

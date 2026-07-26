@@ -27,7 +27,7 @@ export function PlannedTab(): ReactNode {
   const process = async (item: Planned, accountId: number | null): Promise<void> => {
     if (!(await guard(accountId, item.amount))) return;
     updateMonth((d) => checkPlanned(d, item.id, accountId, defaultDateFor(currentDate)));
-    toast.success('Dipindahkan ke pengeluaran aktual');
+    toast.success('Rencana jadi pengeluaran');
   };
 
   const toggle = async (item: Planned): Promise<void> => {
@@ -61,7 +61,7 @@ export function PlannedTab(): ReactNode {
       <div className="card">
         <CardHeader
           dot="yellow"
-          title="Rencana Pengeluaran"
+          title="Rencana"
           action={
             <button className="btn btn-primary btn-sm" onClick={() => setAddOpen(true)}>
               <Icon name="add" size={15} /> Tambah
@@ -72,14 +72,14 @@ export function PlannedTab(): ReactNode {
         {sorted.length === 0 ? (
           <EmptyState
             icon="planned"
-            hint="Daftarkan yang akan dibeli sebelum uangnya keluar — Saldo Bayangan menghitungnya sebagai uang yang sudah punya tujuan."
+            hint="Daftarkan yang akan dibeli supaya uangnya sudah punya tujuan."
             action={
               <button className="btn btn-primary" onClick={() => setAddOpen(true)}>
                 <Icon name="add" size={15} /> Tambah Rencana
               </button>
             }
           >
-            Belum ada rencana pengeluaran
+            Belum ada rencana
           </EmptyState>
         ) : (
           sorted.map((p) => (
@@ -154,7 +154,7 @@ function PlannedModal({ editing, onClose }: { editing?: Planned; onClose: () => 
     const desc = description.trim();
     const amt = parseFloat(amount);
     if (!desc || !amt || amt <= 0) {
-      toast.error('Lengkapi deskripsi dan jumlah!');
+      toast.error('Lengkapi deskripsi dan jumlah');
       return;
     }
     updateMonth((d) => {
@@ -174,7 +174,7 @@ function PlannedModal({ editing, onClose }: { editing?: Planned; onClose: () => 
         });
       }
     });
-    toast.success(editing ? 'Rencana diperbarui' : 'Rencana ditambahkan');
+    toast.success(editing ? 'Rencana diperbarui' : 'Rencana tersimpan');
     onClose();
   };
 
@@ -182,7 +182,7 @@ function PlannedModal({ editing, onClose }: { editing?: Planned; onClose: () => 
     <Modal
       open
       icon="planned"
-      title={editing ? 'Edit Rencana Pengeluaran' : 'Tambah Rencana Pengeluaran'}
+      title={editing ? 'Edit Rencana' : 'Rencana Baru'}
       onClose={onClose}
       actions={
         <>
@@ -190,7 +190,7 @@ function PlannedModal({ editing, onClose }: { editing?: Planned; onClose: () => 
             Batal
           </button>
           <button className="btn btn-primary" onClick={submit}>
-            Simpan
+            Simpan Rencana
           </button>
         </>
       }
