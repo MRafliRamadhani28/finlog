@@ -6,7 +6,7 @@ import { catColor, fmtRp } from '../lib/format';
 import { monthKey } from '../lib/storage';
 import type { TabName } from '../types';
 import { CardHeader, EmptyState } from './Modal';
-import { Icon } from './Icon';
+import { Icon, type IconName } from './Icon';
 import { Money } from './Money';
 
 export function SummaryTab({ onRecord }: { onRecord: (tab: TabName) => void }): ReactNode {
@@ -19,43 +19,21 @@ export function SummaryTab({ onRecord }: { onRecord: (tab: TabName) => void }): 
 
   return (
     <>
-      <div className="summary-grid">
-        <div className="card">
-          <CardHeader dot="green" title="Pemasukan" />
-          <Row label="Gaji Pokok" value={t.salary} tone="gold" />
-          <Row label="Penghasilan Tambahan" value={t.totalAdditional} tone="blue" />
-          <Row label="Total" value={t.totalIncome} tone="green" bold />
-        </div>
-        <div className="card">
-          <CardHeader dot="red" title="Pengeluaran" />
-          <Row label="Sudah Keluar" value={t.totalExpenses} tone="red" />
-          <Row label="Rencana Keluar" value={t.totalPlanned} tone="yellow" />
-          <Row label="Piutang Belum Lunas" value={t.totalPiutangBelumLunas} tone="purple" />
-          {/* Angkanya identik dengan hero panel saldo (pemasukan − pengeluaran).
-              Namanya disamakan supaya user tidak mengira ini angka lain. */}
-          <Row
-            label="Saldo Terkini"
-            value={t.surplus}
-            tone={t.surplus >= 0 ? 'green' : 'red'}
-            signed
-            bold
-          />
-        </div>
-      </div>
+      <QuickActions onRecord={onRecord} />
 
       <div className="card">
-        <CardHeader dot="yellow" title="Pengeluaran per Kategori" />
+        <CardHeader dot="yellow" title="Ke mana uangmu pergi" />
         {cats.length === 0 ? (
           <EmptyState
             icon="expense"
-            hint="Rincian per kategori muncul begitu ada pengeluaran tercatat."
+            hint="Catat satu pengeluaran, rinciannya langsung muncul di sini."
             action={
               <button className="btn btn-primary" onClick={() => onRecord('pengeluaran')}>
                 <Icon name="add" size={15} /> Catat Pengeluaran
               </button>
             }
           >
-            Belum ada pengeluaran bulan ini
+            Bulan ini masih kosong
           </EmptyState>
         ) : (
           cats.map((c) => {
@@ -82,21 +60,45 @@ export function SummaryTab({ onRecord }: { onRecord: (tab: TabName) => void }): 
         )}
       </div>
 
+      <div className="summary-grid">
+        <div className="card">
+          <CardHeader dot="green" title="Yang masuk" />
+          <Row label="Gaji Pokok" value={t.salary} tone="gold" />
+          <Row label="Penghasilan Tambahan" value={t.totalAdditional} tone="blue" />
+          <Row label="Total" value={t.totalIncome} tone="green" bold />
+        </div>
+        <div className="card">
+          <CardHeader dot="red" title="Yang keluar" />
+          <Row label="Sudah Keluar" value={t.totalExpenses} tone="red" />
+          <Row label="Rencana Keluar" value={t.totalPlanned} tone="yellow" />
+          <Row label="Piutang Belum Lunas" value={t.totalPiutangBelumLunas} tone="purple" />
+          {/* Angkanya identik dengan hero panel saldo (pemasukan − pengeluaran).
+              Namanya disamakan supaya user tidak mengira ini angka lain. */}
+          <Row
+            label="Saldo Terkini"
+            value={t.surplus}
+            tone={t.surplus >= 0 ? 'green' : 'red'}
+            signed
+            bold
+          />
+        </div>
+      </div>
+
       <TrendCard />
 
       <div className="card">
-        <CardHeader dot="blue" title="Alokasi Gaji per Akun" />
+        <CardHeader dot="blue" title="Gaji dibagi ke mana" />
         {allocated.length === 0 ? (
           <EmptyState
             icon="account"
-            hint="Bagi gaji ke rekening supaya saldo tiap akun terlacak sendiri-sendiri."
+            hint="Bagi gaji ke rekening, biar saldo tiap akun kelihatan terpisah."
             action={
               <button className="btn btn-primary" onClick={() => onRecord('pemasukan')}>
                 <Icon name="account" size={15} /> Atur Alokasi
               </button>
             }
           >
-            Belum ada alokasi gaji
+            Gaji belum dibagi ke rekening
           </EmptyState>
         ) : (
           <div className="stack">
@@ -125,6 +127,34 @@ export function SummaryTab({ onRecord }: { onRecord: (tab: TabName) => void }): 
 }
 
 /**
+ * Empat jalan pintas mencatat, langsung di beranda.
+ *
+ * Tombol ( + ) di nav bawah melakukan hal yang sama, tapi hanya ada di mobile —
+ * dan di kunjungan pertama belum tentu ketemu. Di sini pilihannya kelihatan.
+ */
+const QUICK: { tab: TabName; icon: IconName; text: string; tone: string }[] = [
+  { tab: 'pengeluaran', icon: 'expense', text: 'Pengeluaran', tone: 'tone-red' },
+  { tab: 'pemasukan', icon: 'income', text: 'Pemasukan', tone: 'tone-green' },
+  { tab: 'tunai', icon: 'cash', text: 'Tarik Tunai', tone: 'tone-yellow' },
+  { tab: 'piutang', icon: 'piutang', text: 'Piutang', tone: 'tone-purple' },
+];
+
+function QuickActions({ onRecord }: { onRecord: (tab: TabName) => void }): ReactNode {
+  return (
+    <div className="quick-actions">
+      {QUICK.map((q) => (
+        <button key={q.tab} className="quick-action" onClick={() => onRecord(q.tab)}>
+          <span className={'quick-action-icon ' + q.tone}>
+            <Icon name={q.icon} size={20} />
+          </span>
+          <span className="quick-action-text">{q.text}</span>
+        </button>
+      ))}
+    </div>
+  );
+}
+
+/**
  * Tren pemasukan vs pengeluaran lintas bulan.
  *
  * Batang dibuat dari div berlebar persen, bukan SVG. Skalanya satu: semua
@@ -149,14 +179,16 @@ function TrendCard(): ReactNode {
     <div className="card">
       <CardHeader
         dot="purple"
-        title="Tren Bulanan"
+        title="Naik turun tiap bulan"
         action={
           <span className="cell-note">
             Rata-rata sisa <Money value={avgNet} tone={avgNet >= 0 ? 'green' : 'red'} signed />
           </span>
         }
       />
-      <div className="card-note">Semua batang diukur ke bulan tertinggi, {fmtRp(peak)}.</div>
+      <div className="card-note">
+        Semua batang diukur ke bulan tertinggi, {fmtRp(peak)}. Ketuk salah satu untuk membukanya.
+      </div>
       <div className="trend">
         {points.map((p) => (
           <button

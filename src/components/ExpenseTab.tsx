@@ -321,7 +321,7 @@ function ExpenseModal({
     <Modal
       open
       icon="expense"
-      title={editing ? 'Edit Pengeluaran' : 'Tambah Pengeluaran'}
+      title={editing ? 'Edit Pengeluaran' : 'Pengeluaran Baru'}
       onClose={onClose}
       actions={
         <>
@@ -329,7 +329,7 @@ function ExpenseModal({
             Batal
           </button>
           <button className="btn btn-primary" onClick={() => void submit()}>
-            Simpan
+            Simpan Pengeluaran
           </button>
         </>
       }

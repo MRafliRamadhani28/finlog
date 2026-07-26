@@ -37,7 +37,7 @@ export function BudgetTab(): ReactNode {
         {rows.length === 0 ? (
           <EmptyState
             icon="budget"
-            hint="Tetapkan batas per kategori supaya pemakaiannya terpantau."
+            hint="Pasang batas per kategori, biar tahu kapan waktunya ngerem."
             action={
               <button className="btn btn-primary" onClick={() => setModalOpen(true)}>
                 <Icon name="settings" size={15} /> Atur Budget

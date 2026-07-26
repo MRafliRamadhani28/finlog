@@ -4,6 +4,10 @@ import { Icon, type IconName } from './Icon';
 
 const NAV_GROUPS: { label: string; items: { tab: TabName; icon: IconName; text: string }[] }[] = [
   {
+    label: 'Mulai',
+    items: [{ tab: 'ringkasan', icon: 'summary', text: 'Beranda' }],
+  },
+  {
     label: 'Transaksi',
     items: [
       { tab: 'pemasukan', icon: 'income', text: 'Pemasukan' },
@@ -29,7 +33,6 @@ const NAV_GROUPS: { label: string; items: { tab: TabName; icon: IconName; text: 
   {
     label: 'Lainnya',
     items: [
-      { tab: 'ringkasan', icon: 'summary', text: 'Ringkasan' },
       { tab: 'data', icon: 'data', text: 'Data' },
       { tab: 'panduan', icon: 'guide', text: 'Panduan' },
     ],

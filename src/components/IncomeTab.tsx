@@ -129,7 +129,7 @@ export function IncomeTab({ openAddSignal }: { openAddSignal?: number } = {}): R
         {income.length === 0 ? (
           <EmptyState
             icon="income"
-            hint="Catat gaji, bonus, atau uang masuk lain supaya saldo ikut terhitung."
+            hint="Bonus, freelance, atau uang masuk lain — catat di sini biar saldo ikut naik."
             action={
               <button className="btn btn-primary" onClick={() => setModalOpen(true)}>
                 <Icon name="add" size={15} /> Tambah Penghasilan

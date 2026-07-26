@@ -78,7 +78,7 @@ export function CashTab({ openAddSignal }: { openAddSignal?: number } = {}): Rea
         {data.cashWithdrawals.length === 0 ? (
           <EmptyState
             icon="cash"
-            hint="Catat penarikan supaya uang di dompet ikut terlacak."
+            hint="Uang di dompet paling gampang hilang jejak. Catat tarikannya di sini."
             action={
               <button className="btn btn-primary" onClick={() => setCashModal(true)}>
                 <Icon name="add" size={15} /> Tarik Tunai

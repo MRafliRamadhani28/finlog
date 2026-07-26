@@ -68,7 +68,7 @@ export function PlannedTab(): ReactNode {
             </button>
           }
         />
-        <div className="card-note">Centang item untuk memindahkan ke pengeluaran aktual.</div>
+        <div className="card-note">Centang kalau barangnya sudah benar-benar dibeli.</div>
         {sorted.length === 0 ? (
           <EmptyState
             icon="planned"

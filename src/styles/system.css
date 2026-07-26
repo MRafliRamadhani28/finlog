@@ -10,7 +10,8 @@
  *   lapisan yang benar-benar melayang (modal, toast).
  * - Warna sudah punya arti tetap (hijau positif, merah negatif, kuning
  *   peringatan, per-kategori). Tidak ada warna dekoratif baru.
- * - Semua angka finansial monospace + tabular, supaya digit sejajar antar baris.
+ * - Satu keluarga huruf (Plus Jakarta Sans), angka finansial pakai tabular-nums
+ *   supaya digit tetap sejajar antar baris tanpa perlu monospace kedua.
  * - Kepadatan diutamakan: skala spacing rapat, bukan lega ala landing page.
  *
  * File ini dimuat SETELAH legacy.css, jadi berperan sebagai lapisan koreksi.
@@ -27,9 +28,12 @@
   --card2-rgb: 35, 39, 58; /* #23273a — kartu terangkat, toast */
   --border-rgb: 37, 40, 55; /* setara putih 5% di atas kartu */
   --border2-rgb: 52, 56, 74; /* setara putih 10% — hover, fokus */
-  --text-rgb: 236, 238, 246;
-  --text2-rgb: 158, 163, 196;
-  --text3-rgb: 108, 114, 144;
+  --text-rgb: 236, 238, 246; /* 14.6:1 di atas kartu */
+  --text2-rgb: 158, 163, 196; /* 6.8:1 */
+  /* Nilai prototipe (108,114,144) cuma 3.6:1 di atas kartu — di bawah ambang
+     WCAG AA 4.5:1. Dinaikkan ke 4.9:1; dia dipakai untuk label mikro, meta
+     baris, dan tab nav yang tidak aktif, jadi paling sering dibaca sekilas. */
+  --text3-rgb: 130, 136, 166;
 
   --green-rgb: 79, 211, 154; /* #4fd39a */
   --red-rgb: 255, 122, 117; /* #ff7a75 */
@@ -84,8 +88,9 @@
 
 /* =======================================================================
    ANGKA
-   Semua nilai uang memakai .num. Mono saja tidak cukup — tabular-nums
-   mengunci lebar digit sehingga kolom angka tetap rata saat nilainya berubah.
+   Satu keluarga huruf untuk semuanya (prototipe 1c). Yang mengunci lebar
+   digit adalah tabular-nums, bukan monospace — dan tabular Plus Jakarta Sans
+   jauh lebih rapat, jadi nominal panjang muat tanpa dikecil-kecilkan.
    ======================================================================= */
 .num,
 .bal-amount,
@@ -106,7 +111,7 @@ table th {
 }
 
 .num {
-  font-family: 'JetBrains Mono', monospace;
+  font-family: 'Plus Jakarta Sans', sans-serif;
   letter-spacing: -0.01em;
 }
 
@@ -143,6 +148,123 @@ table th {
 .icon {
   flex-shrink: 0;
   vertical-align: -0.125em;
+}
+
+/* Placeholder tanpa aturan sendiri akan memakai default browser yang jauh
+   lebih redup dari --text3 dan tidak lolos kontras di latar segelap ini. */
+input::placeholder,
+textarea::placeholder {
+  color: var(--text3);
+  opacity: 1;
+}
+
+/* =======================================================================
+   AKSI CEPAT (beranda)
+   Empat jalan pintas mencatat. Dua kolom di ponsel, empat di layar lebar —
+   bukan scroll horizontal: pilihan yang harus digeser dulu sama saja dengan
+   pilihan yang tidak ada.
+   ======================================================================= */
+.quick-actions {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--sp-2);
+  margin-bottom: var(--sp-4);
+}
+
+@media (min-width: 640px) {
+  .quick-actions {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}
+
+.quick-action {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-3);
+  min-width: 0;
+  min-height: 56px;
+  padding: var(--sp-3);
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: var(--r);
+  cursor: pointer;
+  text-align: left;
+  color: var(--text);
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-size: var(--fs-4);
+  font-weight: 700;
+  transition:
+    border-color var(--dur),
+    transform var(--dur-fast);
+}
+
+.quick-action:hover {
+  border-color: var(--border2);
+}
+
+.quick-action:active {
+  transform: scale(0.98);
+}
+
+.quick-action-icon {
+  width: 36px;
+  height: 36px;
+  flex-shrink: 0;
+  border-radius: var(--r2);
+  display: grid;
+  place-items: center;
+}
+
+.quick-action-text {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* =======================================================================
+   HEADER
+   Wordmark, pemilih bulan, tombol sembunyikan saldo — satu baris di semua
+   lebar. `flex-wrap` warisan memecahnya jadi tiga baris di ponsel dan
+   memakan sepertiga layar sebelum angka pertama muncul.
+   ======================================================================= */
+.header {
+  flex-wrap: nowrap;
+  gap: var(--sp-2);
+  margin-bottom: var(--sp-4);
+}
+
+.header h1 {
+  font-size: 1.375rem;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+}
+
+.header-right {
+  flex-wrap: nowrap;
+  gap: var(--sp-2);
+  min-width: 0;
+}
+
+.month-nav {
+  border-radius: var(--r2);
+  padding: 2px;
+}
+
+.month-label {
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-size: var(--fs-3);
+  font-weight: 700;
+  color: var(--text);
+  min-width: 84px;
+}
+
+@media (max-width: 1023px) {
+  /* Panduan sudah punya tempat sendiri di sheet "Lainnya" — di header dia
+     cuma mendorong pemilih bulan turun ke baris berikutnya. */
+  .header .btn-ghost {
+    display: none;
+  }
 }
 
 /* =======================================================================
@@ -211,14 +333,14 @@ table th {
 }
 
 /*
- * Ukuran ditentukan kasus terburuk: "Rp 8.500.000" (12 karakter mono) harus
- * utuh di sepertiga layar 360px. Ellipsis bukan jalan keluar — nominal yang
- * terpotong lebih buruk daripada nominal yang kecil.
+ * Ukuran ditentukan kasus terburuk: "Rp 8.500.000" harus utuh di sepertiga
+ * layar 360px. Ellipsis bukan jalan keluar — nominal yang terpotong lebih
+ * buruk daripada nominal yang kecil.
  */
 .bal-stat-val {
-  font-size: var(--fs-2);
+  font-size: var(--fs-3);
   font-weight: 800;
-  letter-spacing: -0.04em;
+  letter-spacing: -0.02em;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -227,17 +349,14 @@ table th {
 @media (min-width: 560px) {
   .bal-stat-val {
     font-size: var(--fs-4);
-    letter-spacing: -0.02em;
   }
 }
 
 @media (max-width: 560px) {
   /* Di layar sempit saldo justru dibesarkan, bukan dikecilkan — di ponsel dia
-     satu-satunya angka yang harus menang telak (prototipe 1c). Batas atasnya
-     saldo 9 digit: lebih besar dari ini dan "Rp 123.456.789" mentok tepi. */
+     satu-satunya angka yang harus menang telak (prototipe 1c). */
   .bal-amount {
-    font-size: 2.125rem;
-    letter-spacing: -0.03em;
+    font-size: 2.75rem;
   }
 }
 
@@ -1084,8 +1203,43 @@ table th {
   grid-column: 1 / -1;
 }
 
+/*
+ * Emoji ✨ dekoratif dari CSS lama. Bukan konten milik user seperti emoji
+ * item, jadi tidak kena pengecualian — dan posisinya tepat di belakang
+ * tombol "Tambah" sehingga keduanya saling menumpuk.
+ */
+.wl-hero::before {
+  content: none;
+}
+
+@media (max-width: 560px) {
+  /* Judul + sub + tombol berjejer di 390px membuat sub-judul membungkus
+     dua baris menabrak tombol. Di layar sempit tombolnya turun. */
+  .wl-hero .row-between {
+    flex-direction: column;
+    align-items: stretch;
+    gap: var(--sp-3);
+  }
+  .wl-hero .btn {
+    justify-content: center;
+  }
+}
+
 .wl-card {
   background: var(--card);
+  border-radius: var(--r);
+}
+
+/*
+ * Pita prioritas dulu selebar kartu, jadi ujungnya dimakan sudut membulat
+ * dan terbaca seperti garis yang terpotong. Sekarang di-inset supaya tidak
+ * pernah menyentuh area kurva.
+ */
+.wl-card-ribbon {
+  height: 4px;
+  width: calc(100% - 2 * var(--sp-5));
+  margin: 0 auto;
+  border-radius: 0 0 var(--r-xs) var(--r-xs);
 }
 
 .wl-status-next {
@@ -1143,7 +1297,7 @@ table th {
 }
 
 .error-detail {
-  font-family: 'JetBrains Mono', monospace;
+  font-family: 'Plus Jakarta Sans', sans-serif;
   font-size: var(--fs-2);
   color: var(--red);
   background: var(--bg2);
@@ -1159,7 +1313,26 @@ table th {
    NAVIGASI BAWAH (mobile, < 1024px)
    Menggantikan hamburger + sidebar geser. Lima slot: empat tab cepat plus
    tombol aksi melingkar di tengah. Sidebar tetap dipakai di desktop.
+
+   TANGGA Z-INDEX — nav bawah adalah lapisan melayang pertama di app ini, dan
+   legacy.css menulis z-index modalnya jauh sebelum nav itu ada. Urutannya:
+
+     100  (legacy) .modal-overlay   <- ditimpa di bawah, kalah dari nav
+     150  .sidebar-backdrop
+     160  .sidebar
+     200  .bottom-nav
+     300  .sheet-overlay
+     400  .modal-overlay            <- koreksi
+     1000 .tut-overlay
+     9999 toast
+
+   Nav yang menang atas modal menutupi tombol Simpan di layar sempit —
+   formnya terisi tapi tidak bisa disimpan.
    ======================================================================= */
+.modal-overlay {
+  z-index: 400;
+}
+
 .bottom-nav {
   display: none;
 }

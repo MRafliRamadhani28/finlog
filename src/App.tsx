@@ -57,7 +57,9 @@ export function App(): ReactNode {
 
 function Shell(): ReactNode {
   const { balHidden, data, currentDate } = useApp();
-  const [tab, setTab] = useState<TabName>('pemasukan');
+  // Beranda = tab ringkasan. Namanya di data tetap 'ringkasan' supaya
+  // TabName dan sinyal tab lain tidak ikut berubah.
+  const [tab, setTab] = useState<TabName>('ringkasan');
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [tutorialOpen, setTutorialOpen] = useState(false);
   const [recordOpen, setRecordOpen] = useState(false);
@@ -122,7 +124,9 @@ function Shell(): ReactNode {
           onToggleSidebar={() => setSidebarOpen((v) => !v)}
           onStartTutorial={() => setTutorialOpen(true)}
         />
-        <BalancePanel />
+        {/* Panel saldo cuma di beranda. Di tab lain dia mendorong isi tab
+            yang dituju user turun setengah layar tanpa diminta. */}
+        {tab === 'ringkasan' && <BalancePanel />}
         <div className="layout">
           <Sidebar
             active={tab}

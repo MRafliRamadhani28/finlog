@@ -15,6 +15,7 @@ import { KEYS, monthKey } from './lib/storage';
  */
 
 const TABS = [
+  'Beranda',
   'Pemasukan',
   'Pengeluaran',
   'Tunai',
@@ -23,7 +24,6 @@ const TABS = [
   'Akun Bank',
   'Budget',
   'Wishlist',
-  'Ringkasan',
   'Data',
   'Panduan',
 ];
@@ -228,8 +228,16 @@ function clickSelector(selector: string): Promise<void> {
 }
 
 const tabText = (): string => container.querySelector('.content')!.textContent ?? '';
-const balance = (): string | undefined =>
-  container.querySelector('.bal-amount')?.textContent?.trim();
+
+/**
+ * Saldo Terkini hanya dirender di Beranda, jadi helper ini mampir ke sana
+ * dulu. Pemanggil yang masih butuh tab sebelumnya harus `clickNav` lagi
+ * setelah memakainya.
+ */
+async function balance(): Promise<string | undefined> {
+  await clickNav('Beranda');
+  return container.querySelector('.bal-amount')?.textContent?.trim();
+}
 
 function readMonth(key: string): { piutang: { status: string }[]; expenses: unknown[] } {
   return JSON.parse(localStorage.getItem(key)!) as {
@@ -298,7 +306,7 @@ describe('render app', () => {
   it('panel saldo menampilkan angka yang benar', async () => {
     mount();
     // 5.000.000 + 1.000.000 − (50.000 + 500.000 + 300.000) = 5.150.000
-    expect(balance()).toBe('Rp 5.150.000');
+    expect(await balance()).toBe('Rp 5.150.000');
     // Masuk / Keluar / Tunai. Tunai = tarikan 500.000 − item 25.000.
     const stats = Array.from(container.querySelectorAll('.bal-stat-val')).map((el) =>
       el.textContent?.trim(),
@@ -377,7 +385,7 @@ describe('render app', () => {
     expect(prev.expenses).toHaveLength(1);
 
     // Bulan ini: bertambah 750.000 lewat entry pemasukan (bukan dobel).
-    expect(balance()).toBe('Rp 5.900.000');
+    expect(await balance()).toBe('Rp 5.900.000');
     await clickNav('Pemasukan');
     expect(tabText()).toContain('Pelunasan piutang: Siti');
   });
@@ -394,14 +402,14 @@ describe('render app', () => {
     expect(prev.expenses).toHaveLength(0);
 
     // Saldo bulan ini tidak ikut berubah.
-    expect(balance()).toBe('Rp 5.150.000');
+    expect(await balance()).toBe('Rp 5.150.000');
     expect(tabText()).not.toContain('Belum Lunas dari Bulan Lain');
   });
 
   it('tren bulanan menampilkan tiap bulan yang punya data', async () => {
     seedPreviousMonthPiutang();
     mount();
-    await clickNav('Ringkasan');
+    await clickNav('Beranda');
     const rows = container.querySelectorAll('.trend-row');
     expect(rows).toHaveLength(2);
     // Urut kronologis: bulan lalu dulu, bulan ini di bawahnya.
@@ -444,7 +452,7 @@ describe('alur lewat UI', () => {
     await clickText('Simpan');
 
     expect(tabText()).toContain('Bensin');
-    expect(balance()).toBe('Rp 5.075.000');
+    expect(await balance()).toBe('Rp 5.075.000');
     // Yang tersimpan tetap angka polos, bukan string berpemisah.
     expect(readMonth(monthKey(new Date())).expenses).toHaveLength(4);
   });
@@ -458,7 +466,7 @@ describe('alur lewat UI', () => {
     await clickText('Simpan');
 
     // Makan siang 50.000 jadi 150.000, saldo turun 100.000.
-    expect(balance()).toBe('Rp 5.050.000');
+    expect(await balance()).toBe('Rp 5.050.000');
   });
 
   it('rencana yang dicentang jadi pengeluaran aktual', async () => {
@@ -466,7 +474,7 @@ describe('alur lewat UI', () => {
     await clickNav('Rencana');
     await clickSelector('button[role="checkbox"]');
 
-    expect(balance()).toBe('Rp 4.850.000');
+    expect(await balance()).toBe('Rp 4.850.000');
     await clickNav('Pengeluaran');
     expect(tabText()).toContain('Listrik');
     expect(tabText()).toContain('rencana');
@@ -481,9 +489,13 @@ describe('alur lewat UI', () => {
     expect(container.querySelectorAll('tbody tr')).toHaveLength(1);
     expect(container.querySelector('.filter-count')!.textContent).toContain('1');
     // Saldo dihitung dari seluruh data, bukan dari baris yang tampil.
-    expect(balance()).toBe('Rp 5.150.000');
+    expect(await balance()).toBe('Rp 5.150.000');
 
-    setValue(search, 'zzz');
+    // `balance()` mampir ke Beranda, jadi tab Pengeluaran di-mount ulang —
+    // node `search` yang lama sudah lepas dari DOM.
+    await clickNav('Pengeluaran');
+    const search2 = container.querySelector<HTMLInputElement>('.filter-search input')!;
+    setValue(search2, 'zzz');
     expect(tabText()).toContain('Tidak ada transaksi yang cocok');
     await clickText('Hapus Filter');
     expect(container.querySelectorAll('tbody tr')).toHaveLength(3);
@@ -494,19 +506,19 @@ describe('alur lewat UI', () => {
     const prevKey = monthKey(new Date(new Date().getFullYear(), new Date().getMonth() - 1, 1));
 
     await clickSelector('button[aria-label="Bulan sebelumnya"]');
-    expect(balance()).toBe('Rp 0');
+    expect(await balance()).toBe('Rp 0');
 
     await clickNav('Pengeluaran');
     await clickText('Tambah');
     setField('Deskripsi', 'Belanja bulan lalu');
     setField('Jumlah (Rp)', '20000');
     await clickText('Simpan');
-    expect(balance()).toBe('−Rp 20.000');
+    expect(await balance()).toBe('−Rp 20.000');
 
     await clickSelector('button[aria-label="Bulan berikutnya"]');
 
     // Bulan ini utuh, dan entry bulan lalu tidak bocor ke sini.
-    expect(balance()).toBe('Rp 5.150.000');
+    expect(await balance()).toBe('Rp 5.150.000');
     expect(tabText()).not.toContain('Belanja bulan lalu');
     expect(readMonth(prevKey).expenses).toHaveLength(1);
     expect(readMonth(monthKey(new Date())).expenses).toHaveLength(3);
@@ -525,14 +537,14 @@ describe('alur lewat UI', () => {
     setField('Deskripsi', 'Entry sementara');
     setField('Jumlah (Rp)', '11000');
     await clickText('Simpan');
-    expect(balance()).toBe('Rp 5.139.000');
+    expect(await balance()).toBe('Rp 5.139.000');
 
     await clickNav('Data');
     setValue(container.querySelector('.import-area')!, backup);
     await clickText('Import Data');
     await confirmDialog();
 
-    expect(balance()).toBe('Rp 5.150.000');
+    expect(await balance()).toBe('Rp 5.150.000');
     await clickNav('Pengeluaran');
     expect(tabText()).not.toContain('Entry sementara');
   });
@@ -544,7 +556,7 @@ describe('alur lewat UI', () => {
     await clickText('Hapus Bulan Ini');
     await confirmDialog();
 
-    expect(balance()).toBe('Rp 0');
+    expect(await balance()).toBe('Rp 0');
     // Bulan lain tidak ikut terhapus.
     expect(
       readMonth(monthKey(new Date(new Date().getFullYear(), new Date().getMonth() - 1, 1))).piutang,

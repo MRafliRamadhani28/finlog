@@ -22,7 +22,7 @@ interface BottomNavProps {
  * background, ikon tidak memantul.
  */
 const LEFT: { tab: TabName; icon: IconName; text: string }[] = [
-  { tab: 'ringkasan', icon: 'summary', text: 'Ringkasan' },
+  { tab: 'ringkasan', icon: 'summary', text: 'Beranda' },
   { tab: 'pengeluaran', icon: 'expense', text: 'Keluar' },
 ];
 

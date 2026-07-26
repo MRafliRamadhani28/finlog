@@ -185,6 +185,10 @@
       --cat-makanan: rgb(var(--cat-makanan-rgb));
       --cat-transport: rgb(var(--cat-transport-rgb));
       --cat-tagihan: var(--red);
+      /* Kesehatan & Hiburan sempat hanya punya triplet -rgb tanpa varnya,
+         jadi progress bar & badge dua kategori ini tidak berwarna sama sekali. */
+      --cat-kesehatan: rgb(var(--cat-kesehatan-rgb));
+      --cat-hiburan: rgb(var(--cat-hiburan-rgb));
       --cat-belanja: rgb(var(--cat-belanja-rgb));
       --cat-pendidikan: var(--purple);
       --cat-lainnya: var(--text2);
@@ -304,7 +308,7 @@
     }
 
     .month-label {
-      font-family: 'JetBrains Mono', monospace;
+      font-family: 'Plus Jakarta Sans', sans-serif;
       font-size: .9rem;
       font-weight: 500;
       color: var(--gold);
@@ -364,7 +368,7 @@
     }
 
     .bal-amount {
-      font-family: 'JetBrains Mono', monospace;
+      font-family: 'Plus Jakarta Sans', sans-serif;
       font-size: 1.35rem;
       font-weight: 600
     }
@@ -469,7 +473,7 @@
     }
 
     .bal-acc-amount {
-      font-family: 'JetBrains Mono', monospace;
+      font-family: 'Plus Jakarta Sans', sans-serif;
       font-size: .78rem;
       font-weight: 600;
       white-space: nowrap
@@ -542,7 +546,7 @@
     }
 
     .acc-choose-bal {
-      font-family: 'JetBrains Mono', monospace;
+      font-family: 'Plus Jakarta Sans', sans-serif;
       font-size: .78rem;
       font-weight: 600;
       flex-shrink: 0
@@ -1193,7 +1197,7 @@
     }
 
     .planned-amount {
-      font-family: 'JetBrains Mono', monospace;
+      font-family: 'Plus Jakarta Sans', sans-serif;
       font-size: .9rem;
       font-weight: 600;
       color: var(--red)
@@ -1213,7 +1217,7 @@
     }
 
     .salary-big {
-      font-family: 'JetBrains Mono', monospace;
+      font-family: 'Plus Jakarta Sans', sans-serif;
       font-size: 1.8rem;
       font-weight: 700;
       color: var(--gold);
@@ -1283,13 +1287,13 @@
     }
 
     .account-num {
-      font-family: 'JetBrains Mono', monospace;
+      font-family: 'Plus Jakarta Sans', sans-serif;
       font-size: .75rem;
       color: var(--text3)
     }
 
     .account-bal {
-      font-family: 'JetBrains Mono', monospace;
+      font-family: 'Plus Jakarta Sans', sans-serif;
       font-size: 1.1rem;
       font-weight: 600;
       margin-top: 10px
@@ -1343,7 +1347,7 @@
     }
 
     .split-row .acc-alloc-display {
-      font-family: 'JetBrains Mono', monospace;
+      font-family: 'Plus Jakarta Sans', sans-serif;
       font-size: .82rem;
       font-weight: 600;
       color: var(--green);
@@ -1380,7 +1384,7 @@
       border: 1px solid var(--border);
       border-radius: 6px;
       color: var(--text);
-      font-family: 'JetBrains Mono', monospace;
+      font-family: 'Plus Jakarta Sans', sans-serif;
       font-size: .82rem;
       padding: 5px 8px;
       outline: none;
@@ -1450,7 +1454,7 @@
     .bal-hidden .total-val,
     .bal-hidden .account-bal,
     .bal-hidden .acc-choose-bal,
-    .bal-hidden td[style*="JetBrains"] {
+    .bal-hidden .num {
       filter: blur(8px);
       user-select: none;
       pointer-events: none
@@ -1519,7 +1523,7 @@
     }
 
     .cash-sub-item .sub-amount {
-      font-family: 'JetBrains Mono', monospace;
+      font-family: 'Plus Jakarta Sans', sans-serif;
       color: var(--red);
       font-weight: 600;
       margin-left: auto
@@ -1603,7 +1607,7 @@
     }
 
     .wl-stat-val {
-      font-family: 'JetBrains Mono', monospace;
+      font-family: 'Plus Jakarta Sans', sans-serif;
       font-size: 1.1rem;
       font-weight: 700
     }
@@ -1731,7 +1735,7 @@
     }
 
     .wl-price {
-      font-family: 'JetBrains Mono', monospace;
+      font-family: 'Plus Jakarta Sans', sans-serif;
       font-size: .95rem;
       font-weight: 700;
       margin-bottom: 8px
@@ -1852,7 +1856,7 @@
     }
 
     .total-val {
-      font-family: 'JetBrains Mono', monospace;
+      font-family: 'Plus Jakarta Sans', sans-serif;
       font-size: .95rem;
       font-weight: 600
     }
@@ -1904,7 +1908,7 @@
       border: 1px solid var(--border);
       border-radius: var(--r2);
       padding: 14px;
-      font-family: 'JetBrains Mono', monospace;
+      font-family: 'Plus Jakarta Sans', sans-serif;
       font-size: .75rem;
       color: var(--text2);
       word-break: break-all;
@@ -1921,7 +1925,7 @@
       border: 1px solid var(--border);
       border-radius: var(--r2);
       padding: 14px;
-      font-family: 'JetBrains Mono', monospace;
+      font-family: 'Plus Jakarta Sans', sans-serif;
       font-size: .75rem;
       color: var(--text2);
       width: 100%;

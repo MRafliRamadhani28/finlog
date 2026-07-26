@@ -13,12 +13,7 @@ export function Header({ onToggleSidebar, onStartTutorial }: HeaderProps): React
   return (
     <div className="header">
       <div className="header-title">
-        <div className="logo">
-          <Icon name="income" size={20} />
-        </div>
-        <h1>
-          Catatan <span>Keuangan</span>
-        </h1>
+        <h1>finlog</h1>
       </div>
       <div className="header-right">
         <button className="hamburger" onClick={onToggleSidebar} aria-label="Buka menu">
