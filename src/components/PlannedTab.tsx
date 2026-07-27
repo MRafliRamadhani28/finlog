@@ -107,21 +107,23 @@ export function PlannedTab(): ReactNode {
               <div className="planned-amount">
                 <Money value={p.amount} negative tone={p.checked ? 'plain' : 'red'} />
               </div>
-              {p.checked ? (
-                <span className="planned-lock" title="Terkunci — batalkan centang untuk mengubah">
-                  <Icon name="lock" size={15} />
-                </span>
-              ) : (
-                <>
-                  <IconButton icon="edit" label="Edit rencana" onClick={() => setEditing(p)} />
-                  <IconButton
-                    icon="delete"
-                    tone="red"
-                    label="Hapus rencana"
-                    onClick={() => void remove(p.id)}
-                  />
-                </>
-              )}
+              <div className="planned-actions">
+                {p.checked ? (
+                  <span className="planned-lock" title="Terkunci — batalkan centang untuk mengubah">
+                    <Icon name="lock" size={15} />
+                  </span>
+                ) : (
+                  <>
+                    <IconButton icon="edit" label="Edit rencana" onClick={() => setEditing(p)} />
+                    <IconButton
+                      icon="delete"
+                      tone="red"
+                      label="Hapus rencana"
+                      onClick={() => void remove(p.id)}
+                    />
+                  </>
+                )}
+              </div>
             </div>
           ))
         )}

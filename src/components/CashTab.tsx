@@ -134,15 +134,17 @@ export function CashTab({ openAddSignal }: { openAddSignal?: number } = {}): Rea
                     </span>
                   </span>
                   <Money value={c.amount} tone="yellow" weight="bold" className="cash-amount" />
-                  <IconButton
-                    icon="delete"
-                    tone="red"
-                    label="Hapus penarikan tunai"
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      void removeWithdrawal(c.id);
-                    }}
-                  />
+                  <span className="cash-actions">
+                    <IconButton
+                      icon="delete"
+                      tone="red"
+                      label="Hapus penarikan tunai"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        void removeWithdrawal(c.id);
+                      }}
+                    />
+                  </span>
                 </div>
                 <div className="cash-body">
                   <div className="cash-sub-items">
@@ -151,17 +153,19 @@ export function CashTab({ openAddSignal }: { openAddSignal?: number } = {}): Rea
                     ) : (
                       c.items.map((item) => (
                         <div key={item.id} className="cash-sub-item">
-                          <span className="badge" style={catBadgeStyle(item.category)}>
-                            {item.category}
-                          </span>
                           <span className="cell-name">{item.description}</span>
-                          <span className="sub-amount">
-                            <Money value={item.amount} negative />
+                          <span className="cash-sub-foot">
+                            <span className="badge" style={catBadgeStyle(item.category)}>
+                              {item.category}
+                            </span>
+                            <span className="sub-amount">
+                              <Money value={item.amount} negative />
+                            </span>
                           </span>
                           <IconButton
                             icon="delete"
                             tone="red"
-                            label="Hapus detail"
+                            label={`Hapus detail ${item.description}`}
                             onClick={() => void removeItem(c.id, item.id)}
                           />
                         </div>

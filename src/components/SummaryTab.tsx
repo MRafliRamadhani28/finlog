@@ -112,7 +112,7 @@ export function SummaryTab({ onRecord }: { onRecord: (tab: TabName) => void }): 
                   <div className="alloc-name">
                     {a.bank} · {a.name}
                   </div>
-                  <span className="num num-strong" style={{ color: a.color }}>
+                  <span className="alloc-amount num num-strong" style={{ color: a.color }}>
                     {fmtRp(alloc.amount)}
                   </span>
                   <div className="alloc-pct num">{pct}%</div>

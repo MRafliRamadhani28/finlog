@@ -673,6 +673,45 @@ table th {
   text-align: right;
 }
 
+/*
+ * "BCA · Tabungan Utama" + nominal + persen di 360px menyisakan ~90px untuk
+ * namanya, yang lalu membungkus tiga baris di samping angka satu baris. Nama
+ * naik jadi baris sendiri, angka & persen berpasangan di bawahnya.
+ */
+@media (max-width: 639px) {
+  .alloc-row {
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr) auto;
+    grid-template-areas:
+      'dot name name'
+      'dot amount pct';
+    align-items: center;
+    column-gap: var(--sp-2);
+    row-gap: var(--sp-1);
+    padding: var(--sp-1) 0;
+  }
+
+  .alloc-row .acc-dot {
+    grid-area: dot;
+    align-self: start;
+    margin-top: 6px;
+  }
+
+  .alloc-name {
+    grid-area: name;
+    font-weight: 600;
+  }
+
+  .alloc-amount {
+    grid-area: amount;
+    justify-self: start;
+  }
+
+  .alloc-pct {
+    grid-area: pct;
+  }
+}
+
 /* =======================================================================
    PERINGATAN INLINE (budget, saldo)
    ======================================================================= */
@@ -1266,6 +1305,61 @@ table th {
   margin-top: var(--sp-1);
 }
 
+.split-row .acc-label {
+  font-size: var(--fs-4);
+  font-weight: 600;
+}
+
+/*
+ * Baris alokasi juga dua baris di layar sempit. Bedanya dengan daftar lain:
+ * baris ini bisa masuk mode edit, dan input nominalnya (120px) butuh lebar
+ * yang sama dengan yang dipakai teksnya saat tidak diedit — kalau tidak,
+ * barisnya melompat tiap kali diketuk.
+ */
+@media (max-width: 639px) {
+  .split-row {
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr);
+    grid-template-areas:
+      'dot   label'
+      'dot   value';
+    align-items: center;
+    column-gap: var(--sp-2);
+    row-gap: var(--sp-1);
+    padding: var(--sp-3);
+  }
+
+  .split-row .acc-color {
+    grid-area: dot;
+    align-self: start;
+    margin-top: 6px;
+  }
+
+  .split-row .acc-label {
+    grid-area: label;
+    white-space: normal;
+    overflow: visible;
+  }
+
+  .split-row .acc-alloc-display {
+    grid-area: value;
+    justify-self: start;
+  }
+
+  /* Melebar penuh saat diedit: mengetik nominal di kotak 120px yang mepet
+     tombol simpan adalah target sentuh terkecil di seluruh app. */
+  .split-row .split-edit-wrap {
+    grid-area: value;
+    justify-self: stretch;
+  }
+
+  .split-row .split-input {
+    flex: 1;
+    width: auto;
+    min-width: 0;
+  }
+}
+
 /* =======================================================================
    TAB PENGELUARAN / TUNAI
 
@@ -1291,13 +1385,16 @@ table th {
 }
 
 .cash-desc {
-  display: block;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  overflow-wrap: anywhere;
   font-size: var(--fs-4);
   font-weight: 700;
+  line-height: 1.35;
   color: var(--text);
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
 }
 
 .cash-meta {
@@ -1325,22 +1422,43 @@ table th {
   font-size: var(--fs-5);
 }
 
-/* Rincian pemakaian tunai: deskripsi memanjang dulu mendorong nominal keluar
-   kartu karena tidak ada satu pun anak yang boleh menyusut. */
+.cash-actions {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-1);
+  flex-shrink: 0;
+}
+
+/*
+ * Rincian pemakaian tunai. Empat hal sebaris lagi — badge kategori, deskripsi,
+ * nominal, hapus — dan tidak satu pun boleh menyusut, jadi deskripsi panjang
+ * mendorong nominal keluar kartu. Badge kategori turun ke baris meta bersama
+ * nominalnya; deskripsi naik jadi baris pertama selebar penuh.
+ */
 .cash-sub-item {
-  gap: var(--sp-2);
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
+  gap: var(--sp-1) var(--sp-2);
+  padding: var(--sp-2) var(--sp-3);
 }
 
 .cash-sub-item .cell-name {
-  flex: 1;
+  grid-column: 1;
   min-width: 0;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
+  overflow-wrap: anywhere;
 }
 
-.cash-sub-item .badge {
-  flex-shrink: 0;
+.cash-sub-foot {
+  grid-column: 1;
+  display: flex;
+  align-items: center;
+  gap: var(--sp-2);
+}
+
+.cash-sub-item .btn-icon {
+  grid-column: 2;
+  grid-row: 1 / -1;
 }
 
 .cash-untracked {
@@ -1349,13 +1467,43 @@ table th {
   gap: var(--sp-2);
 }
 
-@media (max-width: 560px) {
+/*
+ * Tunai & Rencana tidak punya versi tabel di layar lebar — komponennya sama di
+ * semua lebar, jadi pemecahan barisnya harus di media query, bukan di markup.
+ * Di bawah 640px keduanya memakai bentuk dua baris yang sama dengan
+ * `.entry-card`: judul dapat lebar penuh, nominal & aksi turun ke bawah.
+ */
+@media (max-width: 639px) {
   .cash-header {
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr) auto;
+    grid-template-areas:
+      'chev main   main'
+      'chev amount actions';
+    align-items: center;
+    column-gap: var(--sp-2);
+    row-gap: var(--sp-2);
     padding: var(--sp-3);
   }
 
+  .cash-expand-icon {
+    grid-area: chev;
+    align-self: start;
+    margin-top: 3px;
+  }
+
+  .cash-main {
+    grid-area: main;
+  }
+
   .cash-amount {
-    font-size: var(--fs-4);
+    grid-area: amount;
+    justify-self: start;
+  }
+
+  .cash-actions {
+    grid-area: actions;
+    justify-self: end;
   }
 }
 
@@ -1398,17 +1546,23 @@ table th {
   font-size: var(--fs-4);
   font-weight: 600;
   color: var(--text);
+  line-height: 1.35;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  line-clamp: 2;
+  -webkit-box-orient: vertical;
   overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
+  overflow-wrap: anywhere;
 }
 
 .planned-cat {
   font-size: var(--fs-2);
+  margin-top: 3px;
 }
 
 .planned-lock {
   display: inline-flex;
+  align-items: center;
   color: var(--text3);
   padding: 0 var(--sp-1);
 }
@@ -1416,6 +1570,49 @@ table th {
 .planned-amount {
   font-size: var(--fs-4);
   flex-shrink: 0;
+}
+
+.planned-actions {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-1);
+  flex-shrink: 0;
+}
+
+/* Sama seperti Tunai: satu deret datar di 360px berarti "Bayar listrik + air
+   Juli" tersisa dua kata. Nominal & aksi turun. */
+@media (max-width: 639px) {
+  .planned-item {
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr) auto;
+    grid-template-areas:
+      'check info   info'
+      'check amount actions';
+    align-items: center;
+    column-gap: var(--sp-3);
+    row-gap: var(--sp-2);
+  }
+
+  .planned-item .checkbox {
+    grid-area: check;
+    align-self: start;
+    margin-top: 2px;
+  }
+
+  .planned-info {
+    grid-area: info;
+  }
+
+  .planned-amount {
+    grid-area: amount;
+    justify-self: start;
+    font-size: var(--fs-5);
+  }
+
+  .planned-actions {
+    grid-area: actions;
+    justify-self: end;
+  }
 }
 
 /* =======================================================================
@@ -2022,22 +2219,53 @@ table th {
 }
 
 /*
- * Satu entri = satu baris (prototipe 1c): petak warna kategori, judul + meta,
- * nominal, aksi. Petaknya yang membawa kategori, jadi teks kategori boleh
- * turun ke baris meta dan judul dapat seluruh lebar sisanya.
+ * Satu entri = satu kartu, DUA baris.
+ *
+ * Bentuk lamanya satu deret datar: petak, deskripsi, nominal, dua tombol aksi.
+ * Hitung lebarnya di layar 360px dan alasannya kelihatan — dari 272px isi
+ * kartu, petak makan 40, nominal 105, dua tombol 56, jarak 36. Deskripsi
+ * kebagian 23px. Itu bukan "dipotong ellipsis", itu tidak ada.
+ *
+ * Yang berebut lebar di baris yang sama sekarang tinggal dua hal yang memang
+ * harus dibandingkan sekilas — nominal dan aksinya — dan keduanya turun ke
+ * baris bawah. Deskripsi dapat SELURUH lebar sisa petak (220px, ±25 karakter
+ * per baris) dan boleh membungkus dua baris sebelum dipotong.
+ *
+ *   ┌────────────────────────────────────────┐
+ *   │ [petak]  Bayar listrik + air Juli      │
+ *   │          Tagihan · 12 Jul · BCA        │
+ *   │          −Rp 1.250.000      [ubah][×]  │
+ *   └────────────────────────────────────────┘
+ *
+ * Konsekuensi yang diterima: kartunya ±28px lebih tinggi. Ditukar dengan
+ * deskripsi yang terbaca utuh — dan deskripsi adalah satu-satunya kolom yang
+ * membedakan satu transaksi dari transaksi lain.
  */
 .entry-card {
   background: var(--card2);
   border: 1px solid var(--border);
   border-radius: var(--r);
   padding: var(--sp-3);
-  display: flex;
+}
+
+.entry-card,
+.entry-card-main {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  grid-template-areas:
+    'tile body   body'
+    'tile amount actions';
   align-items: center;
-  gap: var(--sp-3);
+  column-gap: var(--sp-3);
+  row-gap: var(--sp-2);
 }
 
 /* Petak kategori. Warnanya inline (per kategori/akun), hanya bentuknya di sini. */
 .entry-tile {
+  grid-area: tile;
+  /* Membentang dua baris, tapi tetap menempel di atas: petak yang ikut
+     ter-center pada kartu setinggi tiga baris teks terlihat melayang. */
+  align-self: start;
   width: 40px;
   height: 40px;
   flex-shrink: 0;
@@ -2047,7 +2275,7 @@ table th {
 }
 
 .entry-card-body {
-  flex: 1;
+  grid-area: body;
   min-width: 0;
 }
 
@@ -2055,45 +2283,52 @@ table th {
   font-size: var(--fs-4);
   font-weight: 700;
   color: var(--text);
-  /* Deskripsi panjang dipotong, bukan membungkus — tinggi baris tetap sama
-     supaya daftar bisa dipindai cepat. */
+  line-height: 1.35;
+  /*
+   * Dua baris penuh, baru dipotong. Memotong di satu baris membuat entri yang
+   * berbeda terbaca sama: "Bayar listrik Juli" dan "Bayar listrik Agustus"
+   * sama-sama jadi "Bayar listrik…".
+   */
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  line-clamp: 2;
+  -webkit-box-orient: vertical;
   overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
+  overflow-wrap: anywhere;
 }
 
 .entry-card-meta {
   font-size: var(--fs-2);
   color: var(--text3);
-  margin-top: 2px;
+  margin-top: 3px;
   display: flex;
   align-items: center;
-  gap: 5px;
+  gap: 3px var(--sp-2);
   flex-wrap: wrap;
 }
 
+/* Nominal punya barisnya sendiri sekarang, jadi dia boleh sebesar arti yang
+   dibawanya — sebelumnya dia justru ikut dikecilkan demi memberi ruang. */
 .entry-card-amount {
-  flex-shrink: 0;
+  grid-area: amount;
+  justify-self: start;
+  font-size: var(--fs-5);
   white-space: nowrap;
 }
 
 .entry-card-actions {
-  flex-shrink: 0;
+  grid-area: actions;
+  justify-self: end;
   display: flex;
   align-items: center;
-  gap: 2px;
+  gap: var(--sp-1);
 }
 
-/* Piutang butuh baris kedua untuk tombol status yang lebar penuh. */
+/* Piutang menambah tombol status selebar kartu di bawah dua baris itu. */
 .entry-card-stack {
+  display: flex;
   flex-direction: column;
   align-items: stretch;
-  gap: var(--sp-3);
-}
-
-.entry-card-stack .entry-card-main {
-  display: flex;
-  align-items: center;
   gap: var(--sp-3);
 }
 
