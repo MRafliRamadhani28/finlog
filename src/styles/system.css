@@ -375,6 +375,37 @@ textarea::placeholder {
   display: none;
 }
 
+/*
+ * Baris saldo per akun dulu memakai 12px / 10px / 9.6px — tiga ukuran di bawah
+ * skala, dan dua di antaranya sekaligus berwarna --text3. Semuanya dinaikkan
+ * ke langkah terdekat di skala; nama akun jadi jangkar barisnya.
+ */
+.bal-acc-item {
+  gap: var(--sp-3);
+  padding: 10px var(--sp-3);
+}
+
+.bal-acc-name {
+  font-size: var(--fs-3);
+  font-weight: 600;
+}
+
+.bal-acc-bank {
+  font-size: var(--fs-1);
+  color: var(--text2);
+  letter-spacing: 0.06em;
+}
+
+.bal-acc-amount {
+  font-size: var(--fs-4);
+  font-weight: 700;
+}
+
+.bal-acc-warn {
+  font-size: var(--fs-1);
+  justify-content: flex-end;
+}
+
 /* =======================================================================
    KARTU & JUDUL
    ======================================================================= */
@@ -384,12 +415,29 @@ textarea::placeholder {
   margin-bottom: var(--sp-3);
 }
 
+/*
+ * Di 360px, `.app` menyumbang 16px dan kartu 24px lagi di tiap sisi: 80px
+ * hilang sebelum huruf pertama. Padding kartu dikurangi di layar sempit —
+ * lebar itu lebih berguna untuk deskripsi transaksi daripada untuk udara.
+ */
+@media (max-width: 560px) {
+  .card,
+  .wishlist-card {
+    padding: var(--sp-4);
+  }
+}
+
 .card-header {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: var(--sp-2);
   margin-bottom: var(--sp-4);
 }
 
 .card-title {
   font-size: var(--fs-5);
+  font-weight: 700;
   gap: var(--sp-2);
   letter-spacing: -0.01em;
 }
@@ -414,17 +462,38 @@ table th {
   font-size: var(--fs-3);
 }
 
-.cell-muted {
-  color: var(--text3);
+/*
+ * Kolom nominal rata kanan. tabular-nums saja hanya menyamakan LEBAR digit;
+ * yang membuat ribuan sejajar antar baris adalah tepi kanan yang sama, dan
+ * tanpa itu "Rp 50.000" dan "Rp 1.250.000" mulai di titik yang sama sehingga
+ * besar-kecilnya harus dibaca huruf per huruf. Rata kanan bikin panjang angka
+ * sendiri jadi isyarat besarannya.
+ */
+.col-num {
+  text-align: right;
+  white-space: nowrap;
 }
 
+/* Tanggal tidak pernah boleh membungkus jadi dua baris — dia patokan pindai. */
+.cell-muted {
+  color: var(--text3);
+  white-space: nowrap;
+}
+
+/* Kolom yang dicari mata duluan, jadi dia yang paling tegas di barisnya. */
 .cell-name {
-  font-weight: 500;
+  font-weight: 600;
+  color: var(--text);
 }
 
 .cell-note {
   color: var(--text3);
   font-size: var(--fs-2);
+}
+
+/* Deskripsi boleh mengambil sisa lebar; kolom lain seperlunya saja. */
+.col-grow {
+  width: 99%;
 }
 
 /* Baris yang baru berubah berkedip sekali — memberi tahu APA yang berubah,
@@ -733,7 +802,9 @@ table th {
 .empty-icon {
   color: var(--text3);
   margin-bottom: var(--sp-2);
-  opacity: 0.7;
+  /* Legacy meredupkannya lagi ke .5, dan --text3 × .7 jatuh ke ~3.2:1 — di
+     bawah 3:1 yang jadi ambang ikon begitu ukurannya mengecil. */
+  opacity: 1;
 }
 
 /* Kalimat pertama tegas, penjelasan redup di bawahnya, aksi paling bawah. */
@@ -1027,9 +1098,77 @@ table th {
   }
 }
 
+/* =======================================================================
+   DIALOG TUTORIAL
+   Ikonnya dulu glyph 30px yang berdiri telanjang di antara pil "Langkah n"
+   dan judul — tidak punya bidang, jadi terbaca sebagai sisa layout, bukan
+   sebagai penanda langkah. Sekarang petak bertint seperti .quick-action-icon
+   dan .sheet-row-icon: satu bahasa bentuk untuk semua ikon berpetak.
+   ======================================================================= */
 .tut-icon {
+  /* Wajib `flex`, bukan `inline-flex` warisan aturan bersama di atas: dua kotak
+     inline-level berurutan (pil langkah lalu ikon) menempel di baris yang sama,
+     dan ikonnya berakhir menggantung di sebelah pil. Lebarnya tetap dipatok
+     jadi `flex` tidak membuatnya melar selebar dialog. */
+  display: flex;
+  width: 56px;
+  height: 56px;
+  border-radius: var(--r2);
+  background: var(--blue-bg);
+  border: 1px solid rgba(var(--blue-rgb), 0.22);
   color: var(--blue);
-  margin-bottom: var(--sp-3);
+  /* Pil langkah sudah menyumbang jarak bawahnya sendiri. */
+  margin: 0 0 var(--sp-3);
+}
+
+.tut-box {
+  border-radius: var(--r);
+  padding: var(--sp-5);
+  box-shadow: var(--elev);
+}
+
+.tut-step-badge {
+  font-size: var(--fs-1);
+  letter-spacing: 0.04em;
+}
+
+.tut-title {
+  font-size: 1.25rem;
+  letter-spacing: -0.01em;
+  line-height: 1.25;
+}
+
+.tut-desc {
+  font-size: var(--fs-4);
+  line-height: 1.65;
+}
+
+@media (max-width: 560px) {
+  .tut-box {
+    padding: var(--sp-4);
+  }
+
+  .tut-icon {
+    width: 48px;
+    height: 48px;
+  }
+
+  /* "Lewati" + "Kembali" + "Lanjut" berdesakan di 360px; yang dituju cuma
+     satu, jadi Lewati turun ke barisnya sendiri. */
+  .tut-actions {
+    flex-direction: column-reverse;
+    align-items: stretch;
+    gap: var(--sp-2);
+  }
+
+  .tut-nav {
+    justify-content: flex-end;
+  }
+
+  .tut-nav .btn {
+    flex: 1;
+    justify-content: center;
+  }
 }
 
 .wl-achieved-stamp {
@@ -1052,6 +1191,19 @@ table th {
 .checkbox {
   background: none;
   padding: 0;
+}
+
+/*
+ * Centang & tombol simpan alokasi duduk di atas bidang hijau penuh (#4fd39a).
+ * Legacy memberi keduanya #fff — 1.9:1, coretan putih yang nyaris hilang di
+ * hijau seterang itu. Tinta gelap: 9.9:1.
+ */
+.checkbox.checked svg {
+  stroke: var(--on-accent);
+}
+
+.split-save-btn {
+  color: var(--on-accent);
 }
 
 .status-toggle {
@@ -1116,21 +1268,95 @@ table th {
 
 /* =======================================================================
    TAB PENGELUARAN / TUNAI
+
+   Baris penarikan tunai dulu satu deret datar: tanggal, akun, deskripsi,
+   nominal, chevron, hapus — enam hal setara berebut lebar yang sama. Di 360px
+   deskripsinya tergencet sampai tersisa beberapa huruf. Sekarang bentuknya
+   sama dengan .entry-card yang sudah dipakai tab lain: judul di atas, meta
+   redup di bawahnya, nominal & aksi di kanan.
    ======================================================================= */
 .tag {
   font-size: var(--fs-1);
   margin-left: var(--sp-1);
 }
 
-.cash-acc-name {
-  font-size: var(--fs-3);
-  color: var(--text2);
+.cash-header {
+  gap: var(--sp-3);
+  padding: var(--sp-3) var(--sp-4);
+}
+
+.cash-main {
+  flex: 1;
+  min-width: 0;
 }
 
 .cash-desc {
+  display: block;
   font-size: var(--fs-4);
-  font-weight: 600;
+  font-weight: 700;
   color: var(--text);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.cash-meta {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 3px var(--sp-2);
+  margin-top: 3px;
+  font-size: var(--fs-2);
+  color: var(--text3);
+}
+
+/* Sisa yang belum dirinci adalah satu-satunya hal yang menuntut tindakan di
+   baris ini, jadi dia terbaca tanpa perlu membuka rinciannya dulu. */
+.cash-meta-warn {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  color: var(--yellow);
+  font-weight: 600;
+}
+
+.cash-amount {
+  flex-shrink: 0;
+  font-size: var(--fs-5);
+}
+
+/* Rincian pemakaian tunai: deskripsi memanjang dulu mendorong nominal keluar
+   kartu karena tidak ada satu pun anak yang boleh menyusut. */
+.cash-sub-item {
+  gap: var(--sp-2);
+}
+
+.cash-sub-item .cell-name {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.cash-sub-item .badge {
+  flex-shrink: 0;
+}
+
+.cash-untracked {
+  font-size: var(--fs-3);
+  align-items: center;
+  gap: var(--sp-2);
+}
+
+@media (max-width: 560px) {
+  .cash-header {
+    padding: var(--sp-3);
+  }
+
+  .cash-amount {
+    font-size: var(--fs-4);
+  }
 }
 
 /* =======================================================================
@@ -1138,6 +1364,47 @@ table th {
    ======================================================================= */
 .struck {
   text-decoration: line-through;
+}
+
+.planned-item {
+  padding: var(--sp-3);
+  gap: var(--sp-3);
+}
+
+/*
+ * Item terceklis dulu diredupkan `opacity: .5` seluruh barisnya. Efeknya bukan
+ * "sekunder" tapi "hilang": kategorinya (--text3, 4.9:1) jatuh ke ~1.9:1 dan
+ * ikon gemboknya praktis tidak ada. Statusnya sudah disampaikan tiga kali —
+ * centang hijau, coretan, dan teks "Sudah dibayar" — jadi barisnya tidak perlu
+ * diredupkan sama sekali; cukup latarnya yang mundur.
+ */
+.planned-item.checked {
+  opacity: 1;
+  background: rgba(var(--text3-rgb), 0.06);
+}
+
+.planned-item.checked .planned-name {
+  color: var(--text2);
+  font-weight: 500;
+}
+
+/* `flex: 1` tanpa `min-width: 0` tidak pernah menyusut di bawah lebar isinya:
+   satu deskripsi panjang mendorong nominal dan tombol keluar dari kartu. */
+.planned-info {
+  min-width: 0;
+}
+
+.planned-name {
+  font-size: var(--fs-4);
+  font-weight: 600;
+  color: var(--text);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.planned-cat {
+  font-size: var(--fs-2);
 }
 
 .planned-lock {
@@ -1148,6 +1415,7 @@ table th {
 
 .planned-amount {
   font-size: var(--fs-4);
+  flex-shrink: 0;
 }
 
 /* =======================================================================
@@ -1231,6 +1499,27 @@ table th {
 }
 
 /*
+ * Sama seperti rencana terceklis: `opacity: .55` pada seluruh kartu membuat
+ * catatan dan tanggalnya (--text3) turun ke ~2:1 — tercapai jadi berarti tidak
+ * terbaca. Stempel centang hijau + pita sudah menyatakan statusnya, jadi yang
+ * dimundurkan cukup warna teks utamanya.
+ */
+.wl-card.achieved,
+.wl-card.achieved:hover {
+  opacity: 1;
+}
+
+.wl-card.achieved .wl-name,
+.wl-card.achieved .wl-price .num {
+  color: var(--text2);
+}
+
+/* Emoji milik user — di sini boleh diredupkan, dia bukan pembawa informasi. */
+.wl-card.achieved .wl-emoji-wrap {
+  opacity: 0.55;
+}
+
+/*
  * Pita prioritas dulu selebar kartu, jadi ujungnya dimakan sudut membulat
  * dan terbaca seperti garis yang terpotong. Sekarang di-inset supaya tidak
  * pernah menyentuh area kurva.
@@ -1242,8 +1531,10 @@ table th {
   border-radius: 0 0 var(--r-xs) var(--r-xs);
 }
 
+/* Petunjuk aksi berikutnya. Di .6 dia menumpang pada warna yang sudah redup
+   (--text2 di status Wishlist) dan hasilnya di bawah ambang baca. */
 .wl-status-next {
-  opacity: 0.6;
+  opacity: 0.8;
   font-size: var(--fs-1);
 }
 
@@ -1275,6 +1566,43 @@ table th {
 /* =======================================================================
    TAB PANDUAN
    ======================================================================= */
+.guide-step {
+  /* Bulatan nomor harus sejajar baris judul, bukan ikut diregangkan setinggi
+     paragraf yang panjang. */
+  align-items: flex-start;
+  gap: var(--sp-3);
+  padding: var(--sp-3) var(--sp-4);
+}
+
+.guide-num {
+  /* Border legacy dipatok rgb(77,159,255) — biru palet LAMA. Sejak palet 1c
+     lingkarannya bergaris biru satu nada, isinya biru nada lain. */
+  border-color: rgba(var(--blue-rgb), 0.25);
+  font-size: var(--fs-3);
+}
+
+.guide-content {
+  min-width: 0;
+}
+
+.guide-content h4 {
+  font-size: var(--fs-4);
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  margin-bottom: var(--sp-1);
+}
+
+.guide-content p {
+  font-size: var(--fs-3);
+  line-height: 1.65;
+}
+
+.guide-section-title {
+  font-size: var(--fs-1);
+  letter-spacing: 0.08em;
+  color: var(--text2);
+}
+
 .guide-ref {
   display: inline-flex;
   align-items: center;
@@ -1418,7 +1746,9 @@ table th {
   padding: 0 4px;
   border-radius: 8px;
   background: var(--red);
-  color: var(--white);
+  /* Putih di atas #ff7a75 cuma 2.5:1 — angkanya tenggelam justru di badge yang
+     tugasnya menarik perhatian. Tinta gelap: 7.6:1. */
+  color: var(--on-accent);
   font-size: 9px;
   font-weight: 700;
   line-height: 15px;
@@ -1830,25 +2160,62 @@ table th {
    TOMBOL — ARAH 1c
    Aksen indigo terang, jadi tintanya gelap: teks putih di atas #8f95ff
    kontrasnya justru lebih rendah daripada tinta gelap.
+
+   ATURAN YANG TIDAK BOLEH DILANGGAR: `--on-accent` itu tinta GELAP (#0c0e16).
+   Dia hanya benar di atas BIDANG PENUH yang terang (--blue, --green, --red).
+   Latar `.btn-green`/`.btn-red` warisan cuma tint 8% di atas kartu gelap —
+   memberi mereka tinta gelap menghasilkan 1.3:1 dan tombolnya lenyap. Itulah
+   yang membuat ikon Hapus di Rencana, tombol "Hapus" di dialog konfirmasi,
+   dan "Unduh Backup" tidak terlihat sama sekali.
+   Tinta gelap ikut HANYA kalau latarnya ikut jadi bidang penuh.
    ======================================================================= */
 .btn {
   font-weight: 700;
   border-radius: var(--r2);
 }
 
-.btn-primary,
-.btn-green,
-.btn-red {
-  color: var(--on-accent);
-}
-
 .btn-primary {
   background: var(--blue);
+  color: var(--on-accent);
   box-shadow: 0 8px 18px -8px rgba(var(--blue-rgb), 0.7);
 }
 
 .btn-primary:hover {
   background: var(--blue2);
+}
+
+/* Latar tint → tinta berwarna. 6.0:1 dan 8.1:1 di atas kartu. */
+.btn-green {
+  color: var(--green);
+}
+
+.btn-red {
+  color: var(--red);
+}
+
+/*
+ * Aksi yang menutup dialog (Hapus, Lanjutkan, Import) adalah komitmen, bukan
+ * tautan: di sini bidangnya dipenuhi supaya bobotnya sesuai akibatnya — dan
+ * karena bidangnya penuh, tinta gelap jadi pilihan yang benar (7.6:1).
+ */
+.modal-actions .btn-red {
+  background: var(--red);
+  color: var(--on-accent);
+  border-color: transparent;
+}
+
+.modal-actions .btn-red:hover {
+  background: rgba(var(--red-rgb), 0.85);
+}
+
+.modal-actions .btn-green {
+  background: var(--green);
+  color: var(--on-accent);
+  border-color: transparent;
+}
+
+.modal-actions .btn-green:hover {
+  background: rgba(var(--green-rgb), 0.85);
 }
 
 /* Ikon di dalam petak entri mewarisi warna dari catBadgeStyle/tone-*. */

@@ -119,8 +119,12 @@ export function ExpenseTab({ openAddSignal }: { openAddSignal?: number } = {}): 
                   const locked = Boolean(e.fromPiutang || e.fromCash);
                   return (
                     <div className="entry-card" key={e.id}>
-                      {/* Petak polos: warnanya sendiri yang menyebut kategori. */}
-                      <span className="entry-tile" style={catBadgeStyle(e.category)} />
+                      {/* Warna petak yang menyebut kategori; ikonnya menyamakan
+                          bentuk baris dengan tab Pemasukan & Piutang — petak
+                          kosong terbaca sebagai gambar yang gagal dimuat. */}
+                      <span className="entry-tile" style={catBadgeStyle(e.category)}>
+                        <Icon name="expense" size={18} />
+                      </span>
                       <div className="entry-card-body">
                         <div className="entry-card-desc">{e.description}</div>
                         <div className="entry-card-meta">
@@ -169,8 +173,8 @@ export function ExpenseTab({ openAddSignal }: { openAddSignal?: number } = {}): 
                     <tr>
                       <th>Tanggal</th>
                       <th>Kategori</th>
-                      <th>Deskripsi</th>
-                      <th>Jumlah</th>
+                      <th className="col-grow">Deskripsi</th>
+                      <th className="col-num">Jumlah</th>
                       <th>Akun</th>
                       <th />
                     </tr>
@@ -187,7 +191,7 @@ export function ExpenseTab({ openAddSignal }: { openAddSignal?: number } = {}): 
                               {e.category}
                             </span>
                           </td>
-                          <td className="cell-name">
+                          <td className="cell-name col-grow">
                             {e.description}
                             {e.fromPlanned && <span className="badge badge-gray tag">rencana</span>}
                             {e.fromPiutang && (
@@ -195,7 +199,7 @@ export function ExpenseTab({ openAddSignal }: { openAddSignal?: number } = {}): 
                             )}
                             {e.fromCash && <span className="badge badge-yellow tag">tunai</span>}
                           </td>
-                          <td>
+                          <td className="col-num">
                             <Money value={e.amount} negative tone="red" weight="strong" />
                           </td>
                           <td>

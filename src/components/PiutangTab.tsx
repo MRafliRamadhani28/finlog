@@ -143,9 +143,9 @@ export function PiutangTab({ openAddSignal }: { openAddSignal?: number } = {}): 
               <table>
                 <thead>
                   <tr>
-                    <th>Nama</th>
+                    <th className="col-grow">Nama</th>
                     <th>Tgl Pinjam</th>
-                    <th>Jumlah</th>
+                    <th className="col-num">Jumlah</th>
                     <th>Jatuh Tempo</th>
                     <th>Status</th>
                     <th>Catatan</th>
@@ -157,9 +157,9 @@ export function PiutangTab({ openAddSignal }: { openAddSignal?: number } = {}): 
                     const overdue = isOverdue(p);
                     return (
                       <tr key={p.id}>
-                        <td className="cell-name">{p.name}</td>
+                        <td className="cell-name col-grow">{p.name}</td>
                         <td className="cell-muted">{fmtDate(p.date)}</td>
-                        <td>
+                        <td className="col-num">
                           <Money value={p.amount} tone="purple" weight="strong" />
                         </td>
                         <td className={overdue ? 'text-red' : 'cell-muted'}>

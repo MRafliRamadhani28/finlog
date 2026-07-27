@@ -188,8 +188,8 @@ export function IncomeTab({ openAddSignal }: { openAddSignal?: number } = {}): R
                     <tr>
                       <th>Tanggal</th>
                       <th>Kategori</th>
-                      <th>Deskripsi</th>
-                      <th>Jumlah</th>
+                      <th className="col-grow">Deskripsi</th>
+                      <th className="col-num">Jumlah</th>
                       <th>Catatan</th>
                       <th />
                     </tr>
@@ -203,8 +203,8 @@ export function IncomeTab({ openAddSignal }: { openAddSignal?: number } = {}): R
                             {i.category}
                           </span>
                         </td>
-                        <td className="cell-name">{i.description}</td>
-                        <td>
+                        <td className="cell-name col-grow">{i.description}</td>
+                        <td className="col-num">
                           <Money value={i.amount} tone="green" weight="strong" />
                         </td>
                         <td className="cell-note">{i.note || '-'}</td>

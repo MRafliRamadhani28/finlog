@@ -4,7 +4,7 @@ import { useApp } from '../hooks/useApp';
 import { useConfirmDelete } from '../hooks/useConfirm';
 import { useUndoableDelete } from '../hooks/useUndoableDelete';
 import { useBalanceGuard } from '../hooks/useBalanceGuard';
-import { catBadgeStyle, defaultDateFor, fmtDate } from '../lib/format';
+import { catBadgeStyle, defaultDateFor, fmtDate, fmtRp } from '../lib/format';
 import { nextId } from '../lib/id';
 import { addCashWithdrawal, deleteCashWithdrawal } from '../lib/mutations';
 import { EXPENSE_CATS } from '../types';
@@ -108,22 +108,32 @@ export function CashTab({ openAddSignal }: { openAddSignal?: number } = {}): Rea
                     }
                   }}
                 >
-                  <span className="cell-muted">{fmtDate(c.date)}</span>
-                  {acc ? (
-                    <span className="row row-tight">
-                      <span className="acc-dot acc-dot-md" style={{ background: acc.color }} />
-                      <span className="cash-acc-name">
-                        {acc.bank} · {acc.name}
-                      </span>
-                    </span>
-                  ) : (
-                    <span className="cell-muted">Tunai</span>
-                  )}
-                  <span className="cash-desc grow">{c.description}</span>
-                  <Money value={c.amount} tone="yellow" weight="bold" />
                   <span className="cash-expand-icon">
                     <Icon name="next" size={14} />
                   </span>
+                  <span className="cash-main">
+                    <span className="cash-desc">{c.description}</span>
+                    <span className="cash-meta">
+                      <span>{fmtDate(c.date)}</span>
+                      {acc ? (
+                        <span className="row row-tight">
+                          <span className="acc-dot acc-dot-md" style={{ background: acc.color }} />
+                          {acc.bank} · {acc.name}
+                        </span>
+                      ) : (
+                        <span>Tunai</span>
+                      )}
+                      <span>
+                        {c.items.length} rincian
+                      </span>
+                      {untracked > 0 && (
+                        <span className="cash-meta-warn">
+                          <Icon name="warn" size={11} /> Sisa {fmtRp(untracked)} belum dirinci
+                        </span>
+                      )}
+                    </span>
+                  </span>
+                  <Money value={c.amount} tone="yellow" weight="bold" className="cash-amount" />
                   <IconButton
                     icon="delete"
                     tone="red"
