@@ -18,11 +18,14 @@ export interface ToastAction {
 export interface ToastOptions {
   action?: ToastAction;
   duration?: number;
+  displayDuration?: number;
 }
 
-function show(kind: 'success' | 'error', message: string, options?: ToastOptions): void {
+function show(kind: 'success' | 'error' | 'info', message: string, options?: ToastOptions): void {
+  const { displayDuration, ...rest } = options ?? {};
+  const goeyOptions = displayDuration ? { ...rest, timing: { displayDuration } } : rest;
   void load().then(
-    (m) => m.gooeyToast[kind](message, options as GooeyToastOptions),
+    (m) => m.gooeyToast[kind](message, goeyOptions as GooeyToastOptions),
     // Chunk-nya tidak bisa dimuat (offline, belum ter-cache). Aksinya sendiri
     // sudah berhasil — kehilangan notifikasinya jauh lebih baik daripada
     // unhandled rejection.
@@ -33,4 +36,5 @@ function show(kind: 'success' | 'error', message: string, options?: ToastOptions
 export const toast = {
   success: (message: string, options?: ToastOptions): void => show('success', message, options),
   error: (message: string, options?: ToastOptions): void => show('error', message, options),
+  info: (message: string, options?: ToastOptions): void => show('info', message, options),
 };

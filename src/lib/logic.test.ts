@@ -3,6 +3,7 @@ import type { MonthDataFull } from '../types';
 import { coerceMonthData, defaultMonthData } from './storage';
 import { groupThousands, moneyEdit } from './format';
 import { monthsBetween, parseMonthKey } from './crossMonth';
+import { decideOnLogin, sameSnapshot } from './cloud';
 import {
   budgetProgress,
   cashOnHand,
@@ -401,5 +402,27 @@ describe('pelunasan piutang beda bulan', () => {
     const gabungan =
       monthTotals(juni).currentBalance - 5_000_000 + (monthTotals(juli).currentBalance - 5_000_000);
     expect(gabungan).toBe(0);
+  });
+});
+
+describe('sinkron cloud', () => {
+  const data = { finance_2026_01: { salary: 1, income: [{ id: 1, amount: 2 }] } };
+
+  it('decideOnLogin mengikuti tabel keputusan spec', () => {
+    expect(decideOnLogin({}, null)).toBe('same');
+    expect(decideOnLogin({}, {})).toBe('same');
+    expect(decideOnLogin(data, null)).toBe('push');
+    expect(decideOnLogin(data, {})).toBe('push');
+    expect(decideOnLogin({}, data)).toBe('pull');
+    expect(decideOnLogin(data, structuredClone(data))).toBe('same');
+    expect(decideOnLogin(data, { finance_2026_01: { salary: 9 } })).toBe('ask');
+  });
+
+  it('sameSnapshot mengabaikan urutan key object tapi tidak urutan array', () => {
+    expect(sameSnapshot({ x: { a: 1, b: { c: 2, d: 3 } } }, { x: { b: { d: 3, c: 2 }, a: 1 } })).toBe(
+      true,
+    );
+    expect(sameSnapshot({ x: [1, 2] }, { x: [2, 1] })).toBe(false);
+    expect(sameSnapshot({ x: 1 }, { x: 1, y: 2 })).toBe(false);
   });
 });

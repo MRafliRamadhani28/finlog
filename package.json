@@ -11,6 +11,7 @@
     "test": "vitest run"
   },
   "dependencies": {
+    "better-auth": "1.6.23",
     "framer-motion": "^12.42.2",
     "goey-toast": "^0.5.0",
     "lucide-react": "^1.26.0",

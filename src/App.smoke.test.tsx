@@ -1,9 +1,23 @@
 // @vitest-environment jsdom
-import { afterEach, beforeEach, describe, expect, it } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { act } from 'react';
 import { createRoot, type Root } from 'react-dom/client';
 import { App } from './App';
-import { KEYS, monthKey } from './lib/storage';
+import { toast } from './lib/toast';
+import {
+  KEYS,
+  defaultMonthData,
+  deleteAllData,
+  exportAll,
+  importAll,
+  loadCloudState,
+  monthKey,
+  onFinanceChange,
+  removeMonth,
+  saveCloudState,
+  saveMonth,
+  setFlag,
+} from './lib/storage';
 
 /**
  * Smoke test render: memasang seluruh app dan berpindah ke setiap tab.
@@ -561,5 +575,104 @@ describe('alur lewat UI', () => {
     expect(
       readMonth(monthKey(new Date(new Date().getFullYear(), new Date().getMonth() - 1, 1))).piutang,
     ).toHaveLength(1);
+  });
+});
+
+describe('storage untuk sync', () => {
+  afterEach(() => onFinanceChange(null));
+
+  it('listener terpanggil untuk setiap tulis data finance', () => {
+    const cb = vi.fn();
+    onFinanceChange(cb);
+    saveMonth('finance_2026_01', defaultMonthData());
+    importAll({ finance_2026_02: defaultMonthData() }, ['finance_2026_02']);
+    removeMonth('finance_2026_01');
+    deleteAllData();
+    expect(cb).toHaveBeenCalledTimes(4);
+  });
+
+  it('listener tidak terpanggil untuk flag perangkat dan state cloud', () => {
+    const cb = vi.fn();
+    onFinanceChange(cb);
+    setFlag(KEYS.balHidden, true);
+    saveCloudState({ email: 'a@b.c', dirty: true });
+    saveCloudState(null);
+    expect(cb).not.toHaveBeenCalled();
+  });
+
+  it('state cloud tidak ikut export dan tidak terhapus oleh hapus semua', () => {
+    saveCloudState({ email: 'a@b.c', dirty: false });
+    expect(Object.keys(exportAll())).not.toContain(KEYS.cloud);
+    deleteAllData();
+    expect(loadCloudState()).toEqual({ email: 'a@b.c', dirty: false });
+  });
+
+  it('state cloud yang korup dibaca sebagai belum login', () => {
+    localStorage.setItem(KEYS.cloud, '{"dirty":true}');
+    expect(loadCloudState()).toBeNull();
+    localStorage.setItem(KEYS.cloud, 'bukan json');
+    expect(loadCloudState()).toBeNull();
+  });
+});
+
+describe('login tersembunyi', () => {
+  afterEach(() => {
+    vi.unstubAllEnvs();
+    vi.restoreAllMocks();
+  });
+
+  const logo = (): Element | null => container.querySelector('.header h1 button');
+  const dialog = (): Element | null => container.querySelector('.modal[role="dialog"]');
+  const stubCloudEnv = (): void => {
+    vi.stubEnv('VITE_NEON_AUTH_URL', 'https://auth.test');
+    vi.stubEnv('VITE_NEON_DATA_API_URL', 'https://data.test');
+  };
+
+  it('logo tetap bertuliskan finlog', () => {
+    mount();
+    expect(logo()?.textContent).toBe('finlog');
+  });
+
+  it('tanpa env, klik logo tidak membuka apa pun', async () => {
+    vi.stubEnv('VITE_NEON_AUTH_URL', '');
+    vi.stubEnv('VITE_NEON_DATA_API_URL', '');
+    mount();
+    await click(logo(), 'logo');
+    expect(dialog()).toBeNull();
+  });
+
+  it('belum login, klik logo membuka form login', async () => {
+    stubCloudEnv();
+    mount();
+    await click(logo(), 'logo');
+    expect(dialog()?.textContent).toContain('Masuk');
+    expect(field('Email')).toBeTruthy();
+    expect(field('Password')).toBeTruthy();
+  });
+
+  it('batal menutup form login tanpa menulis state cloud', async () => {
+    stubCloudEnv();
+    mount();
+    await click(logo(), 'logo');
+    await click(container.querySelector('.modal[role="dialog"] .btn-ghost'), 'tombol Batal');
+    expect(dialog()).toBeNull();
+    expect(loadCloudState()).toBeNull();
+  });
+
+  it('sudah login, klik logo memunculkan toast konfirmasi logout', async () => {
+    stubCloudEnv();
+    saveCloudState({ email: 'a@b.c', dirty: false });
+    const info = vi.spyOn(toast, 'info').mockImplementation(() => {});
+    mount();
+    await click(logo(), 'logo');
+    expect(info).toHaveBeenCalledWith(
+      'Keluar dari akun a@b.c?',
+      expect.objectContaining({
+        duration: 8000,
+        displayDuration: 8000,
+        action: expect.objectContaining({ label: 'Logout' }),
+      }),
+    );
+    expect(dialog()).toBeNull();
   });
 });

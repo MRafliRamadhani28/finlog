@@ -6,14 +6,19 @@ import { Icon } from './Icon';
 interface HeaderProps {
   onToggleSidebar: () => void;
   onStartTutorial: () => void;
+  onBrandClick: () => void;
 }
 
-export function Header({ onToggleSidebar, onStartTutorial }: HeaderProps): ReactNode {
+export function Header({ onToggleSidebar, onStartTutorial, onBrandClick }: HeaderProps): ReactNode {
   const { currentDate, changeMonth, balHidden, toggleBalHidden } = useApp();
   return (
     <div className="header">
       <div className="header-title">
-        <h1>finlog</h1>
+        <h1>
+          <button type="button" className="brand-btn" onClick={onBrandClick}>
+            finlog
+          </button>
+        </h1>
       </div>
       <div className="header-right">
         <button className="hamburger" onClick={onToggleSidebar} aria-label="Buka menu">

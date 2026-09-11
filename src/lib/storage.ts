@@ -9,6 +9,7 @@ export const KEYS = {
   wishlist: 'finance_wishlist',
   balHidden: 'keuangan_bal_hidden',
   tutorialDone: 'keuangan_tutorial_done',
+  cloud: 'finlog_cloud',
 } as const;
 
 /** `finance_2026_07` */
@@ -42,6 +43,12 @@ function readJSON<T>(key: string, fallback: T): T {
   }
 }
 
+let financeListener: (() => void) | null = null;
+
+export function onFinanceChange(cb: (() => void) | null): void {
+  financeListener = cb;
+}
+
 function writeJSON(key: string, value: unknown): void {
   try {
     localStorage.setItem(key, JSON.stringify(value));
@@ -50,6 +57,7 @@ function writeJSON(key: string, value: unknown): void {
     console.error('Gagal menyimpan ke localStorage:', e);
     throw e;
   }
+  if (isFinanceKey(key)) financeListener?.();
 }
 
 function asArray<T>(v: unknown): T[] {
@@ -95,6 +103,7 @@ export function saveMonth(key: string, data: MonthDataFull): void {
 
 export function removeMonth(key: string): void {
   localStorage.removeItem(key);
+  financeListener?.();
 }
 
 export function loadAccounts(): Account[] {
@@ -162,4 +171,24 @@ export function importAll(parsed: Record<string, unknown>, keys: string[]): void
 
 export function deleteAllData(): void {
   for (const k of allFinanceKeys()) localStorage.removeItem(k);
+  financeListener?.();
+}
+
+export interface CloudState {
+  email: string;
+  dirty: boolean;
+}
+
+export function loadCloudState(): CloudState | null {
+  const v = readJSON<Partial<CloudState> | null>(KEYS.cloud, null);
+  return v && typeof v.email === 'string' ? { email: v.email, dirty: v.dirty === true } : null;
+}
+
+export function saveCloudState(s: CloudState | null): void {
+  try {
+    if (s) localStorage.setItem(KEYS.cloud, JSON.stringify(s));
+    else localStorage.removeItem(KEYS.cloud);
+  } catch (e) {
+    console.error('Gagal menyimpan status cloud:', e);
+  }
 }

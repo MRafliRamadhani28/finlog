@@ -17,3 +17,6 @@ tsconfig.tsbuildinfo
 /.clinerules/
 /.opencode/
 /.github/copilot-instructions.md
+
+# Env lokal
+*.local

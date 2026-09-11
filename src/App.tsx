@@ -4,7 +4,9 @@ import { ErrorBoundary } from './components/ErrorBoundary';
 import { ConfirmProvider } from './hooks/useConfirm';
 import { isOverdue } from './lib/calc';
 import { openPiutangElsewhere } from './lib/crossMonth';
-import { KEYS, getFlag, monthKey, setFlag } from './lib/storage';
+import { beginSession, cloudEnabled, logout, startSync, stopSync } from './lib/cloud';
+import { KEYS, getFlag, loadCloudState, monthKey, setFlag } from './lib/storage';
+import { toast } from './lib/toast';
 import type { TabName } from './types';
 import { BalancePanel } from './components/BalancePanel';
 import { Header } from './components/Header';
@@ -23,6 +25,7 @@ import { SummaryTab } from './components/SummaryTab';
 import { DataTab } from './components/DataTab';
 import { GuideTab } from './components/GuideTab';
 import { TutorialOverlay } from './components/TutorialOverlay';
+import { LoginModal } from './components/LoginModal';
 
 const MOBILE_BREAKPOINT = 1024;
 
@@ -56,7 +59,7 @@ export function App(): ReactNode {
 }
 
 function Shell(): ReactNode {
-  const { balHidden, data, currentDate } = useApp();
+  const { balHidden, data, currentDate, reloadAll } = useApp();
   // Beranda = tab ringkasan. Namanya di data tetap 'ringkasan' supaya
   // TabName dan sinyal tab lain tidak ikut berubah.
   const [tab, setTab] = useState<TabName>('ringkasan');
@@ -64,6 +67,53 @@ function Shell(): ReactNode {
   const [tutorialOpen, setTutorialOpen] = useState(false);
   const [recordOpen, setRecordOpen] = useState(false);
   const [moreOpen, setMoreOpen] = useState(false);
+  const [cloudEmail, setCloudEmail] = useState<string | null>(
+    () => loadCloudState()?.email ?? null,
+  );
+  const [loginOpen, setLoginOpen] = useState(false);
+
+  const cloudExpired = useCallback(() => {
+    setCloudEmail(null);
+    toast.error('Sesi cloud habis. Klik logo finlog untuk login lagi.');
+  }, []);
+
+  useEffect(() => {
+    if (!cloudEnabled() || !loadCloudState()) return;
+    startSync(cloudExpired);
+    return stopSync;
+  }, [cloudExpired]);
+
+  const loggedIn = useCallback(
+    (email: string, replacedLocal: boolean) => {
+      if (replacedLocal) reloadAll();
+      beginSession(email, cloudExpired);
+      setCloudEmail(email);
+      setLoginOpen(false);
+      toast.success(`Masuk sebagai ${email}`);
+    },
+    [reloadAll, cloudExpired],
+  );
+
+  const brandClick = useCallback(() => {
+    if (!cloudEnabled()) return;
+    if (!cloudEmail) {
+      setLoginOpen(true);
+      return;
+    }
+    toast.info(`Keluar dari akun ${cloudEmail}?`, {
+      duration: 8000,
+      displayDuration: 8000,
+      action: {
+        label: 'Logout',
+        onClick: () => {
+          void logout().then(() => {
+            setCloudEmail(null);
+            toast.success('Berhasil keluar');
+          });
+        },
+      },
+    });
+  }, [cloudEmail]);
 
   // Tutorial otomatis saat pertama kali buka aplikasi.
   useEffect(() => {
@@ -123,6 +173,7 @@ function Shell(): ReactNode {
         <Header
           onToggleSidebar={() => setSidebarOpen((v) => !v)}
           onStartTutorial={() => setTutorialOpen(true)}
+          onBrandClick={brandClick}
         />
         {/* Panel saldo cuma di beranda. Di tab lain dia mendorong isi tab
             yang dituju user turun setengah layar tanpa diminta. */}
@@ -168,6 +219,7 @@ function Shell(): ReactNode {
         onPick={navPick}
       />
       <TutorialOverlay open={tutorialOpen} onClose={closeTutorial} />
+      {loginOpen && <LoginModal onClose={() => setLoginOpen(false)} onLoggedIn={loggedIn} />}
     </>
   );
 }
